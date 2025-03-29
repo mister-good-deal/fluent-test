@@ -1,0 +1,17 @@
+[package]
+name = "fluent-test"
+version = "0.1.0"
+edition = "2024"
+authors = ["Romain Laneuville<romain.laneuville@hotmail.fr>"]
+description = "A fluent, Jest-like testing library for Rust"
+repository = "https://github.com/mister-good-deal/fluent-test"
+license = "MIT"
+keywords = ["testing", "test", "jest", "fluent", "assertions"]
+categories = ["development-tools", "development-tools::testing"]
+
+[dependencies]
+regex = "1.10.3"
+colored = "2.0.4"
+lazy_static = "1.4.0"
+thread_local = "1.1.8"
+once_cell = "1.18.0"
