@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use colored::*;
-use thread_local::ThreadLocal;
 use once_cell::sync::Lazy;
+use std::sync::RwLock;
 use crate::config::Config;
 
 struct TestReport {
@@ -20,8 +20,8 @@ impl TestReport {
     }
 }
 
-static GLOBAL_CONFIG: Lazy<RefCell<Config>> = Lazy::new(|| {
-    RefCell::new(Config::new())
+pub(crate) static GLOBAL_CONFIG: Lazy<RwLock<Config>> = Lazy::new(|| {
+    RwLock::new(Config::new())
 });
 
 thread_local! {
@@ -34,7 +34,7 @@ pub fn report_success(message: &str) {
         report.passed += 1;
     });
 
-    let config = GLOBAL_CONFIG.borrow();
+    let config = GLOBAL_CONFIG.read().unwrap();
     if config.show_success_details {
         let prefix = if config.use_unicode_symbols { "✓ " } else { "+ " };
         let message = if config.use_colors {
@@ -53,7 +53,7 @@ pub fn report_failure(expected: &str, received: &str) {
         report.failures.push((expected.to_string(), received.to_string()));
     });
 
-    let config = GLOBAL_CONFIG.borrow();
+    let config = GLOBAL_CONFIG.read().unwrap();
     let prefix = if config.use_unicode_symbols { "✗ " } else { "- " };
 
     let expected_msg = if config.use_colors {
@@ -78,7 +78,7 @@ impl Reporter {
     pub fn summarize() {
         REPORT.with(|r| {
             let report = r.borrow();
-            let config = GLOBAL_CONFIG.borrow();
+            let config = GLOBAL_CONFIG.read().unwrap();
 
             println!("\nTest Results:");
 

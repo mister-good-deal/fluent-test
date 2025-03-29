@@ -36,6 +36,6 @@ impl Config {
     /// Apply the configuration
     pub fn apply(self) {
         use crate::reporter::GLOBAL_CONFIG;
-        *GLOBAL_CONFIG.borrow_mut() = self;
+        *GLOBAL_CONFIG.write().unwrap() = self;
     }
 }

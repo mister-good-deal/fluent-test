@@ -1,4 +1,3 @@
-use std::fmt::Debug;
 use crate::reporter::report_success;
 use crate::reporter::report_failure;
 
@@ -34,5 +33,7 @@ impl<T> Expectation<T> {
     /// Helper to report a failed test
     pub(crate) fn report_failure(&self, expected: &str, received: &str) {
         report_failure(expected, received);
+        // Panic to support #[should_panic] test cases
+        panic!("Assertion failed: {}", expected);
     }
 }
