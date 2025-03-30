@@ -33,12 +33,6 @@ jobs:
         run: |
           cargo test --verbose
 
-      - name: Verify profraw files exist
-        run: |
-          echo "Listing profraw files:"
-          find . -name "*.profraw" || echo "No profraw files found"
-          ls -la
-
       - name: Generate coverage report
         run: |
           mkdir -p coverage
