@@ -8,10 +8,9 @@
 - Run examples: `cargo run --example basic`
 - Check formatting: `cargo fmt --check`
 - Apply formatting: `cargo fmt`
-- Run linter: `cargo clippy`
+- Run linter: `cargo clippy -- -D warnings`
 - Check errors with `cargo clippy -- -D warnings` after editing code
 - Format Markdown: Use markdownlint-cli2 to format Markdown files with `npx markdownlint-cli2 --fix README.md`
-- Markdown line length: Maximum line length is configured to 140 characters in .markdownlint.json
 
 ## Code Style Guidelines
 
@@ -22,7 +21,7 @@
 - **Error Handling**: Descriptive messages with context through Reporter module
 - **API Design**: Trait-based, fluent interface with method chaining
 - **Testing**: Unit tests alongside implementation, integration tests in tests/ directory
-- **Markdown**: Use plain Markdown in README.md, no HTML tags, follow VSCode Markdown formatting
+- **Markdown**: Use plain Markdown in README.md, no HTML tags, follow markdownlint.json formatting
 
 ## Implementation Patterns
 

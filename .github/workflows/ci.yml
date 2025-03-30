@@ -37,7 +37,11 @@ jobs:
         run: cargo test --verbose
       
       - name: Run examples
-        run: cargo run --example basic
+        run: |
+          for example in $(cargo metadata --no-deps --format-version=1 | jq -r '.packages[].targets[] | select(.kind | contains(["example"])) | .name'); do
+            echo "Running example: $example"
+            cargo run --example "$example"
+          done
 
   test-all-features:
     name: Test with all Rust channels
