@@ -18,6 +18,28 @@ expressive assertions with readable error messages while maintaining compatibili
 - **Beautiful Test Output**: Enhanced test reporting with visual cues and better organization.
 - **Type-Safe Assertions**: Leverages Rust's type system for compile-time safety.
 
+## Roadmap
+
+- [x] Basic matchers for primitive types
+- [x] Matchers for collections (Vec, HashMap, etc.)
+- [x] Matchers for Option and Result types
+- [x] Logical chain modifiers (AND/OR)
+- [x] Custom matcher support
+- [x] Improved test output formatting
+- [x] CI/CD integration for automatic releases
+- [x] Documentation and examples
+- [ ] More advanced matchers (e.g., regex, custom types)
+- [ ] Performance optimizations
+- [ ] Support for async testing
+- [ ] Custom console client (e.g., for CI/CD or nice terminal output)
+- [ ] Support for code coverage reporting
+- [ ] Support for mocking and stubbing
+- [ ] Integration with other testing frameworks (e.g., mockito, assert_eq)
+- [ ] Community contributions and feedback
+- [ ] Continuous improvement based on user feedback
+- [ ] Enhanced error reporting and debugging tools
+- [ ] Integration with popular CI/CD tools
+
 ## Quick Start
 
 Add FluentTest to your project:
@@ -777,18 +799,21 @@ To generate coverage reports locally:
 
 ```bash
 # Install required components
-rustup toolchain install nightly --component llvm-tools-preview
+rustup component add llvm-tools-preview
 cargo install grcov
 cargo install rustfilt
 
 # Build with coverage instrumentation and run tests
-RUSTFLAGS="-C instrument-coverage" cargo +nightly test
+RUSTFLAGS="-C instrument-coverage" cargo test
 
 # Generate HTML report
-grcov . --binary-path ./target/debug/ -s . -t html --branch --ignore-not-existing -o ./coverage/
+grcov . --binary-path ./target/debug/ -s . -t html --branch --keep-only "src/**" -o ./coverage
+
+# Generate Markdown report
+grcov . --binary-path ./target/debug/ -s . -t markdown --branch --keep-only "src/**" -o ./coverage/coverage.md
 ```
 
-Then open `./coverage/index.html` in your browser.
+Then open `./coverage/index.html` in your browser or view the Markdown report in your favorite editor.
 
 ## License
 

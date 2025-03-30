@@ -47,11 +47,7 @@ jobs:
             -s . \
             -t lcov \
             --branch \
-            --ignore-not-existing \
-            --ignore "*/.cargo/*" \
-            --ignore "*/tests/*" \
-            --ignore "*/examples/*" \
-            --excl-start "mod tests" \
+            --keep-only "src/**" \
             -o ./coverage/lcov.info
 
       - name: Upload coverage report to Codecov
@@ -68,10 +64,7 @@ jobs:
             -s . \
             -t html \
             --branch \
-            --ignore-not-existing \
-            --ignore "*/.cargo/*" \
-            --ignore "*/tests/*" \
-            --ignore "*/examples/*" \
+            --keep-only "src/**" \
             -o ./coverage/html
             
       - name: Upload HTML report artifact
