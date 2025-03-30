@@ -1,5 +1,5 @@
-use std::fmt::Debug;
 use crate::expectation::Expectation;
+use std::fmt::Debug;
 
 pub trait EqualityMatchers<T> {
     fn to_equal(self, expected: T);
@@ -33,6 +33,7 @@ impl<T: Debug + PartialEq> EqualityMatchers<T> for Expectation<T> {
             value: self.value,
             expr_str: self.expr_str,
             negated: true,
-        }.to_equal(expected);
+        }
+        .to_equal(expected);
     }
 }

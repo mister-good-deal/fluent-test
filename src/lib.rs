@@ -3,10 +3,10 @@
 //! This crate provides a more expressive way to write tests in Rust,
 //! inspired by JavaScript testing frameworks like Jest.
 
+mod config;
 pub mod expectation;
 mod matchers;
 mod reporter;
-mod config;
 
 pub mod prelude {
     pub use crate::expect;

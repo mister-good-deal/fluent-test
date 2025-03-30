@@ -1,5 +1,5 @@
-use crate::reporter::report_success;
 use crate::reporter::report_failure;
+use crate::reporter::report_success;
 
 /// The core struct that holds a value being tested and provides
 /// the fluent API for assertions

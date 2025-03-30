@@ -1,6 +1,6 @@
-use std::fmt::Debug;
 use crate::expectation::Expectation;
 use regex::Regex;
+use std::fmt::Debug;
 
 pub trait StringMatchers {
     fn to_contain(self, substring: &str);
@@ -27,7 +27,10 @@ impl<T: AsRef<str> + Debug> StringMatchers for Expectation<T> {
             self.report_success(&format!("{} \"{}\"", msg, substring));
         } else {
             let expected_msg = if self.negated {
-                format!("Expected {} not to contain \"{}\"", self.expr_str, substring)
+                format!(
+                    "Expected {} not to contain \"{}\"",
+                    self.expr_str, substring
+                )
             } else {
                 format!("Expected {} to contain \"{}\"", self.expr_str, substring)
             };
@@ -49,7 +52,10 @@ impl<T: AsRef<str> + Debug> StringMatchers for Expectation<T> {
             self.report_success(&format!("{} \"{}\"", msg, prefix));
         } else {
             let expected_msg = if self.negated {
-                format!("Expected {} not to start with \"{}\"", self.expr_str, prefix)
+                format!(
+                    "Expected {} not to start with \"{}\"",
+                    self.expr_str, prefix
+                )
             } else {
                 format!("Expected {} to start with \"{}\"", self.expr_str, prefix)
             };
@@ -104,7 +110,10 @@ impl<T: AsRef<str> + Debug> StringMatchers for Expectation<T> {
             self.report_success(&format!("{} \"{}\"", msg, pattern));
         } else {
             let expected_msg = if self.negated {
-                format!("Expected {} not to match regex \"{}\"", self.expr_str, pattern)
+                format!(
+                    "Expected {} not to match regex \"{}\"",
+                    self.expr_str, pattern
+                )
             } else {
                 format!("Expected {} to match regex \"{}\"", self.expr_str, pattern)
             };
@@ -150,9 +159,15 @@ impl<T: AsRef<str> + Debug> StringMatchers for Expectation<T> {
             self.report_success(&format!("{} {}", msg, length));
         } else {
             let expected_msg = if self.negated {
-                format!("Expected {} not to have length greater than {}", self.expr_str, length)
+                format!(
+                    "Expected {} not to have length greater than {}",
+                    self.expr_str, length
+                )
             } else {
-                format!("Expected {} to have length greater than {}", self.expr_str, length)
+                format!(
+                    "Expected {} to have length greater than {}",
+                    self.expr_str, length
+                )
             };
             self.report_failure(&expected_msg, &format!("Actual length: {}", actual_length));
         }
@@ -173,9 +188,15 @@ impl<T: AsRef<str> + Debug> StringMatchers for Expectation<T> {
             self.report_success(&format!("{} {}", msg, length));
         } else {
             let expected_msg = if self.negated {
-                format!("Expected {} not to have length less than {}", self.expr_str, length)
+                format!(
+                    "Expected {} not to have length less than {}",
+                    self.expr_str, length
+                )
             } else {
-                format!("Expected {} to have length less than {}", self.expr_str, length)
+                format!(
+                    "Expected {} to have length less than {}",
+                    self.expr_str, length
+                )
             };
             self.report_failure(&expected_msg, &format!("Actual length: {}", actual_length));
         }
