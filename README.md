@@ -41,6 +41,11 @@ fn should_check_values() {
 FluentTest provides a comprehensive set of matchers for various types. All matchers support negation through either the
 `not()` method or the `expect_not!` macro.
 
+### Boolean
+
+- [**to_be_true**](#to_be_true) - Checks if a boolean is true
+- [**to_be_false**](#to_be_false) - Checks if a boolean is false
+
 ### Equality
 
 - [**to_equal**](#to_equal) - Checks if a value equals another value
@@ -58,14 +63,42 @@ FluentTest provides a comprehensive set of matchers for various types. All match
 
 ### String
 
-- [**to_be_empty**](#to_be_empty) - Checks if a string is empty
-- [**to_contain**](#to_contain) - Checks if a string contains a substring
+- [**to_be_empty**](#to_be_empty-string) - Checks if a string is empty
+- [**to_contain**](#to_contain-string) - Checks if a string contains a substring
 - [**to_start_with**](#to_start_with) - Checks if a string starts with a prefix
 - [**to_end_with**](#to_end_with) - Checks if a string ends with a suffix
 - [**to_match_regex**](#to_match_regex) - Checks if a string matches a regex pattern
-- [**to_have_length**](#to_have_length) - Checks if a string has a specific length
+- [**to_have_length**](#to_have_length-string) - Checks if a string has a specific length
 - [**to_have_length_greater_than**](#to_have_length_greater_than) - Checks if a string length is greater than a value
 - [**to_have_length_less_than**](#to_have_length_less_than) - Checks if a string length is less than a value
+
+### Collection
+
+- [**to_be_empty**](#to_be_empty-collection) - Checks if a collection is empty
+- [**to_have_length**](#to_have_length-collection) - Checks if a collection has a specific length
+- [**to_contain**](#to_contain-collection) - Checks if a collection contains a specific element
+- [**to_contain_all_of**](#to_contain_all_of) - Checks if a collection contains all specified elements
+- [**to_equal_collection**](#to_equal_collection) - Compares two collections for element-wise equality
+
+### HashMap
+
+- [**to_be_empty**](#to_be_empty-hashmap) - Checks if a HashMap is empty
+- [**to_have_length**](#to_have_length-hashmap) - Checks if a HashMap has a specific length
+- [**to_contain_key**](#to_contain_key) - Checks if a HashMap contains a specific key
+- [**to_contain_entry**](#to_contain_entry) - Checks if a HashMap contains a specific key-value pair
+
+### Option
+
+- [**to_be_some**](#to_be_some) - Checks if an Option contains a value
+- [**to_be_none**](#to_be_none) - Checks if an Option is None
+- [**to_contain_value**](#to_contain_value) - Checks if an Option contains a specific value
+
+### Result
+
+- [**to_be_ok**](#to_be_ok) - Checks if a Result is Ok
+- [**to_be_err**](#to_be_err) - Checks if a Result is Err
+- [**to_contain_ok**](#to_contain_ok) - Checks if a Result contains a specific Ok value
+- [**to_contain_err**](#to_contain_err) - Checks if a Result contains a specific Err value
 
 ## Using Not Modifiers
 
@@ -89,6 +122,36 @@ fn test_not_modifiers() {
 ```
 
 ## Matcher Documentation
+
+### Boolean Matchers
+
+#### to_be_true
+
+Checks if a boolean is true.
+
+```rust
+fn test_boolean_true() {
+    let is_enabled = true;
+    let is_disabled = false;
+    
+    expect!(is_enabled).to_be_true();     // Passes
+    expect!(is_disabled).not().to_be_true(); // Passes
+}
+```
+
+#### to_be_false
+
+Checks if a boolean is false.
+
+```rust
+fn test_boolean_false() {
+    let is_enabled = true;
+    let is_disabled = false;
+    
+    expect!(is_disabled).to_be_false();     // Passes
+    expect!(is_enabled).not().to_be_false(); // Passes
+}
+```
 
 ### Equality Matchers
 
@@ -326,6 +389,246 @@ fn test_string_length_less_than() {
     
     expect!(greeting).to_have_length_less_than(20);        // Passes
     expect!(greeting).not().to_have_length_less_than(10);  // Passes
+}
+```
+
+### Collection Matchers
+
+#### to_be_empty (collection)
+
+Checks if a collection is empty.
+
+```rust
+fn test_empty_collection() {
+    let empty_vec: Vec<i32> = vec![];
+    let non_empty_vec = vec![1, 2, 3];
+    
+    expect!(empty_vec.as_slice()).to_be_empty();             // Passes
+    expect!(non_empty_vec.as_slice()).not().to_be_empty();   // Passes
+}
+```
+
+#### to_have_length (collection)
+
+Checks if a collection has a specific length.
+
+```rust
+fn test_collection_length() {
+    let numbers = vec![1, 2, 3, 4, 5];
+    
+    expect!(numbers.as_slice()).to_have_length(5);         // Passes
+    expect!(numbers.as_slice()).not().to_have_length(3);   // Passes
+}
+```
+
+#### to_contain (collection)
+
+Checks if a collection contains a specific element.
+
+```rust
+fn test_collection_contains() {
+    let numbers = vec![1, 2, 3, 4, 5];
+    
+    expect!(numbers.as_slice()).to_contain(3);           // Passes
+    expect!(numbers.as_slice()).not().to_contain(10);    // Passes
+}
+```
+
+#### to_contain_all_of
+
+Checks if a collection contains all of the specified elements.
+
+```rust
+fn test_collection_contains_all() {
+    let numbers = vec![1, 2, 3, 4, 5];
+    
+    expect!(numbers.as_slice()).to_contain_all_of(&[1, 3, 5]);        // Passes
+    expect!(numbers.as_slice()).not().to_contain_all_of(&[1, 6, 7]);  // Passes
+}
+```
+
+#### to_equal_collection
+
+Compares two collections for element-wise equality.
+
+```rust
+fn test_equal_collection() {
+    let numbers = vec![1, 2, 3, 4, 5];
+    
+    expect!(numbers.as_slice()).to_equal_collection(vec![1, 2, 3, 4, 5]);         // Passes
+    expect!(numbers.as_slice()).not().to_equal_collection(vec![5, 4, 3, 2, 1]);   // Passes
+}
+```
+
+### HashMap Matchers
+
+#### to_be_empty (hashmap)
+
+Checks if a HashMap is empty.
+
+```rust
+fn test_empty_hashmap() {
+    use std::collections::HashMap;
+    
+    let empty_map: HashMap<&str, i32> = HashMap::new();
+    let mut non_empty_map = HashMap::new();
+    non_empty_map.insert("Alice", 100);
+    
+    expect!(&empty_map).to_be_empty();             // Passes
+    expect!(&non_empty_map).not().to_be_empty();   // Passes
+}
+```
+
+#### to_have_length (hashmap)
+
+Checks if a HashMap has a specific number of entries.
+
+```rust
+fn test_hashmap_length() {
+    use std::collections::HashMap;
+    
+    let mut scores = HashMap::new();
+    scores.insert("Alice", 100);
+    scores.insert("Bob", 85);
+    
+    expect!(&scores).to_have_length(2);         // Passes
+    expect!(&scores).not().to_have_length(1);   // Passes
+}
+```
+
+#### to_contain_key
+
+Checks if a HashMap contains a specific key.
+
+```rust
+fn test_hashmap_contains_key() {
+    use std::collections::HashMap;
+    
+    let mut scores = HashMap::new();
+    scores.insert("Alice", 100);
+    scores.insert("Bob", 85);
+    
+    expect!(&scores).to_contain_key("Alice");          // Passes
+    expect!(&scores).not().to_contain_key("Charlie");  // Passes
+}
+```
+
+#### to_contain_entry
+
+Checks if a HashMap contains a specific key-value pair.
+
+```rust
+fn test_hashmap_contains_entry() {
+    use std::collections::HashMap;
+    
+    let mut scores = HashMap::new();
+    scores.insert("Alice", 100);
+    scores.insert("Bob", 85);
+    
+    expect!(&scores).to_contain_entry("Alice", &100);         // Passes
+    expect!(&scores).not().to_contain_entry("Alice", &50);    // Passes
+}
+```
+
+### Option Matchers
+
+#### to_be_some
+
+Checks if an Option contains a value.
+
+```rust
+fn test_option_some() {
+    let maybe_value: Option<i32> = Some(42);
+    let empty_option: Option<i32> = None;
+    
+    expect!(&maybe_value).to_be_some();         // Passes
+    expect!(&empty_option).not().to_be_some();  // Passes
+}
+```
+
+#### to_be_none
+
+Checks if an Option is None.
+
+```rust
+fn test_option_none() {
+    let maybe_value: Option<i32> = Some(42);
+    let empty_option: Option<i32> = None;
+    
+    expect!(&empty_option).to_be_none();        // Passes
+    expect!(&maybe_value).not().to_be_none();   // Passes
+}
+```
+
+#### to_contain_value
+
+Checks if an Option contains a specific value.
+
+```rust
+fn test_option_contains_value() {
+    let maybe_value: Option<i32> = Some(42);
+    let other_value: Option<i32> = Some(100);
+    
+    expect!(&maybe_value).to_contain_value(42);        // Passes
+    expect!(&other_value).not().to_contain_value(42);  // Passes
+}
+```
+
+### Result Matchers
+
+#### to_be_ok
+
+Checks if a Result is Ok.
+
+```rust
+fn test_result_ok() {
+    let success: Result<i32, &str> = Ok(42);
+    let failure: Result<i32, &str> = Err("failed");
+    
+    expect!(&success).to_be_ok();         // Passes
+    expect!(&failure).not().to_be_ok();  // Passes
+}
+```
+
+#### to_be_err
+
+Checks if a Result is Err.
+
+```rust
+fn test_result_err() {
+    let success: Result<i32, &str> = Ok(42);
+    let failure: Result<i32, &str> = Err("failed");
+    
+    expect!(&failure).to_be_err();        // Passes
+    expect!(&success).not().to_be_err();  // Passes
+}
+```
+
+#### to_contain_ok
+
+Checks if a Result contains a specific Ok value.
+
+```rust
+fn test_result_contains_ok() {
+    let success: Result<i32, &str> = Ok(42);
+    let other_success: Result<i32, &str> = Ok(100);
+    
+    expect!(&success).to_contain_ok(42);           // Passes
+    expect!(&other_success).not().to_contain_ok(42); // Passes
+}
+```
+
+#### to_contain_err
+
+Checks if a Result contains a specific error value.
+
+```rust
+fn test_result_contains_err() {
+    let network_err: Result<i32, &str> = Err("network error");
+    let auth_err: Result<i32, &str> = Err("authentication error");
+    
+    expect!(&network_err).to_contain_err("network error");            // Passes
+    expect!(&auth_err).not().to_contain_err("network error");         // Passes
 }
 ```
 
