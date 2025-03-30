@@ -15,7 +15,7 @@ fn main() {
     // Note: This won't actually work in most cases due to type issues
     // Leaving as an example of what's possible with traits
     let expectation = expect!(true);
-    let negated = !expectation; // This works but isn't practical for direct use
+    let _negated = !expectation; // This works but isn't practical for direct use
 
     // 4. Using the not! macro
     not!(5).to_equal(10);
@@ -38,7 +38,7 @@ fn main() {
     let age = 30;
     expect!(age).not().to_be_greater_than(50); // true (30 is not > 50)
     expect!(age).not().to_be_less_than(20); // true (30 is not < 20)
-    expect!(age).not().to_be_even(); // true (30 is even)
+    expect!(age).not().to_be_odd(); // true (30 is even, not odd)
     expect!(age).not().to_be_negative(); // true (30 is positive)
     expect!(age).not().to_be_in_range(40..50); // true (30 is not in 40..50)
 
