@@ -10,6 +10,8 @@ jobs:
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating releases
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,22 +55,22 @@ jobs:
 
       - name: Create GitHub Release with CHANGELOG notes
         if: steps.changelog.outputs.use_generated_notes != 'true'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: "Release ${{ steps.get_version.outputs.tag_name }}"
           tag_name: ${{ steps.get_version.outputs.tag_name }}
           body_path: release_notes.md
           draft: false
           prerelease: false
-          token: ${{ secrets.GH_PAT }} # Use the existing token parameter
+          make_latest: true
 
       - name: Create GitHub Release with generated notes
         if: steps.changelog.outputs.use_generated_notes == 'true'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: "Release ${{ steps.get_version.outputs.tag_name }}"
           tag_name: ${{ steps.get_version.outputs.tag_name }}
           generate_release_notes: true
           draft: false
           prerelease: false
-          token: ${{ secrets.GH_PAT }} # Use the existing token parameter
+          make_latest: true
