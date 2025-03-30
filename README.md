@@ -1,19 +1,14 @@
 # FluentTest
 
-A fluent, Jest-like testing library for Rust that builds upon the standard testing
-infrastructure. FluentTest provides expressive assertions with readable error
-messages while maintaining compatibility with Rust's built-in testing
-functionality.
+A fluent, Jest-like testing library for Rust that builds upon the standard testing infrastructure. FluentTest provides
+expressive assertions with readable error messages while maintaining compatibility with Rust's built-in testing functionality.
 
 ## Features
 
-- **Fluent, Expressive API**: Write tests in a readable, chainable style
-  similar to Jest.
-- **Helpful Error Messages**: Get clear error messages that include variable names
-  and expressions.
+- **Fluent, Expressive API**: Write tests in a readable, chainable style similar to Jest.
+- **Helpful Error Messages**: Get clear error messages that include variable names and expressions.
 - **Seamless Integration**: Works alongside Rust's standard testing infrastructure.
-- **Beautiful Test Output**: Enhanced test reporting with visual cues and better
-  organization.
+- **Beautiful Test Output**: Enhanced test reporting with visual cues and better organization.
 - **Type-Safe Assertions**: Leverages Rust's type system for compile-time safety.
 
 ## Quick Start
@@ -43,34 +38,34 @@ fn should_check_values() {
 
 ## Available Matchers
 
-FluentTest provides a comprehensive set of matchers for various types. All matchers
-support negation through either the `not()` method or the `expect_not!` macro.
+FluentTest provides a comprehensive set of matchers for various types. All matchers support negation through either the
+`not()` method or the `expect_not!` macro.
 
 ### Equality
 
-- **to_equal** - Checks if a value equals another value
+- [**to_equal**](#to_equal) - Checks if a value equals another value
 
 ### Numeric
 
-- **to_be_greater_than** - Checks if a number is greater than another
-- **to_be_less_than** - Checks if a number is less than another
-- **to_be_even** - Checks if a number is even
-- **to_be_odd** - Checks if a number is odd
-- **to_be_divisible_by** - Checks if a number is divisible by another
-- **to_be_positive** - Checks if a number is positive
-- **to_be_negative** - Checks if a number is negative
-- **to_be_in_range** - Checks if a number is within a specified range
+- [**to_be_greater_than**](#to_be_greater_than) - Checks if a number is greater than another
+- [**to_be_less_than**](#to_be_less_than) - Checks if a number is less than another
+- [**to_be_even**](#to_be_even) - Checks if a number is even
+- [**to_be_odd**](#to_be_odd) - Checks if a number is odd
+- [**to_be_divisible_by**](#to_be_divisible_by) - Checks if a number is divisible by another
+- [**to_be_positive**](#to_be_positive) - Checks if a number is positive
+- [**to_be_negative**](#to_be_negative) - Checks if a number is negative
+- [**to_be_in_range**](#to_be_in_range) - Checks if a number is within a specified range
 
 ### String
 
-- **to_be_empty** - Checks if a string is empty
-- **to_contain** - Checks if a string contains a substring
-- **to_start_with** - Checks if a string starts with a prefix
-- **to_end_with** - Checks if a string ends with a suffix
-- **to_match_regex** - Checks if a string matches a regex pattern
-- **to_have_length** - Checks if a string has a specific length
-- **to_have_length_greater_than** - Checks if a string length is greater than a value
-- **to_have_length_less_than** - Checks if a string length is less than a value
+- [**to_be_empty**](#to_be_empty) - Checks if a string is empty
+- [**to_contain**](#to_contain) - Checks if a string contains a substring
+- [**to_start_with**](#to_start_with) - Checks if a string starts with a prefix
+- [**to_end_with**](#to_end_with) - Checks if a string ends with a suffix
+- [**to_match_regex**](#to_match_regex) - Checks if a string matches a regex pattern
+- [**to_have_length**](#to_have_length) - Checks if a string has a specific length
+- [**to_have_length_greater_than**](#to_have_length_greater_than) - Checks if a string length is greater than a value
+- [**to_have_length_less_than**](#to_have_length_less_than) - Checks if a string length is less than a value
 
 ## Using Not Modifiers
 
