@@ -63,27 +63,27 @@ FluentTest provides a comprehensive set of matchers for various types. All match
 
 ### String
 
-- [**to_be_empty**](#to_be_empty-string) - Checks if a string is empty
-- [**to_contain**](#to_contain-string) - Checks if a string contains a substring
+- [**to_be_empty**](#to_be_empty) - Checks if a string is empty
+- [**to_contain**](#to_contain) - Checks if a string contains a substring
 - [**to_start_with**](#to_start_with) - Checks if a string starts with a prefix
 - [**to_end_with**](#to_end_with) - Checks if a string ends with a suffix
 - [**to_match_regex**](#to_match_regex) - Checks if a string matches a regex pattern
-- [**to_have_length**](#to_have_length-string) - Checks if a string has a specific length
+- [**to_have_length**](#to_have_length) - Checks if a string has a specific length
 - [**to_have_length_greater_than**](#to_have_length_greater_than) - Checks if a string length is greater than a value
 - [**to_have_length_less_than**](#to_have_length_less_than) - Checks if a string length is less than a value
 
 ### Collection
 
-- [**to_be_empty**](#to_be_empty-collection) - Checks if a collection is empty
-- [**to_have_length**](#to_have_length-collection) - Checks if a collection has a specific length
-- [**to_contain**](#to_contain-collection) - Checks if a collection contains a specific element
+- [**to_be_empty_collection**](#to_be_empty_collection) - Checks if a collection is empty
+- [**to_have_length_collection**](#to_have_length_collection) - Checks if a collection has a specific length
+- [**to_contain_collection**](#to_contain_collection) - Checks if a collection contains a specific element
 - [**to_contain_all_of**](#to_contain_all_of) - Checks if a collection contains all specified elements
 - [**to_equal_collection**](#to_equal_collection) - Compares two collections for element-wise equality
 
 ### HashMap
 
-- [**to_be_empty**](#to_be_empty-hashmap) - Checks if a HashMap is empty
-- [**to_have_length**](#to_have_length-hashmap) - Checks if a HashMap has a specific length
+- [**to_be_empty_hashmap**](#to_be_empty_hashmap) - Checks if a HashMap is empty
+- [**to_have_length_hashmap**](#to_have_length_hashmap) - Checks if a HashMap has a specific length
 - [**to_contain_key**](#to_contain_key) - Checks if a HashMap contains a specific key
 - [**to_contain_entry**](#to_contain_entry) - Checks if a HashMap contains a specific key-value pair
 
@@ -394,7 +394,7 @@ fn test_string_length_less_than() {
 
 ### Collection Matchers
 
-#### to_be_empty (collection)
+#### to_be_empty_collection
 
 Checks if a collection is empty.
 
@@ -408,7 +408,7 @@ fn test_empty_collection() {
 }
 ```
 
-#### to_have_length (collection)
+#### to_have_length_collection
 
 Checks if a collection has a specific length.
 
@@ -421,7 +421,7 @@ fn test_collection_length() {
 }
 ```
 
-#### to_contain (collection)
+#### to_contain_collection
 
 Checks if a collection contains a specific element.
 
@@ -462,7 +462,7 @@ fn test_equal_collection() {
 
 ### HashMap Matchers
 
-#### to_be_empty (hashmap)
+#### to_be_empty_hashmap
 
 Checks if a HashMap is empty.
 
@@ -479,7 +479,7 @@ fn test_empty_hashmap() {
 }
 ```
 
-#### to_have_length (hashmap)
+#### to_have_length_hashmap
 
 Checks if a HashMap has a specific number of entries.
 
@@ -706,6 +706,7 @@ This project is automatically published to [crates.io](https://crates.io/crates/
 3. All CI checks pass (tests, examples, linting)
 
 The publishing workflow will:
+
 1. Create a git tag for the new version (vX.Y.Z)
 2. Publish the package to crates.io
 3. Generate a GitHub release using notes from CHANGELOG.md
