@@ -27,9 +27,9 @@ thread_local! {
     // Track already reported messages to avoid duplicates
     static REPORTED_MESSAGES: RefCell<HashSet<String>> = RefCell::new(HashSet::new());
     // Flag to enable/disable deduplication
-    static DEDUPLICATE_ENABLED: RefCell<bool> = RefCell::new(true);
+    static DEDUPLICATE_ENABLED: RefCell<bool> = const { RefCell::new(true) };
     // Flag to enable silent mode for intermediate steps in a chain
-    static SILENT_MODE: RefCell<bool> = RefCell::new(false);
+    static SILENT_MODE: RefCell<bool> = const { RefCell::new(false) };
 }
 
 pub fn report_success(message: &str) {

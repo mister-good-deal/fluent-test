@@ -60,7 +60,7 @@ impl AssertionChain {
         let (passed, message) = self.evaluate_chain();
 
         // Check if this is the final result or an intermediate chained result
-        let is_final = self.steps.len() > 0 && (self.steps.last().unwrap().logical_op.is_none() || self.steps.len() > 1);
+        let is_final = !self.steps.is_empty() && (self.steps.last().unwrap().logical_op.is_none() || self.steps.len() > 1);
 
         if passed && is_final {
             report_success(&message);

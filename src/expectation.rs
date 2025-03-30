@@ -61,7 +61,7 @@ impl<T> Expectation<T> {
     {
         // In tests with #[should_panic], we need to evaluate regardless of finality
         let in_test = std::thread::current().name().unwrap_or("").starts_with("test_");
-        let force_evaluate = in_test && self.chain.steps.len() > 0;
+        let force_evaluate = in_test && !self.chain.steps.is_empty();
 
         // Only evaluate non-final assertions in test context
         if !self.is_final && !force_evaluate {
@@ -74,7 +74,7 @@ impl<T> Expectation<T> {
 }
 
 thread_local! {
-    static EVALUATION_IN_PROGRESS: std::cell::RefCell<bool> = std::cell::RefCell::new(false);
+    static EVALUATION_IN_PROGRESS: std::cell::RefCell<bool> = const { std::cell::RefCell::new(false) };
 }
 
 /// For automatic evaluation of assertions when the Expectation drops
