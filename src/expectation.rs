@@ -28,12 +28,17 @@ impl<T> Expectation<T> {
     }
 }
 
-// Add the not() method for negated expectations
 impl<T: Clone> Expectation<T> {
-    /// Creates a negated expectation
-    /// This provides a fluent API for negated expectations:
-    /// expect(value).not().to_equal(x)
-    pub fn not(&self) -> Self {
-        Self { value: self.value.clone(), expr_str: self.expr_str, negated: !self.negated }
+    /// Helper to handle assertion success/failure and return a new expectation
+    /// for chaining additional assertions
+    pub(crate) fn handle_assertion_result(&self, success: bool, success_msg: &str, expected_msg: &str, received_msg: &str) -> Self {
+        if success {
+            self.report_success(success_msg);
+        } else {
+            self.report_failure(expected_msg, received_msg);
+        }
+
+        // Clone self to allow chaining further assertions
+        Self { value: self.value.clone(), expr_str: self.expr_str, negated: self.negated }
     }
 }

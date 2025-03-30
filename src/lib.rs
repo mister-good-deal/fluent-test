@@ -6,6 +6,7 @@
 mod config;
 pub mod expectation;
 mod matchers;
+pub mod modifiers;
 mod reporter;
 
 pub mod prelude {
@@ -13,6 +14,7 @@ pub mod prelude {
     pub use crate::expect_not;
     pub use crate::expectation::Expectation;
     pub use crate::matchers::*;
+    pub use crate::modifiers::*;
 }
 
 // Re-exports
@@ -36,9 +38,10 @@ macro_rules! expect {
 /// This provides a more natural way to write assertions with not
 #[macro_export]
 macro_rules! expect_not {
-    ($expr:expr) => {
+    ($expr:expr) => {{
+        use $crate::modifiers::NotModifier;
         $crate::expectation::Expectation::new($expr, stringify!($expr)).not()
-    };
+    }};
 }
 
 /// Run all FluentTest tests in a module
