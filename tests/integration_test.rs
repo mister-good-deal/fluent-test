@@ -5,7 +5,7 @@ fn test_basic_assertions() {
     let value = 42;
 
     expect!(value).to_equal(42);
-    expect!(value).not_to_equal(13);
+    expect!(value).not().to_equal(13);
     expect!(value).to_be_greater_than(30);
     expect!(value).to_be_less_than(50);
 }
