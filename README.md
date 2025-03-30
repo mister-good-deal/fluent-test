@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/fluent-test.svg)](https://crates.io/crates/fluent-test)
 [![Build Status](https://github.com/mister-good-deal/fluent-test/workflows/CI/badge.svg)](https://github.com/mister-good-deal/fluent-test/actions)
-[![codecov](https://codecov.io/gh/mister-good-deal/fluent-test/branch/master/graph/badge.svg)](https://codecov.io/gh/mister-good-deal/fluent-test)
+[![codecov](https://codecov.io/gh/mister-good-deal/fluent-test/graph/badge.svg?token=W5L8E2CQ9M)](https://codecov.io/gh/mister-good-deal/fluent-test)
 [![License](https://img.shields.io/crates/l/fluent-test.svg)](https://github.com/mister-good-deal/fluent-test/blob/master/LICENSE)
 [![Downloads](https://img.shields.io/crates/d/fluent-test.svg)](https://crates.io/crates/fluent-test)
 
