@@ -47,7 +47,7 @@ fn test_basic_assertions() {
     let items = vec![1, 2, 3, 4];
     
     expect!(value).to_equal(42);
-    expect!(value).not_to_equal(13);
+    expect!(value).not().to_equal(13);
     expect!(value).to_be_greater_than(30);
     expect!(value).to_be_less_than(50);
     
@@ -58,13 +58,13 @@ fn test_basic_assertions() {
     
     expect!(items).to_have_length(4);
     expect!(items).to_contain(3);
-    expect!(items).not_to_contain(5);
+    expect!(items).not().to_contain(5);
 }
 ```
 
-### Using Jest-like Not Syntax
+### Using Not Modifiers
 
-FluentTest supports several ways to negate expectations, similar to Jest's `.not` property:
+FluentTest supports two ways to negate expectations:
 
 ```rust
 #[test]
@@ -72,24 +72,14 @@ fn test_not_modifiers() {
     let value = 42;
     let name = "Arthur";
     
-    // Four different ways to use negated expectations
+    // Two ways to use negated expectations
     
-    // 1. Traditional method chaining
-    expect!(value).not_method().to_equal(100);
-    
-    // 2. Alternative method
-    expect!(value).not_prop().to_equal(100);
-    
-    // 3. We implement the Not trait, but it's not practical for direct use
-    // let expectation = expect!(value);
-    // let negated = !expectation; // Works but isn't useful directly
-    
-    // 4. Using the not! macro
-    not!(value).to_equal(100);
-    
-    // 5. Jest-style .not() method (recommended)
+    // 1. Using the .not() method (fluent API)
     expect!(value).not().to_equal(100);
     expect!(name).not().to_contain("Bob");
+    
+    // 2. Using the expect_not! macro
+    expect_not!(value).to_equal(100);
 }
 ```
 
@@ -101,7 +91,7 @@ fn test_numbers() {
     let value = 42;
     
     expect!(value).to_be_even();
-    expect!(value).not_to_be_odd();
+    expect!(value).not().to_be_odd();
     expect!(value).to_be_divisible_by(7);
     expect!(value).to_be_positive();
     expect!(value).to_be_in_range(40..=45);
@@ -253,9 +243,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 FluentTest is built around a few core components:
 
 1. The `expect!` macro which captures both values and their textual representation
-2. The `Expectation<T>` struct which holds the value and provides the fluent API
-3. Trait implementations for different types of assertions
-4. A custom test reporter that enhances the standard output
+2. The `expect_not!` macro which creates negated expectations 
+3. The `Expectation<T>` struct which holds the value and provides the fluent API
+4. Trait implementations for different types of assertions
+5. A custom test reporter that enhances the standard output
 
 ## Roadmap
 

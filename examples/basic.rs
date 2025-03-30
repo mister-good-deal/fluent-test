@@ -11,6 +11,7 @@ fn main() {
 
     expect!(name).to_contain("th");
     expect!(name).to_have_length(6);
+    expect!(name).not().to_have_length_greater_than(8);
 
     // Report test results
     fluent_test::Reporter::summarize();

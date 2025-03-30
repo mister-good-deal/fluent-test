@@ -10,9 +10,9 @@ mod reporter;
 
 pub mod prelude {
     pub use crate::expect;
+    pub use crate::expect_not;
     pub use crate::expectation::Expectation;
     pub use crate::matchers::*;
-    pub use crate::not;
 }
 
 // Re-exports
@@ -35,9 +35,9 @@ macro_rules! expect {
 /// Shorthand for creating a negated expectation
 /// This provides a more natural way to write assertions with not
 #[macro_export]
-macro_rules! not {
+macro_rules! expect_not {
     ($expr:expr) => {
-        $crate::expectation::Expectation::new($expr, stringify!($expr)).not_method()
+        $crate::expectation::Expectation::new($expr, stringify!($expr)).not()
     };
 }
 
