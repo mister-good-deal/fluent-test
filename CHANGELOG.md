@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.1.1 (2024-03-30)
+
+### Added
+
+- Boolean matchers:
+  - `to_be_true` - Check if a boolean is true
+  - `to_be_false` - Check if a boolean is false
+- Option matchers:
+  - `to_be_some` - Check if an Option contains a value
+  - `to_be_none` - Check if an Option is None
+  - `to_contain_value` - Check if an Option contains a specific value
+- Result matchers:
+  - `to_be_ok` - Check if a Result is Ok
+  - `to_be_err` - Check if a Result is Err
+  - `to_contain_ok` - Check if a Result contains a specific Ok value
+  - `to_contain_err` - Check if a Result contains a specific Err value
+- Collection matchers:
+  - `to_be_empty` - Check if a collection is empty
+  - `to_have_length` - Check if a collection has a specific length
+  - `to_contain` - Check if a collection contains a specific element
+  - `to_contain_all_of` - Check if a collection contains all specified elements
+  - `to_equal_collection` - Compare two collections for element-wise equality
+- HashMap matchers:
+  - `to_be_empty` - Check if a HashMap is empty
+  - `to_have_length` - Check if a HashMap has a specific length
+  - `to_contain_key` - Check if a HashMap contains a specific key
+  - `to_contain_entry` - Check if a HashMap contains a specific key-value pair
+- Comprehensive documentation for all matchers
+- Unit tests for all new matchers
+
+### Fixed
+
+- Fixed clippy warnings in collection matchers
+- Fixed markdown linting issues in README
+
 ## 0.1.0 (2024-03-30)
 
 ### Added

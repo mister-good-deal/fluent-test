@@ -75,7 +75,7 @@ impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Expectation<&[T]> {
 
         // Check if lengths match first
         if self.value.len() != expected_vec.len() {
-            let success = if self.negated { true } else { false };
+            let success = self.negated;
             let not = if self.negated { " not" } else { "" };
 
             if success {
@@ -169,7 +169,7 @@ impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Expectation<Vec<T>>
 
         // Check if lengths match first
         if self.value.len() != expected_vec.len() {
-            let success = if self.negated { true } else { false };
+            let success = self.negated;
             let not = if self.negated { " not" } else { "" };
 
             if success {
