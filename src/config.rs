@@ -5,6 +5,12 @@ pub struct Config {
     pub(crate) show_success_details: bool,
 }
 
+impl Default for Config {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Config {
     /// Creates a new configuration with default settings
     pub fn new() -> Self {
