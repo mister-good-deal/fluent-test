@@ -405,7 +405,8 @@ This project is automatically published to [crates.io](https://crates.io/crates/
 The publishing workflow will:
 1. Create a git tag for the new version (vX.Y.Z)
 2. Publish the package to crates.io
-3. Generate a GitHub release with automatically generated release notes
+3. Generate a GitHub release using notes from CHANGELOG.md
+4. Fall back to auto-generated notes if no CHANGELOG entry exists
 
 ## License
 

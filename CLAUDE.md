@@ -37,5 +37,6 @@
   1. Compare version with latest git tag (not with published crates.io version)
   2. Create a git tag (vX.Y.Z) for the new version
   3. Publish to crates.io
-  4. Generate a GitHub release with release notes when the tag is pushed
+  4. Generate a GitHub release using the CHANGELOG.md entry for the version
+  5. If no CHANGELOG entry exists, fall back to auto-generated notes from commits
 - **CI Checks**: Publishing only happens if all tests, examples, and linting checks pass

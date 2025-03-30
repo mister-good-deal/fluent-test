@@ -24,7 +24,46 @@ jobs:
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "Tag: $TAG_NAME, Version: $VERSION"
       
-      - name: Create GitHub Release
+      - name: Extract release notes from CHANGELOG
+        id: changelog
+        run: |
+          # Extract section for the current version
+          VERSION="${{ steps.get_version.outputs.version }}"
+          
+          # Extract content between the current version header and the next header
+          RELEASE_NOTES=$(awk -v ver="$VERSION" '
+            BEGIN { capture=0; notes=""; }
+            $0 ~ "^## " ver { capture=1; next; }
+            $0 ~ /^## [0-9]+\.[0-9]+\.[0-9]+/ && capture { capture=0; }
+            capture { notes = notes $0 "\n"; }
+            END { print notes; }
+          ' CHANGELOG.md)
+          
+          # If no specific release notes found, generate from commits
+          if [ -z "$RELEASE_NOTES" ]; then
+            echo "No specific release notes found in CHANGELOG.md for version $VERSION."
+            echo "Falling back to auto-generated notes from commits."
+            echo "use_generated_notes=true" >> $GITHUB_OUTPUT
+          else
+            # Save release notes to a temporary file to preserve formatting
+            echo "$RELEASE_NOTES" > release_notes.md
+            echo "use_generated_notes=false" >> $GITHUB_OUTPUT
+            echo "Found release notes in CHANGELOG.md for version $VERSION"
+          fi
+
+      - name: Create GitHub Release with CHANGELOG notes
+        if: steps.changelog.outputs.use_generated_notes != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Release ${{ steps.get_version.outputs.tag_name }}"
+          tag_name: ${{ steps.get_version.outputs.tag_name }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GH_PAT }} # Use the existing token parameter
+
+      - name: Create GitHub Release with generated notes
+        if: steps.changelog.outputs.use_generated_notes == 'true'
         uses: softprops/action-gh-release@v1
         with:
           name: "Release ${{ steps.get_version.outputs.tag_name }}"
@@ -32,5 +71,4 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }} # Use the existing token parameter
