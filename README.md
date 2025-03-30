@@ -1,13 +1,19 @@
 # FluentTest
 
-A fluent, Jest-like testing library for Rust that builds upon the standard testing infrastructure. FluentTest provides expressive assertions with readable error messages while maintaining compatibility with Rust's built-in testing functionality.
+A fluent, Jest-like testing library for Rust that builds upon the standard testing
+infrastructure. FluentTest provides expressive assertions with readable error
+messages while maintaining compatibility with Rust's built-in testing
+functionality.
 
 ## Features
 
-- **Fluent, Expressive API**: Write tests in a readable, chainable style similar to Jest.
-- **Helpful Error Messages**: Get clear error messages that include variable names and expressions.
+- **Fluent, Expressive API**: Write tests in a readable, chainable style
+  similar to Jest.
+- **Helpful Error Messages**: Get clear error messages that include variable names
+  and expressions.
 - **Seamless Integration**: Works alongside Rust's standard testing infrastructure.
-- **Beautiful Test Output**: Enhanced test reporting with visual cues and better organization.
+- **Beautiful Test Output**: Enhanced test reporting with visual cues and better
+  organization.
 - **Type-Safe Assertions**: Leverages Rust's type system for compile-time safety.
 
 ## Quick Start
@@ -35,34 +41,38 @@ fn should_check_values() {
 }
 ```
 
-## Detailed Examples
+## Available Matchers
 
-### Basic Assertions
+FluentTest provides a comprehensive set of matchers for various types. All matchers
+support negation through either the `not()` method or the `expect_not!` macro.
 
-```rust
-#[test]
-fn test_basic_assertions() {
-    let value = 42;
-    let name = "Arthur";
-    let items = vec![1, 2, 3, 4];
-    
-    expect!(value).to_equal(42);
-    expect!(value).not().to_equal(13);
-    expect!(value).to_be_greater_than(30);
-    expect!(value).to_be_less_than(50);
-    
-    expect!(name).to_equal("Arthur");
-    expect!(name).to_contain("rt");
-    expect!(name).to_start_with("Ar");
-    expect!(name).to_end_with("ur");
-    
-    expect!(items).to_have_length(4);
-    expect!(items).to_contain(3);
-    expect!(items).not().to_contain(5);
-}
-```
+### Equality
 
-### Using Not Modifiers
+- **to_equal** - Checks if a value equals another value
+
+### Numeric
+
+- **to_be_greater_than** - Checks if a number is greater than another
+- **to_be_less_than** - Checks if a number is less than another
+- **to_be_even** - Checks if a number is even
+- **to_be_odd** - Checks if a number is odd
+- **to_be_divisible_by** - Checks if a number is divisible by another
+- **to_be_positive** - Checks if a number is positive
+- **to_be_negative** - Checks if a number is negative
+- **to_be_in_range** - Checks if a number is within a specified range
+
+### String
+
+- **to_be_empty** - Checks if a string is empty
+- **to_contain** - Checks if a string contains a substring
+- **to_start_with** - Checks if a string starts with a prefix
+- **to_end_with** - Checks if a string ends with a suffix
+- **to_match_regex** - Checks if a string matches a regex pattern
+- **to_have_length** - Checks if a string has a specific length
+- **to_have_length_greater_than** - Checks if a string length is greater than a value
+- **to_have_length_less_than** - Checks if a string length is less than a value
+
+## Using Not Modifiers
 
 FluentTest supports two ways to negate expectations:
 
@@ -83,71 +93,244 @@ fn test_not_modifiers() {
 }
 ```
 
-### Numeric Testing
+## Matcher Documentation
+
+### Equality Matchers
+
+#### to_equal
+
+Checks if a value equals another value.
 
 ```rust
-#[test]
-fn test_numbers() {
+fn test_equality() {
+    let value = 42;
+    let name = "Arthur";
+    
+    expect!(value).to_equal(42);         // Passes
+    expect!(value).not().to_equal(13);   // Passes
+    expect!(name).to_equal("Arthur");    // Passes
+}
+```
+
+### Numeric Matchers
+
+#### to_be_greater_than
+
+Checks if a number is greater than another number.
+
+```rust
+fn test_greater_than() {
     let value = 42;
     
-    expect!(value).to_be_even();
-    expect!(value).not().to_be_odd();
-    expect!(value).to_be_divisible_by(7);
-    expect!(value).to_be_positive();
-    expect!(value).to_be_in_range(40..=45);
+    expect!(value).to_be_greater_than(30);       // Passes
+    expect!(value).not().to_be_greater_than(50); // Passes
 }
 ```
 
-### String Testing
+#### to_be_less_than
+
+Checks if a number is less than another number.
 
 ```rust
-#[test]
-fn test_strings() {
-    let message = "Hello, world!";
+fn test_less_than() {
+    let value = 42;
     
-    expect!(message).to_match_regex(r"^Hello.*!$");
-    expect!(message).to_be_lowercase_at(7); // character 'w'
-    expect!(message).to_have_length_greater_than(10);
+    expect!(value).to_be_less_than(50);       // Passes
+    expect!(value).not().to_be_less_than(30); // Passes
 }
 ```
 
-### Error Testing
+#### to_be_even
+
+Checks if a number is even.
 
 ```rust
-#[test]
-fn test_results_and_options() {
-    let success: Result<i32, &str> = Ok(42);
-    let failure: Result<i32, &str> = Err("something went wrong");
-    let some_value: Option<i32> = Some(42);
-    let no_value: Option<i32> = None;
+fn test_even() {
+    let even = 42;
+    let odd = 43;
     
-    expect!(success).to_be_ok().and_to_equal(42);
-    expect!(failure).to_be_err().and_to_contain("wrong");
-    expect!(some_value).to_be_some().and_to_equal(42);
-    expect!(no_value).to_be_none();
+    expect!(even).to_be_even();       // Passes
+    expect!(odd).not().to_be_even();  // Passes
 }
 ```
 
-## Grouping Tests
+#### to_be_odd
 
-FluentTest works with Rust's standard test organization:
+Checks if a number is odd.
 
 ```rust
-mod tests {
-    use super::*;
-    use fluent_test::prelude::*;
+fn test_odd() {
+    let even = 42;
+    let odd = 43;
     
-    #[test]
-    fn test_addition() {
-        let result = add(2, 3);
-        expect!(result).to_equal(5);
-    }
+    expect!(odd).to_be_odd();        // Passes
+    expect!(even).not().to_be_odd(); // Passes
+}
+```
+
+#### to_be_divisible_by
+
+Checks if a number is divisible by another number.
+
+```rust
+fn test_divisible_by() {
+    let value = 42;
     
-    #[test]
-    fn test_subtraction() {
-        let result = subtract(5, 3);
-        expect!(result).to_equal(2);
-    }
+    expect!(value).to_be_divisible_by(7);   // Passes (42 is divisible by 7)
+    expect!(value).not().to_be_divisible_by(5); // Not divisible by 5
+}
+```
+
+#### to_be_positive
+
+Checks if a number is positive (greater than zero).
+
+```rust
+fn test_positive() {
+    let positive = 42;
+    let negative = -42;
+    
+    expect!(positive).to_be_positive();       // Passes
+    expect!(negative).not().to_be_positive(); // Passes
+}
+```
+
+#### to_be_negative
+
+Checks if a number is negative (less than zero).
+
+```rust
+fn test_negative() {
+    let positive = 42;
+    let negative = -42;
+    
+    expect!(negative).to_be_negative();       // Passes
+    expect!(positive).not().to_be_negative(); // Passes
+}
+```
+
+#### to_be_in_range
+
+Checks if a number is within a specified range.
+
+```rust
+fn test_in_range() {
+    let value = 42;
+    
+    expect!(value).to_be_in_range(40..=45);  // Inclusive range 40 to 45
+    expect!(value).not().to_be_in_range(50..60);  // Not in range 50 to 60
+    
+    // Different range types
+    expect!(value).to_be_in_range(40..46);  // Half-open range
+    expect!(value).to_be_in_range(30..);  // Range from 30 upwards
+    expect!(value).to_be_in_range(..50);  // Range up to but not including 50
+}
+```
+
+### String Matchers
+
+#### to_be_empty
+
+Checks if a string is empty.
+
+```rust
+fn test_empty_string() {
+    let empty = "";
+    let not_empty = "hello";
+    
+    expect!(empty).to_be_empty();        // Passes
+    expect!(not_empty).not().to_be_empty(); // Passes
+}
+```
+
+#### to_contain
+
+Checks if a string contains a specified substring.
+
+```rust
+fn test_string_contains() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_contain("world");       // Passes
+    expect!(greeting).not().to_contain("moon");  // Passes
+}
+```
+
+#### to_start_with
+
+Checks if a string starts with a specified prefix.
+
+```rust
+fn test_string_starts_with() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_start_with("Hello");       // Passes
+    expect!(greeting).not().to_start_with("Goodbye"); // Passes
+}
+```
+
+#### to_end_with
+
+Checks if a string ends with a specified suffix.
+
+```rust
+fn test_string_ends_with() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_end_with("world!");        // Passes
+    expect!(greeting).not().to_end_with("universe"); // Passes
+}
+```
+
+#### to_match_regex
+
+Checks if a string matches a regular expression pattern.
+
+```rust
+fn test_string_matches_regex() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_match_regex(r"^Hello.*!$");        // Passes
+    expect!(greeting).not().to_match_regex(r"^Goodbye.*\?$"); // Passes
+}
+```
+
+#### to_have_length
+
+Checks if a string has a specific length.
+
+```rust
+fn test_string_length() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_have_length(13);        // Passes
+    expect!(greeting).not().to_have_length(10);  // Passes
+}
+```
+
+#### to_have_length_greater_than
+
+Checks if a string length is greater than a specified value.
+
+```rust
+fn test_string_length_greater_than() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_have_length_greater_than(10);        // Passes
+    expect!(greeting).not().to_have_length_greater_than(15);  // Passes
+}
+```
+
+#### to_have_length_less_than
+
+Checks if a string length is less than a specified value.
+
+```rust
+fn test_string_length_less_than() {
+    let greeting = "Hello, world!";
+    
+    expect!(greeting).to_have_length_less_than(20);        // Passes
+    expect!(greeting).not().to_have_length_less_than(10);  // Passes
 }
 ```
 
@@ -165,13 +348,14 @@ trait UserMatchers<T> {
 impl<T: AsRef<User>> UserMatchers<T> for Expectation<T> {
     fn to_be_admin(self) {
         let user = self.value.as_ref();
-        if user.role == Role::Admin {
-            self.report_success("is an admin");
+        let success = user.role == Role::Admin;
+        let not = if self.negated { " not" } else { "" };
+        
+        if (success && !self.negated) || (!success && self.negated) {
+            self.report_success(&format!("is{not} an admin"));
         } else {
-            self.report_failure(
-                &format!("Expected {} to be an admin", self.expr_str),
-                &format!("Found role: {:?}", user.role)
-            );
+            let expected_msg = format!("Expected {}{not} to be an admin", self.expr_str);
+            self.report_failure(&expected_msg, &format!("Found role: {:?}", user.role));
         }
     }
 }
@@ -179,22 +363,19 @@ impl<T: AsRef<User>> UserMatchers<T> for Expectation<T> {
 // Use it in your tests
 #[test]
 fn test_user_permissions() {
-    let user = get_user(1);
-    expect!(user).to_be_admin();
+    let admin_user = get_admin_user();
+    let regular_user = get_regular_user();
+    
+    expect!(admin_user).to_be_admin();           // Passes
+    expect!(regular_user).not().to_be_admin();   // Passes
 }
 ```
 
-## How It Works
-
-FluentTest uses Rust's macro system to capture both the value and the expression text at the test site. This allows it to provide clear, context-aware error messages without requiring you to manually specify variable names.
-
-The library seamlessly integrates with Rust's test framework, so you can run your tests with the standard `cargo test` command.
-
 ## Output Customization
 
-FluentTest enhances the standard test output with colors, symbols, and improved formatting, making it easier to quickly understand test results.
+FluentTest enhances the standard test output with colors, symbols, and improved formatting.
 
-For CI environments or other special cases, you can customize the output format:
+For CI environments or other special cases, you can customize the output:
 
 ```rust
 // In your test module or test helper file
@@ -208,54 +389,15 @@ fn setup() {
 }
 ```
 
-## Compatibility
-
-FluentTest is designed to work alongside Rust's standard testing functionality. You can:
-
-- Mix and match FluentTest assertions with standard `assert!` macros
-- Use FluentTest in some test modules and not others
-- Integrate with other testing utilities like `proptest` or `quickcheck`
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/fluent-test.git
-   cd fluent-test
-   ```
-
-2. Build the project:
-   ```bash
-   cargo build
-   ```
-
-3. Run the tests:
-   ```bash
-   cargo test
-   ```
-
-## Implementation Details
+## How It Works
 
 FluentTest is built around a few core components:
 
 1. The `expect!` macro which captures both values and their textual representation
-2. The `expect_not!` macro which creates negated expectations 
+2. The `expect_not!` macro which creates negated expectations
 3. The `Expectation<T>` struct which holds the value and provides the fluent API
 4. Trait implementations for different types of assertions
 5. A custom test reporter that enhances the standard output
-
-## Roadmap
-
-- [ ] More built-in matchers for common Rust types
-- [ ] Snapshot testing support
-- [ ] Async test support
-- [ ] Property-based testing integration
-- [ ] Custom test runner with improved reporting
-- [ ] IDE integration
 
 ## License
 
