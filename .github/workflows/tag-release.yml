@@ -1,0 +1,61 @@
+name: Tag Release
+
+on:
+  # Run after successful publish
+  workflow_run:
+    workflows: ["Publish to crates.io"]
+    branches: [master]
+    types:
+      - completed
+
+jobs:
+  tag-release:
+    name: Create GitHub Release
+    # Only run if the publish workflow completed successfully
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for tags
+      
+      - name: Get version from Cargo.toml
+        id: get_version
+        run: |
+          LOCAL_VERSION=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+          echo "Local version: $LOCAL_VERSION"
+      
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          TAG_NAME="v${{ steps.get_version.outputs.version }}"
+          if git tag -l "$TAG_NAME" | grep -q "$TAG_NAME"; then
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+            echo "Tag $TAG_NAME already exists"
+          else
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+            echo "Tag $TAG_NAME doesn't exist yet"
+          fi
+      
+      - name: Create and push tag
+        if: steps.check_tag.outputs.tag_exists != 'true'
+        run: |
+          TAG_NAME="v${{ steps.get_version.outputs.version }}"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -a "$TAG_NAME" -m "Version ${{ steps.get_version.outputs.version }}"
+          git push origin "$TAG_NAME"
+          echo "Created and pushed tag $TAG_NAME"
+      
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.tag_exists != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Release v${{ steps.get_version.outputs.version }}"
+          tag_name: "v${{ steps.get_version.outputs.version }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

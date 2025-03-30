@@ -394,6 +394,16 @@ FluentTest is built around a few core components:
 4. Trait implementations for different types of assertions
 5. A custom test reporter that enhances the standard output
 
+## Releases
+
+This project is automatically published to [crates.io](https://crates.io/crates/fluent-test) when:
+
+1. The version in Cargo.toml is increased
+2. The code is merged to the master branch
+3. All CI checks pass (tests, examples, linting)
+
+A GitHub release is also automatically created with release notes based on commits.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

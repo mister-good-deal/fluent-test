@@ -29,3 +29,12 @@
 - Follow fluent API pattern for consistency
 - Use thread-local storage for test reporting
 - Public API exposed through prelude
+
+## Releases and Publishing
+
+- **Version Bump**: Update `version` in Cargo.toml when making significant changes
+- **Automated Publishing**: Changes merged to master with a version bump will automatically:
+  1. Publish to crates.io (if the version is higher than the current published version)
+  2. Create a GitHub tag (vX.Y.Z)
+  3. Generate a GitHub release with release notes
+- **CI Checks**: Publishing only happens if all tests, examples, and linting checks pass

@@ -1,0 +1,68 @@
+name: Publish to crates.io
+
+on:
+  # This workflow runs after the CI workflow completes successfully
+  workflow_run:
+    workflows: ["CI"]
+    branches: [master]
+    types:
+      - completed
+
+jobs:
+  publish:
+    name: Publish to crates.io
+    # Only run if the CI workflow completed successfully
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+      
+      - name: Get version from Cargo.toml
+        id: get_version
+        run: |
+          LOCAL_VERSION=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "local_version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+          echo "Local version: $LOCAL_VERSION"
+      
+      - name: Check latest published version
+        id: check_version
+        run: |
+          PUBLISHED_VERSION=$(cargo search fluent-test --limit 1 | grep -oP '^\S+ = "\K[^"]+' || echo "0.0.0")
+          echo "published_version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
+          echo "Published version: $PUBLISHED_VERSION"
+      
+      - name: Compare versions
+        id: version_check
+        run: |
+          LOCAL_VERSION="${{ steps.get_version.outputs.local_version }}"
+          PUBLISHED_VERSION="${{ steps.check_version.outputs.published_version }}"
+          
+          if [ "$(printf '%s\n' "$PUBLISHED_VERSION" "$LOCAL_VERSION" | sort -V | head -n1)" != "$LOCAL_VERSION" ] && 
+             [ "$LOCAL_VERSION" != "$PUBLISHED_VERSION" ]; then
+            echo "newer_version=true" >> $GITHUB_OUTPUT
+            echo "Local version $LOCAL_VERSION is newer than published version $PUBLISHED_VERSION"
+          else
+            echo "newer_version=false" >> $GITHUB_OUTPUT
+            echo "Local version $LOCAL_VERSION is not newer than published version $PUBLISHED_VERSION"
+          fi
+      
+      - name: Publish to crates.io
+        if: steps.version_check.outputs.newer_version == 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          echo "Publishing to crates.io..."
+          cargo publish --no-verify
+          echo "Successfully published version ${{ steps.get_version.outputs.local_version }} to crates.io"
+      
+      - name: No publish needed
+        if: steps.version_check.outputs.newer_version != 'true'
+        run: |
+          echo "Version ${{ steps.get_version.outputs.local_version }} is not newer than ${{ steps.check_version.outputs.published_version }}"
+          echo "No publishing required."
