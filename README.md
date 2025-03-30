@@ -718,6 +718,42 @@ The publishing workflow will:
 3. Generate a GitHub release using notes from CHANGELOG.md
 4. Fall back to auto-generated notes if no CHANGELOG entry exists
 
+## Code Coverage
+
+This project uses Rust's official LLVM-based code coverage instrumentation to track test coverage. The coverage workflow:
+
+1. Compiles the project with coverage instrumentation using Rust nightly's `-C instrument-coverage` flag
+2. Runs the test suite to generate raw coverage data in LLVM's profraw format
+3. Uses grcov to convert the raw coverage data to:
+   - LCOV format for uploading to Codecov.io
+   - HTML reports for local viewing
+
+Coverage reports are automatically generated on each push to the master branch and for pull requests.
+
+### Viewing Coverage Reports
+
+- The latest coverage report is always available on [Codecov.io](https://codecov.io/gh/mister-good-deal/fluent-test)
+- Each CI run also produces an HTML coverage report available as a downloadable artifact
+
+### Running Code Coverage Locally
+
+To generate coverage reports locally:
+
+```bash
+# Install required components
+rustup toolchain install nightly --component llvm-tools-preview
+cargo install grcov
+cargo install rustfilt
+
+# Build with coverage instrumentation and run tests
+RUSTFLAGS="-C instrument-coverage" cargo +nightly test
+
+# Generate HTML report
+grcov . --binary-path ./target/debug/ -s . -t html --branch --ignore-not-existing -o ./coverage/
+```
+
+Then open `./coverage/index.html` in your browser.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

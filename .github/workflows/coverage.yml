@@ -8,23 +8,68 @@ on:
 
 jobs:
   coverage:
-    name: Generate code coverage
+    name: Generate LLVM code coverage
     runs-on: ubuntu-latest
-    container:
-      image: xd009642/tarpaulin:develop
-      options: --security-opt seccomp=unconfined
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate code coverage
-        run: |
-          cargo tarpaulin --verbose --workspace --timeout 120 --out Xml --output-dir ./coverage
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: llvm-tools-preview
 
-      - name: Upload coverage reports to Codecov
+      - name: Install grcov
+        run: cargo install grcov
+
+      - name: Install rustfilt (for demangling)
+        run: cargo install rustfilt
+
+      - name: Build with coverage instrumentation
+        run: |
+          RUSTFLAGS="-C instrument-coverage" cargo build --verbose
+          RUSTFLAGS="-C instrument-coverage" cargo test --verbose --no-run
+
+      - name: Run tests to generate coverage data
+        run: |
+          LLVM_PROFILE_FILE="fluent-test-%p-%m.profraw" cargo test --verbose
+
+      - name: Generate coverage report
+        run: |
+          mkdir -p coverage
+          grcov . \
+            --binary-path ./target/debug/ \
+            -s . \
+            -t lcov \
+            --branch \
+            --ignore-not-existing \
+            --ignore "*/.cargo/*" \
+            --ignore "*/tests/*" \
+            --ignore "*/examples/*" \
+            -o ./coverage/lcov.info
+
+      - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v3
         with:
-          directory: ./coverage/
+          files: ./coverage/lcov.info
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          
+      - name: Generate HTML report
+        run: |
+          grcov . \
+            --binary-path ./target/debug/ \
+            -s . \
+            -t html \
+            --branch \
+            --ignore-not-existing \
+            --ignore "*/.cargo/*" \
+            --ignore "*/tests/*" \
+            --ignore "*/examples/*" \
+            -o ./coverage/html
+            
+      - name: Upload HTML report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./coverage/html/
