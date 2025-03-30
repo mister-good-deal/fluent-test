@@ -33,16 +33,12 @@ where
     fn to_be_greater_than(self, expected: T) {
         let result = self.value > expected;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not greater than" } else { "is greater than" };
-            self.report_success(&format!("{} {:?}", msg, expected));
+            self.report_success(&format!("is{not} greater than {:?}", expected));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be greater than {:?}", self.expr_str, expected)
-            } else {
-                format!("Expected {} to be greater than {:?}", self.expr_str, expected)
-            };
+            let expected_msg = format!("Expected {}{not} to be greater than {:?}", self.expr_str, expected);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -50,16 +46,12 @@ where
     fn to_be_less_than(self, expected: T) {
         let result = self.value < expected;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not less than" } else { "is less than" };
-            self.report_success(&format!("{} {:?}", msg, expected));
+            self.report_success(&format!("is{not} less than {:?}", expected));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be less than {:?}", self.expr_str, expected)
-            } else {
-                format!("Expected {} to be less than {:?}", self.expr_str, expected)
-            };
+            let expected_msg = format!("Expected {}{not} to be less than {:?}", self.expr_str, expected);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -72,16 +64,12 @@ where
         let two = T::from(2);
         let result = self.value % two == zero;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not even" } else { "is even" };
-            self.report_success(msg);
+            self.report_success(&format!("is{not} even"));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be even", self.expr_str)
-            } else {
-                format!("Expected {} to be even", self.expr_str)
-            };
+            let expected_msg = format!("Expected {}{not} to be even", self.expr_str);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -94,16 +82,12 @@ where
         let two = T::from(2);
         let result = self.value % two != zero;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not odd" } else { "is odd" };
-            self.report_success(msg);
+            self.report_success(&format!("is{not} odd"));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be odd", self.expr_str)
-            } else {
-                format!("Expected {} to be odd", self.expr_str)
-            };
+            let expected_msg = format!("Expected {}{not} to be odd", self.expr_str);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -115,16 +99,12 @@ where
         let zero = T::from(0);
         let result = self.value % divisor == zero;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not divisible by" } else { "is divisible by" };
-            self.report_success(&format!("{} {:?}", msg, divisor));
+            self.report_success(&format!("is{not} divisible by {:?}", divisor));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be divisible by {:?}", self.expr_str, divisor)
-            } else {
-                format!("Expected {} to be divisible by {:?}", self.expr_str, divisor)
-            };
+            let expected_msg = format!("Expected {}{not} to be divisible by {:?}", self.expr_str, divisor);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -136,16 +116,12 @@ where
         let zero = T::from(0);
         let result = self.value > zero;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not positive" } else { "is positive" };
-            self.report_success(msg);
+            self.report_success(&format!("is{not} positive"));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be positive", self.expr_str)
-            } else {
-                format!("Expected {} to be positive", self.expr_str)
-            };
+            let expected_msg = format!("Expected {}{not} to be positive", self.expr_str);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -157,16 +133,12 @@ where
         let zero = T::from(0);
         let result = self.value < zero;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not negative" } else { "is negative" };
-            self.report_success(msg);
+            self.report_success(&format!("is{not} negative"));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be negative", self.expr_str)
-            } else {
-                format!("Expected {} to be negative", self.expr_str)
-            };
+            let expected_msg = format!("Expected {}{not} to be negative", self.expr_str);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
@@ -190,17 +162,14 @@ where
         };
 
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
+        let range_str = format!("{:?}", range);
 
         if success {
-            let msg = if self.negated { "is not in range" } else { "is in range" };
-            self.report_success(msg);
+            self.report_success(&format!("is{not} in range {}", range_str));
         } else {
-            let range_str = format!("{:?}", range);
-            let expected_msg = if self.negated {
-                format!("Expected {} not to be in range {}", self.expr_str, range_str)
-            } else {
-                format!("Expected {} to be in range {}", self.expr_str, range_str)
-            };
+            let expected_msg = format!("Expected {}{not} to be in range {}", self.expr_str, range_str);
+
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }

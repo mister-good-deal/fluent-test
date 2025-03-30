@@ -9,16 +9,12 @@ impl<T: Debug + PartialEq> EqualityMatchers<T> for Expectation<T> {
     fn to_equal(self, expected: T) {
         let result = self.value == expected;
         let success = if self.negated { !result } else { result };
+        let not = if self.negated { " not" } else { "" };
 
         if success {
-            let msg = if self.negated { "is not equal to" } else { "is equal to" };
-            self.report_success(&format!("{} {:?}", msg, expected));
+            self.report_success(&format!("is{not} equal to {:?}", expected));
         } else {
-            let expected_msg = if self.negated {
-                format!("Expected {} not to equal {:?}", self.expr_str, expected)
-            } else {
-                format!("Expected {} to equal {:?}", self.expr_str, expected)
-            };
+            let expected_msg = format!("Expected {}{not} to equal {:?}", self.expr_str, expected);
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
     }
