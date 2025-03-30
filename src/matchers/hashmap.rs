@@ -5,13 +5,13 @@ use std::fmt::Debug;
 use std::hash::Hash;
 
 pub trait HashMapMatchers<K, V> {
-    fn to_be_empty(self);
-    fn to_have_length(self, expected: usize);
-    fn to_contain_key<Q>(self, key: &Q)
+    fn to_be_empty(self) -> Self;
+    fn to_have_length(self, expected: usize) -> Self;
+    fn to_contain_key<Q>(self, key: &Q) -> Self
     where
         K: Borrow<Q>,
         Q: Hash + Eq + Debug + ?Sized;
-    fn to_contain_entry<Q, R>(self, key: &Q, value: &R)
+    fn to_contain_entry<Q, R>(self, key: &Q, value: &R) -> Self
     where
         K: Borrow<Q>,
         Q: Hash + Eq + Debug + ?Sized,
@@ -21,37 +21,33 @@ pub trait HashMapMatchers<K, V> {
 
 impl<K, V> HashMapMatchers<K, V> for Expectation<&HashMap<K, V>>
 where
-    K: Eq + Hash + Debug,
-    V: Debug,
+    K: Eq + Hash + Debug + Clone,
+    V: Debug + Clone,
 {
-    fn to_be_empty(self) {
+    fn to_be_empty(self) -> Self {
         let result = self.value.is_empty();
         let success = if self.negated { !result } else { result };
         let not = if self.negated { " not" } else { "" };
 
-        if success {
-            self.report_success(&format!("is{not} empty"));
-        } else {
-            let expected_msg = format!("Expected {}{not} to be empty", self.expr_str);
-            self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
-        }
+        let description = format!("is{not} empty");
+
+        // Add this assertion to the chain instead of immediately evaluating
+        self.add_assertion_step(description, success)
     }
 
-    fn to_have_length(self, expected: usize) {
+    fn to_have_length(self, expected: usize) -> Self {
         let actual_length = self.value.len();
         let result = actual_length == expected;
         let success = if self.negated { !result } else { result };
         let not = if self.negated { " not" } else { "" };
 
-        if success {
-            self.report_success(&format!("does{not} have length {}", expected));
-        } else {
-            let expected_msg = format!("Expected {}{not} to have length {}", self.expr_str, expected);
-            self.report_failure(&expected_msg, &format!("Actual length: {}", actual_length));
-        }
+        let description = format!("does{not} have length {}", expected);
+
+        // Add this assertion to the chain instead of immediately evaluating
+        self.add_assertion_step(description, success)
     }
 
-    fn to_contain_key<Q>(self, key: &Q)
+    fn to_contain_key<Q>(self, key: &Q) -> Self
     where
         K: Borrow<Q>,
         Q: Hash + Eq + Debug + ?Sized,
@@ -60,16 +56,13 @@ where
         let success = if self.negated { !result } else { result };
         let not = if self.negated { " not" } else { "" };
 
-        if success {
-            self.report_success(&format!("does{not} contain key {:?}", key));
-        } else {
-            let expected_msg = format!("Expected {}{not} to contain key {:?}", self.expr_str, key);
-            let keys: Vec<&K> = self.value.keys().collect();
-            self.report_failure(&expected_msg, &format!("Available keys: {:?}", keys));
-        }
+        let description = format!("does{not} contain key {:?}", key);
+
+        // Add this assertion to the chain instead of immediately evaluating
+        self.add_assertion_step(description, success)
     }
 
-    fn to_contain_entry<Q, R>(self, key: &Q, value: &R)
+    fn to_contain_entry<Q, R>(self, key: &Q, value: &R) -> Self
     where
         K: Borrow<Q>,
         Q: Hash + Eq + Debug + ?Sized,
@@ -81,22 +74,9 @@ where
         let success = if self.negated { !entry_exists } else { entry_exists };
         let not = if self.negated { " not" } else { "" };
 
-        if success {
-            self.report_success(&format!("does{not} contain entry ({:?}, {:?})", key, value));
-        } else {
-            let expected_msg = format!("Expected {}{not} to contain entry ({:?}, {:?})", self.expr_str, key, value);
+        let description = format!("does{not} contain entry ({:?}, {:?})", key, value);
 
-            // Check if the key exists to provide a more helpful error message
-            let key_exists = self.value.contains_key(key);
-            let details = if key_exists {
-                // Get the actual value for this key
-                let actual_value = self.value.get(key).unwrap();
-                format!("Found key {:?} but with value: {:?}", key, actual_value)
-            } else {
-                format!("Key {:?} not found in map", key)
-            };
-
-            self.report_failure(&expected_msg, &details);
-        }
+        // Add this assertion to the chain instead of immediately evaluating
+        self.add_assertion_step(description, success)
     }
 }

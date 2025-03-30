@@ -12,6 +12,7 @@ expressive assertions with readable error messages while maintaining compatibili
 ## Features
 
 - **Fluent, Expressive API**: Write tests in a readable, chainable style similar to Jest.
+- **Logical Chain Modifiers**: Combine assertions with `.and()` and `.or()` operators.
 - **Helpful Error Messages**: Get clear error messages that include variable names and expressions.
 - **Seamless Integration**: Works alongside Rust's standard testing infrastructure.
 - **Beautiful Test Output**: Enhanced test reporting with visual cues and better organization.
@@ -106,7 +107,9 @@ FluentTest provides a comprehensive set of matchers for various types. All match
 - [**to_contain_ok**](#to_contain_ok) - Checks if a Result contains a specific Ok value
 - [**to_contain_err**](#to_contain_err) - Checks if a Result contains a specific Err value
 
-## Using Not Modifiers
+## Using Modifiers
+
+### Not Modifier
 
 FluentTest supports two ways to negate expectations:
 
@@ -126,6 +129,33 @@ fn test_not_modifiers() {
     expect_not!(value).to_equal(100);
 }
 ```
+
+### Logical Chain Modifiers (AND/OR)
+
+FluentTest allows chaining multiple assertions with logical operators:
+
+```rust
+#[test]
+fn test_chain_modifiers() {
+    let number = 42;
+    
+    // Using AND to require all conditions to pass
+    expect!(number).to_be_greater_than(30)
+                 .and().to_be_less_than(50)
+                 .and().to_be_even();
+    
+    // Using OR where at least one condition must pass
+    expect!(number).to_be_greater_than(100)  // This fails
+                 .or().to_be_less_than(30)   // This fails
+                 .or().to_equal(42);         // This passes, so overall expression passes
+    
+    // Combining NOT with logical modifiers
+    expect!(number).not().to_be_less_than(30)
+                 .and().not().to_be_greater_than(50);
+}
+```
+
+The output from logical chains is clean and concise, showing just the final result with properly indented details for failing chains.
 
 ## Matcher Documentation
 
@@ -675,11 +705,17 @@ fn test_user_permissions() {
 }
 ```
 
-## Output Customization
+## Output Formatting
 
-FluentTest enhances the standard test output with colors, symbols, and improved formatting.
+FluentTest enhances the standard test output with colors, symbols, and improved formatting:
 
-For CI environments or other special cases, you can customize the output:
+- **Color Coding**: Green for passing tests, red for failing tests
+- **Unicode Symbols**: Check (✓) marks for passing conditions, cross (✗) for failing ones
+- **Clean Variable Names**: Reference symbols (`&`) are automatically removed from output
+- **Consistent Indentation**: Multi-line output is properly indented for readability
+- **Logical Assertions**: AND/OR chains produce concise, readable output
+
+You can customize the output for CI environments or other special cases:
 
 ```rust
 // In your test module or test helper file

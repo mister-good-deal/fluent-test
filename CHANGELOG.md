@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.2.0 (2024-03-30)
+
+### Added
+
+- Added support for logical chain modifiers:
+  - `.and()` - Chain multiple assertions that must all pass
+  - `.or()` - Chain multiple assertions where at least one must pass
+- Added support for combining `.not()` with logical chain operators
+
+### Changed
+
+- Improved output formatting:
+  - Removed ampersands (`&`) from variable names in output for cleaner display
+  - Added check (✓) and cross (✗) signs for passed/failed conditions
+  - Applied proper coloring (green for passed, red for failed conditions)
+  - Improved indentation in failure details
+- Modified assertion chain behavior to avoid duplicate output in chained assertions
+- Assertions no longer panic outside of test contexts, allowing for use in examples and production code
+
+### Fixed
+
+- Fixed issue with duplicate output in logical chain assertions
+- Fixed the output formatting in Reporter's summary section
+
 ## 0.1.1 (2024-03-30)
 
 ### Added

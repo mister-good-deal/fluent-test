@@ -11,10 +11,9 @@ impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Expectation<T> {
         let success = if self.negated { !result } else { result };
         let not = if self.negated { " not" } else { "" };
 
-        let success_msg = format!("is{not} equal to {:?}", expected);
-        let expected_msg = format!("Expected {}{not} to equal {:?}", self.expr_str, expected);
-        let received_msg = format!("Received: {:?}", self.value);
+        let description = format!("is{not} equal to {:?}", expected);
 
-        self.handle_assertion_result(success, &success_msg, &expected_msg, &received_msg)
+        // Add this assertion to the chain instead of immediately evaluating
+        self.add_assertion_step(description, success)
     }
 }
