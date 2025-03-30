@@ -10,6 +10,10 @@ jobs:
   coverage:
     name: Generate LLVM code coverage
     runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+      LLVM_PROFILE_FILE: "coverage-%p-%m.profraw"
+      RUSTFLAGS: "-C instrument-coverage -C link-dead-code"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,14 +29,15 @@ jobs:
       - name: Install rustfilt (for demangling)
         run: cargo install rustfilt
 
-      - name: Build with coverage instrumentation
+      - name: Build and run tests with coverage instrumentation
         run: |
-          RUSTFLAGS="-C instrument-coverage" cargo build --verbose
-          RUSTFLAGS="-C instrument-coverage" cargo test --verbose --no-run
+          cargo test --verbose
 
-      - name: Run tests to generate coverage data
+      - name: Verify profraw files exist
         run: |
-          LLVM_PROFILE_FILE="fluent-test-%p-%m.profraw" cargo test --verbose
+          echo "Listing profraw files:"
+          find . -name "*.profraw" || echo "No profraw files found"
+          ls -la
 
       - name: Generate coverage report
         run: |
@@ -46,6 +51,7 @@ jobs:
             --ignore "*/.cargo/*" \
             --ignore "*/tests/*" \
             --ignore "*/examples/*" \
+            --excl-start "mod tests" \
             -o ./coverage/lcov.info
 
       - name: Upload coverage report to Codecov
