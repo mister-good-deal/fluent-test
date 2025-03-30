@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for tags
+          token: ${{ secrets.GH_PAT }} # Use a personal access token with repo scope
       
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -61,6 +62,8 @@ jobs:
       
       - name: Tag new version
         if: steps.version_check.outputs.newer_version == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           TAG_NAME="v${{ steps.get_version.outputs.local_version }}"
           git config user.name "GitHub Actions"
