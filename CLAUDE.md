@@ -34,7 +34,8 @@
 
 - **Version Bump**: Update `version` in Cargo.toml when making significant changes
 - **Automated Publishing**: Changes merged to master with a version bump will automatically:
-  1. Publish to crates.io (if the version is higher than the current published version)
-  2. Create a GitHub tag (vX.Y.Z)
-  3. Generate a GitHub release with release notes
+  1. Compare version with latest git tag (not with published crates.io version)
+  2. Create a git tag (vX.Y.Z) for the new version
+  3. Publish to crates.io
+  4. Generate a GitHub release with release notes when the tag is pushed
 - **CI Checks**: Publishing only happens if all tests, examples, and linting checks pass

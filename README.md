@@ -398,11 +398,14 @@ FluentTest is built around a few core components:
 
 This project is automatically published to [crates.io](https://crates.io/crates/fluent-test) when:
 
-1. The version in Cargo.toml is increased
+1. The version in Cargo.toml is increased beyond the latest git tag
 2. The code is merged to the master branch
 3. All CI checks pass (tests, examples, linting)
 
-A GitHub release is also automatically created with release notes based on commits.
+The publishing workflow will:
+1. Create a git tag for the new version (vX.Y.Z)
+2. Publish the package to crates.io
+3. Generate a GitHub release with automatically generated release notes
 
 ## License
 
