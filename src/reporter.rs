@@ -12,11 +12,7 @@ struct TestReport {
 
 impl TestReport {
     fn new() -> Self {
-        Self {
-            passed: 0,
-            failed: 0,
-            failures: Vec::new(),
-        }
+        Self { passed: 0, failed: 0, failures: Vec::new() }
     }
 }
 
@@ -34,16 +30,8 @@ pub fn report_success(message: &str) {
 
     let config = GLOBAL_CONFIG.read().unwrap();
     if config.show_success_details {
-        let prefix = if config.use_unicode_symbols {
-            "✓ "
-        } else {
-            "+ "
-        };
-        let message = if config.use_colors {
-            format!("{}{}", prefix.green(), message.green())
-        } else {
-            format!("{}{}", prefix, message)
-        };
+        let prefix = if config.use_unicode_symbols { "✓ " } else { "+ " };
+        let message = if config.use_colors { format!("{}{}", prefix.green(), message.green()) } else { format!("{}{}", prefix, message) };
         println!("{}", message);
     }
 }
@@ -52,29 +40,15 @@ pub fn report_failure(expected: &str, received: &str) {
     REPORT.with(|r| {
         let mut report = r.borrow_mut();
         report.failed += 1;
-        report
-            .failures
-            .push((expected.to_string(), received.to_string()));
+        report.failures.push((expected.to_string(), received.to_string()));
     });
 
     let config = GLOBAL_CONFIG.read().unwrap();
-    let prefix = if config.use_unicode_symbols {
-        "✗ "
-    } else {
-        "- "
-    };
+    let prefix = if config.use_unicode_symbols { "✗ " } else { "- " };
 
-    let expected_msg = if config.use_colors {
-        expected.red().bold()
-    } else {
-        expected.normal()
-    };
+    let expected_msg = if config.use_colors { expected.red().bold() } else { expected.normal() };
 
-    let received_msg = if config.use_colors {
-        received.red()
-    } else {
-        received.normal()
-    };
+    let received_msg = if config.use_colors { received.red() } else { received.normal() };
 
     println!("{}{}", prefix, expected_msg);
     println!("  {}", received_msg);
@@ -96,16 +70,8 @@ impl Reporter {
             if config.use_colors {
                 println!(
                     "  {} / {}",
-                    if report.passed > 0 {
-                        passed_msg.green()
-                    } else {
-                        passed_msg.normal()
-                    },
-                    if report.failed > 0 {
-                        failed_msg.red().bold()
-                    } else {
-                        failed_msg.normal()
-                    }
+                    if report.passed > 0 { passed_msg.green() } else { passed_msg.normal() },
+                    if report.failed > 0 { failed_msg.red().bold() } else { failed_msg.normal() }
                 );
             } else {
                 println!("  {} / {}", passed_msg, failed_msg);

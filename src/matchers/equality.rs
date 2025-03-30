@@ -12,11 +12,7 @@ impl<T: Debug + PartialEq> EqualityMatchers<T> for Expectation<T> {
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not equal to"
-            } else {
-                "is equal to"
-            };
+            let msg = if self.negated { "is not equal to" } else { "is equal to" };
             self.report_success(&format!("{} {:?}", msg, expected));
         } else {
             let expected_msg = if self.negated {
@@ -29,11 +25,6 @@ impl<T: Debug + PartialEq> EqualityMatchers<T> for Expectation<T> {
     }
 
     fn not_to_equal(self, expected: T) {
-        Expectation {
-            value: self.value,
-            expr_str: self.expr_str,
-            negated: true,
-        }
-        .to_equal(expected);
+        Expectation { value: self.value, expr_str: self.expr_str, negated: true }.to_equal(expected);
     }
 }

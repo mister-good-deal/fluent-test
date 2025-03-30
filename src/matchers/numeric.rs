@@ -35,23 +35,13 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not greater than"
-            } else {
-                "is greater than"
-            };
+            let msg = if self.negated { "is not greater than" } else { "is greater than" };
             self.report_success(&format!("{} {:?}", msg, expected));
         } else {
             let expected_msg = if self.negated {
-                format!(
-                    "Expected {} not to be greater than {:?}",
-                    self.expr_str, expected
-                )
+                format!("Expected {} not to be greater than {:?}", self.expr_str, expected)
             } else {
-                format!(
-                    "Expected {} to be greater than {:?}",
-                    self.expr_str, expected
-                )
+                format!("Expected {} to be greater than {:?}", self.expr_str, expected)
             };
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
@@ -62,18 +52,11 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not less than"
-            } else {
-                "is less than"
-            };
+            let msg = if self.negated { "is not less than" } else { "is less than" };
             self.report_success(&format!("{} {:?}", msg, expected));
         } else {
             let expected_msg = if self.negated {
-                format!(
-                    "Expected {} not to be less than {:?}",
-                    self.expr_str, expected
-                )
+                format!("Expected {} not to be less than {:?}", self.expr_str, expected)
             } else {
                 format!("Expected {} to be less than {:?}", self.expr_str, expected)
             };
@@ -91,11 +74,7 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not even"
-            } else {
-                "is even"
-            };
+            let msg = if self.negated { "is not even" } else { "is even" };
             self.report_success(msg);
         } else {
             let expected_msg = if self.negated {
@@ -138,23 +117,13 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not divisible by"
-            } else {
-                "is divisible by"
-            };
+            let msg = if self.negated { "is not divisible by" } else { "is divisible by" };
             self.report_success(&format!("{} {:?}", msg, divisor));
         } else {
             let expected_msg = if self.negated {
-                format!(
-                    "Expected {} not to be divisible by {:?}",
-                    self.expr_str, divisor
-                )
+                format!("Expected {} not to be divisible by {:?}", self.expr_str, divisor)
             } else {
-                format!(
-                    "Expected {} to be divisible by {:?}",
-                    self.expr_str, divisor
-                )
+                format!("Expected {} to be divisible by {:?}", self.expr_str, divisor)
             };
             self.report_failure(&expected_msg, &format!("Received: {:?}", self.value));
         }
@@ -169,11 +138,7 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not positive"
-            } else {
-                "is positive"
-            };
+            let msg = if self.negated { "is not positive" } else { "is positive" };
             self.report_success(msg);
         } else {
             let expected_msg = if self.negated {
@@ -194,11 +159,7 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not negative"
-            } else {
-                "is negative"
-            };
+            let msg = if self.negated { "is not negative" } else { "is negative" };
             self.report_success(msg);
         } else {
             let expected_msg = if self.negated {
@@ -217,18 +178,10 @@ where
         use std::ops::Bound;
 
         let result = match (range.start_bound(), range.end_bound()) {
-            (Bound::Included(start), Bound::Included(end)) => {
-                self.value >= *start && self.value <= *end
-            }
-            (Bound::Included(start), Bound::Excluded(end)) => {
-                self.value >= *start && self.value < *end
-            }
-            (Bound::Excluded(start), Bound::Included(end)) => {
-                self.value > *start && self.value <= *end
-            }
-            (Bound::Excluded(start), Bound::Excluded(end)) => {
-                self.value > *start && self.value < *end
-            }
+            (Bound::Included(start), Bound::Included(end)) => self.value >= *start && self.value <= *end,
+            (Bound::Included(start), Bound::Excluded(end)) => self.value >= *start && self.value < *end,
+            (Bound::Excluded(start), Bound::Included(end)) => self.value > *start && self.value <= *end,
+            (Bound::Excluded(start), Bound::Excluded(end)) => self.value > *start && self.value < *end,
             (Bound::Included(start), Bound::Unbounded) => self.value >= *start,
             (Bound::Excluded(start), Bound::Unbounded) => self.value > *start,
             (Bound::Unbounded, Bound::Included(end)) => self.value <= *end,
@@ -239,19 +192,12 @@ where
         let success = if self.negated { !result } else { result };
 
         if success {
-            let msg = if self.negated {
-                "is not in range"
-            } else {
-                "is in range"
-            };
+            let msg = if self.negated { "is not in range" } else { "is in range" };
             self.report_success(msg);
         } else {
             let range_str = format!("{:?}", range);
             let expected_msg = if self.negated {
-                format!(
-                    "Expected {} not to be in range {}",
-                    self.expr_str, range_str
-                )
+                format!("Expected {} not to be in range {}", self.expr_str, range_str)
             } else {
                 format!("Expected {} to be in range {}", self.expr_str, range_str)
             };

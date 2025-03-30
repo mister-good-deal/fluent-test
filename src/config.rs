@@ -8,11 +8,7 @@ pub struct Config {
 impl Config {
     /// Creates a new configuration with default settings
     pub fn new() -> Self {
-        Self {
-            use_colors: true,
-            use_unicode_symbols: true,
-            show_success_details: true,
-        }
+        Self { use_colors: true, use_unicode_symbols: true, show_success_details: true }
     }
 
     /// Enable or disable colored output

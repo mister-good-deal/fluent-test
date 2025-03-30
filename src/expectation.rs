@@ -12,11 +12,7 @@ pub struct Expectation<T> {
 impl<T> Expectation<T> {
     /// Creates a new expectation
     pub fn new(value: T, expr_str: &'static str) -> Self {
-        Self {
-            value,
-            expr_str,
-            negated: false,
-        }
+        Self { value, expr_str, negated: false }
     }
 
     /// Negates the next assertion
