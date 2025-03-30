@@ -64,7 +64,7 @@ fn test_basic_assertions() {
 
 ### Using Jest-like Not Syntax
 
-FluentTest supports several ways to negate expectations, including a Jest-like `.not` property:
+FluentTest supports several ways to negate expectations, similar to Jest's `.not` property:
 
 ```rust
 #[test]
@@ -80,15 +80,16 @@ fn test_not_modifiers() {
     // 2. Alternative method
     expect!(value).not_prop().to_equal(100);
     
-    // 3. Using the ! operator (Rust-specific)
-    !expect!(value).to_equal(100);
+    // 3. We implement the Not trait, but it's not practical for direct use
+    // let expectation = expect!(value);
+    // let negated = !expectation; // Works but isn't useful directly
     
     // 4. Using the not! macro
     not!(value).to_equal(100);
     
-    // 5. Jest-style .not property (recommended)
-    expect!(value).not.to_equal(100);
-    expect!(name).not.to_contain("Bob");
+    // 5. Jest-style .not() method (recommended)
+    expect!(value).not().to_equal(100);
+    expect!(name).not().to_contain("Bob");
 }
 ```
 

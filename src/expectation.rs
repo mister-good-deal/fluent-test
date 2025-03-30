@@ -79,11 +79,12 @@ impl<T: Clone> Expectation<T> {
     }
 }
 
-// Add a property for the Jest-style API using the not field
+// Add a method for the Jest-style API
+// In Rust we can't use property access like in JavaScript, so we'll use a method call
 impl<T: Clone> Expectation<T> {
-    /// Simulates the Jest-style .not property
-    /// This allows for the syntax: expect(value).not.to_equal(x)
-    #[allow(clippy::should_implement_trait)]
+    /// Creates a Jest-style negated expectation
+    /// While not exactly the same as Jest's property access, this provides a similar feel:
+    /// expect(value).not().to_equal(x)
     pub fn not(&self) -> NotExpectation<T> {
         NotExpectation { value: self.value.clone(), expr_str: self.expr_str, negated: !self.negated }
     }
