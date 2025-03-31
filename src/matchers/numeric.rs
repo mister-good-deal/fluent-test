@@ -157,3 +157,185 @@ where
         self.add_assertion_step(description, success)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+    use std::ops::Range;
+
+    #[test]
+    fn test_greater_than() {
+        crate::Reporter::disable_deduplication();
+        
+        expect!(42).to_be_greater_than(30);
+        expect!(42).not().to_be_greater_than(50);
+    }
+
+    #[test]
+    #[should_panic(expected = "is greater than")]
+    fn test_greater_than_fails() {
+        let _assertion = expect!(30).to_be_greater_than(42);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is greater than")]
+    fn test_not_greater_than_fails() {
+        let _assertion = expect!(42).not().to_be_greater_than(30);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    fn test_less_than() {
+        crate::Reporter::disable_deduplication();
+        
+        expect!(30).to_be_less_than(42);
+        expect!(42).not().to_be_less_than(30);
+    }
+
+    #[test]
+    #[should_panic(expected = "is less than")]
+    fn test_less_than_fails() {
+        let _assertion = expect!(42).to_be_less_than(30);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is less than")]
+    fn test_not_less_than_fails() {
+        let _assertion = expect!(30).not().to_be_less_than(42);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    fn test_even_odd() {
+        crate::Reporter::disable_deduplication();
+        
+        // Even tests
+        expect!(42).to_be_even();
+        expect!(43).not().to_be_even();
+        
+        // Odd tests
+        expect!(43).to_be_odd();
+        expect!(42).not().to_be_odd();
+    }
+
+    #[test]
+    #[should_panic(expected = "is even")]
+    fn test_even_fails() {
+        let _assertion = expect!(43).to_be_even();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is even")]
+    fn test_not_even_fails() {
+        let _assertion = expect!(42).not().to_be_even();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "is odd")]
+    fn test_odd_fails() {
+        let _assertion = expect!(42).to_be_odd();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is odd")]
+    fn test_not_odd_fails() {
+        let _assertion = expect!(43).not().to_be_odd();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    fn test_divisible_by() {
+        crate::Reporter::disable_deduplication();
+        
+        expect!(42).to_be_divisible_by(7);
+        expect!(42).not().to_be_divisible_by(5);
+    }
+
+    #[test]
+    #[should_panic(expected = "is divisible by")]
+    fn test_divisible_by_fails() {
+        let _assertion = expect!(42).to_be_divisible_by(5);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is divisible by")]
+    fn test_not_divisible_by_fails() {
+        let _assertion = expect!(42).not().to_be_divisible_by(7);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    fn test_positive_negative() {
+        crate::Reporter::disable_deduplication();
+        
+        // Positive tests
+        expect!(42).to_be_positive();
+        expect!(-42).not().to_be_positive();
+        
+        // Negative tests
+        expect!(-42).to_be_negative();
+        expect!(42).not().to_be_negative();
+    }
+
+    #[test]
+    #[should_panic(expected = "is positive")]
+    fn test_positive_fails() {
+        let _assertion = expect!(-42).to_be_positive();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is positive")]
+    fn test_not_positive_fails() {
+        let _assertion = expect!(42).not().to_be_positive();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "is negative")]
+    fn test_negative_fails() {
+        let _assertion = expect!(42).to_be_negative();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is negative")]
+    fn test_not_negative_fails() {
+        let _assertion = expect!(-42).not().to_be_negative();
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    fn test_in_range() {
+        crate::Reporter::disable_deduplication();
+        
+        // Test different range types
+        expect!(42).to_be_in_range(40..=50); // Inclusive range
+        expect!(42).to_be_in_range(40..51);  // Exclusive range
+        expect!(42).to_be_in_range(40..);    // Open-ended range
+        expect!(42).to_be_in_range(..51);    // From zero range
+        
+        // Test negations
+        expect!(30).not().to_be_in_range(40..50);
+    }
+
+    #[test]
+    #[should_panic(expected = "is in range")]
+    fn test_in_range_fails() {
+        let _assertion = expect!(30).to_be_in_range(40..50);
+        std::hint::black_box(_assertion);
+    }
+
+    #[test]
+    #[should_panic(expected = "NOT is in range")]
+    fn test_not_in_range_fails() {
+        let _assertion = expect!(42).not().to_be_in_range(40..50);
+        std::hint::black_box(_assertion);
+    }
+}
