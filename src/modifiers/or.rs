@@ -29,3 +29,40 @@ impl<T: Clone> OrModifier<T> for Expectation<T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+
+    #[test]
+    fn test_or_modifier() {
+        // Disable deduplication for tests
+        crate::Reporter::disable_deduplication();
+
+        let value = 42;
+
+        // Create a variable to hold the chain so it doesn't get dropped immediately
+        let chain = expect!(value)
+            .to_be_greater_than(100) // This fails
+            .or()
+            .to_be_less_than(100); // This passes
+
+        // Manually evaluate the chain - should not panic because OR with a passing condition
+        // It should return true since one of the conditions passes
+        let result = chain.evaluate();
+        assert!(result, "OR chain with one passing condition should evaluate to true");
+    }
+
+    #[test]
+    fn test_or_modifier_failing() {
+        // Disable deduplication for tests
+        crate::Reporter::disable_deduplication();
+        
+        let value = 42;
+        // Both fail - should return false, not panic
+        let chain = expect!(value).to_be_greater_than(100).or().to_be_less_than(10);
+        // Manually evaluate the chain - should return false because both conditions fail
+        let result = chain.evaluate();
+        assert!(!result, "OR chain with all failing conditions should evaluate to false");
+    }
+}

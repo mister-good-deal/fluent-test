@@ -29,3 +29,31 @@ impl<T: Clone> AndModifier<T> for Expectation<T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+
+    #[test]
+    fn test_and_modifier() {
+        // Disable deduplication for tests
+        crate::Reporter::disable_deduplication();
+
+        let value = 42;
+
+        // Both assertions pass - this should work without panicking
+        expect!(value).to_be_greater_than(30).and().to_be_less_than(50);
+    }
+
+    #[test]
+    fn test_and_modifier_failing_manual_check() {
+        // Disable deduplication for tests
+        crate::Reporter::disable_deduplication();
+
+        let value = 42;
+        // First passes, second fails - manually evaluate to check the result
+        let chain = expect!(value).to_be_greater_than(30).and().to_be_less_than(40);
+        let result = chain.evaluate();
+        assert!(!result, "AND chain with a failing condition should evaluate to false");
+    }
+}
