@@ -8,7 +8,7 @@
 - Run examples: `cargo run --example basic`
 - Check formatting: `cargo fmt --check`
 - Apply formatting: `cargo fmt`
-- Run linter: `cargo clippy -- -D warnings`
+- Run linter: `cargo clippy -- -D warnings --fix`
 - Check errors with `cargo clippy -- -D warnings` after editing code
 - Format Markdown: Use markdownlint-cli2 to format Markdown files with `npx markdownlint-cli2 --fix README.md`
 
