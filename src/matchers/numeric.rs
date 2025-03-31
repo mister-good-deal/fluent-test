@@ -161,7 +161,6 @@ where
 #[cfg(test)]
 mod tests {
     use crate::prelude::*;
-    use std::ops::Range;
 
     #[test]
     fn test_greater_than() {
