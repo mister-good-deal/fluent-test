@@ -53,7 +53,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is equal to")]
+    #[should_panic(expected = "is not equal to")]
     fn test_equality_not_fails() {
         // This should fail because !(42 != 42)
         let _assertion = expect!(42).not().to_equal(42);

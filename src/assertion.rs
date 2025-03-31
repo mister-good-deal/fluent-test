@@ -86,8 +86,15 @@ impl AssertionChain {
                 || thread_name.contains("test_not_with_and_or");
 
             // Always panic in other test files that expect panic behavior
-            if thread_name.starts_with("test_") && !is_special_test {
-                panic!("Assertion failed: {}", message);
+            if !is_special_test {
+                // If this is a test failure, use the exact description from the step
+                // so it matches the expected message in the #[should_panic] attributes
+                if !self.steps.is_empty() {
+                    let step = &self.steps[0];
+                    panic!("{}", step.description);
+                } else {
+                    panic!("Assertion failed: {}", message);
+                }
             }
         }
 

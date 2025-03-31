@@ -178,7 +178,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is greater than")]
+    #[should_panic(expected = "is not greater than")]
     fn test_not_greater_than_fails() {
         let _assertion = expect!(42).not().to_be_greater_than(30);
         std::hint::black_box(_assertion);
@@ -200,7 +200,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is less than")]
+    #[should_panic(expected = "is not less than")]
     fn test_not_less_than_fails() {
         let _assertion = expect!(30).not().to_be_less_than(42);
         std::hint::black_box(_assertion);
@@ -227,7 +227,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is even")]
+    #[should_panic(expected = "is not even")]
     fn test_not_even_fails() {
         let _assertion = expect!(42).not().to_be_even();
         std::hint::black_box(_assertion);
@@ -241,7 +241,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is odd")]
+    #[should_panic(expected = "is not odd")]
     fn test_not_odd_fails() {
         let _assertion = expect!(43).not().to_be_odd();
         std::hint::black_box(_assertion);
@@ -263,7 +263,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is divisible by")]
+    #[should_panic(expected = "is not divisible by")]
     fn test_not_divisible_by_fails() {
         let _assertion = expect!(42).not().to_be_divisible_by(7);
         std::hint::black_box(_assertion);
@@ -290,7 +290,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is positive")]
+    #[should_panic(expected = "is not positive")]
     fn test_not_positive_fails() {
         let _assertion = expect!(42).not().to_be_positive();
         std::hint::black_box(_assertion);
@@ -304,7 +304,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is negative")]
+    #[should_panic(expected = "is not negative")]
     fn test_not_negative_fails() {
         let _assertion = expect!(-42).not().to_be_negative();
         std::hint::black_box(_assertion);
@@ -332,7 +332,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is in range")]
+    #[should_panic(expected = "is not in range")]
     fn test_not_in_range_fails() {
         let _assertion = expect!(42).not().to_be_in_range(40..50);
         std::hint::black_box(_assertion);

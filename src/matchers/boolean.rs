@@ -44,7 +44,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is true")]
+    #[should_panic(expected = "is not true")]
     fn test_not_true_fails() {
         // This will evaluate and panic when the Expectation is dropped
         let _assertion = expect!(true).not().to_be_true();
@@ -72,7 +72,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is false")]
+    #[should_panic(expected = "is not false")]
     fn test_not_false_fails() {
         // This will evaluate and panic when the Expectation is dropped
         let _assertion = expect!(false).not().to_be_false();

@@ -154,7 +154,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "NOT is empty")]
+    #[should_panic(expected = "is not empty")]
     fn test_empty_not_to_be_empty_fails() {
         let _assertion = expect!("").not().to_be_empty();
         std::hint::black_box(_assertion);
@@ -178,7 +178,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT contain")]
+    #[should_panic(expected = "does not contain")]
     fn test_string_not_contains_fails() {
         let _assertion = expect!("Hello, world!").not().to_contain("world");
         std::hint::black_box(_assertion);
@@ -202,7 +202,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT start with")]
+    #[should_panic(expected = "does not start with")]
     fn test_string_not_starts_with_fails() {
         let _assertion = expect!("Hello, world!").not().to_start_with("Hello");
         std::hint::black_box(_assertion);
@@ -226,7 +226,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT end with")]
+    #[should_panic(expected = "does not end with")]
     fn test_string_not_ends_with_fails() {
         let _assertion = expect!("Hello, world!").not().to_end_with("world!");
         std::hint::black_box(_assertion);
@@ -250,7 +250,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT match pattern")]
+    #[should_panic(expected = "does not match pattern")]
     fn test_string_not_match_regex_fails() {
         let _assertion = expect!("Hello, world!").not().to_match_regex(r"Hello,\s\w+!");
         std::hint::black_box(_assertion);
@@ -276,7 +276,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT have length")]
+    #[should_panic(expected = "does not have length")]
     fn test_string_not_length_fails() {
         let _assertion = expect!("Hello").not().to_have_length(5);
         std::hint::black_box(_assertion);
@@ -290,7 +290,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT have length greater than")]
+    #[should_panic(expected = "does not have length greater than")]
     fn test_string_not_length_greater_than_fails() {
         let _assertion = expect!("Hello").not().to_have_length_greater_than(3);
         std::hint::black_box(_assertion);
@@ -304,7 +304,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "does NOT have length less than")]
+    #[should_panic(expected = "does not have length less than")]
     fn test_string_not_length_less_than_fails() {
         let _assertion = expect!("Hello").not().to_have_length_less_than(10);
         std::hint::black_box(_assertion);
