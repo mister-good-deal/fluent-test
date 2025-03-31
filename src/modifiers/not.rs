@@ -36,7 +36,7 @@ mod tests {
         // These should pass
         expect!(value).not().to_equal(100);
         expect!(value).not().to_be_less_than(10);
-        
+
         // Test with chains
         let chain = expect!(value)
             .not()

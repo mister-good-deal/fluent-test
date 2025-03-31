@@ -57,7 +57,7 @@ mod tests {
     fn test_or_modifier_failing() {
         // Disable deduplication for tests
         crate::Reporter::disable_deduplication();
-        
+
         let value = 42;
         // Both fail - should return false, not panic
         let chain = expect!(value).to_be_greater_than(100).or().to_be_less_than(10);

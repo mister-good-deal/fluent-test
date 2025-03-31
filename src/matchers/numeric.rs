@@ -165,7 +165,7 @@ mod tests {
     #[test]
     fn test_greater_than() {
         crate::Reporter::disable_deduplication();
-        
+
         expect!(42).to_be_greater_than(30);
         expect!(42).not().to_be_greater_than(50);
     }
@@ -187,7 +187,7 @@ mod tests {
     #[test]
     fn test_less_than() {
         crate::Reporter::disable_deduplication();
-        
+
         expect!(30).to_be_less_than(42);
         expect!(42).not().to_be_less_than(30);
     }
@@ -209,11 +209,11 @@ mod tests {
     #[test]
     fn test_even_odd() {
         crate::Reporter::disable_deduplication();
-        
+
         // Even tests
         expect!(42).to_be_even();
         expect!(43).not().to_be_even();
-        
+
         // Odd tests
         expect!(43).to_be_odd();
         expect!(42).not().to_be_odd();
@@ -250,7 +250,7 @@ mod tests {
     #[test]
     fn test_divisible_by() {
         crate::Reporter::disable_deduplication();
-        
+
         expect!(42).to_be_divisible_by(7);
         expect!(42).not().to_be_divisible_by(5);
     }
@@ -272,11 +272,11 @@ mod tests {
     #[test]
     fn test_positive_negative() {
         crate::Reporter::disable_deduplication();
-        
+
         // Positive tests
         expect!(42).to_be_positive();
         expect!(-42).not().to_be_positive();
-        
+
         // Negative tests
         expect!(-42).to_be_negative();
         expect!(42).not().to_be_negative();
@@ -313,13 +313,13 @@ mod tests {
     #[test]
     fn test_in_range() {
         crate::Reporter::disable_deduplication();
-        
+
         // Test different range types
         expect!(42).to_be_in_range(40..=50); // Inclusive range
-        expect!(42).to_be_in_range(40..51);  // Exclusive range
-        expect!(42).to_be_in_range(40..);    // Open-ended range
-        expect!(42).to_be_in_range(..51);    // From zero range
-        
+        expect!(42).to_be_in_range(40..51); // Exclusive range
+        expect!(42).to_be_in_range(40..); // Open-ended range
+        expect!(42).to_be_in_range(..51); // From zero range
+
         // Test negations
         expect!(30).not().to_be_in_range(40..50);
     }
