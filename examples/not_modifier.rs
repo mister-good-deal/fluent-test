@@ -1,4 +1,5 @@
 use fluent_test::prelude::*;
+mod helpers;
 
 fn main() {
     println!("Running not modifier examples");
@@ -20,7 +21,7 @@ fn main() {
     expect!(name).not().to_contain("Smith");
     expect!(name).not().to_start_with("Bob");
     expect!(name).not().to_end_with("Smith");
-    expect!(name).not().to_match_regex("^Smith");
+    expect!(name).not().to_match("^Smith");
 
     // Numeric matchers
     let age = 30;

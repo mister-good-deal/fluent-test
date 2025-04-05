@@ -1,4 +1,6 @@
 use fluent_test::prelude::*;
+mod helpers;
+use helpers::run_test;
 
 fn main() {
     println!("\n=== Testing AND modifier (all true) ===");
@@ -8,15 +10,21 @@ fn main() {
 
     println!("\n=== Testing complex AND chain (passing) ===");
     // Complex chain with multiple AND conditions
-    expect!(number).to_be_even().and().to_be_divisible_by(7).and().to_be_positive();
+    expect!(number).to_be_even().and().to_be_positive();
 
     println!("\n=== Testing failing OR chain with passing part ===");
     // Using OR modifier (will pass if any condition is true)
     expect!(number).to_be_greater_than(50).or().to_be_less_than(30).or().to_equal(42);
 
     println!("\n=== Testing OR chain (all false) ===");
-    // All conditions fail - should not panic but should report failure
-    expect!(number).to_be_greater_than(50).or().to_be_less_than(30).or().to_be_greater_than(100);
+    // All conditions fail - should report failure and handle the panic
+    let success = run_test(|| {
+        expect!(number).to_be_greater_than(50).or().to_be_less_than(30).or().to_be_greater_than(100);
+    });
+
+    if !success {
+        println!("Test failed as expected (all conditions were false)");
+    }
 
     println!("\n=== Testing combined NOT with AND ===");
     // Combining AND and OR with NOT

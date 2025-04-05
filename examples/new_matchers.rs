@@ -1,5 +1,6 @@
 use fluent_test::prelude::*;
 use std::collections::HashMap;
+mod helpers;
 
 fn main() {
     // Boolean matchers
@@ -10,7 +11,7 @@ fn main() {
     // Option matchers
     let maybe_value: Option<i32> = Some(42);
     expect!(&maybe_value).to_be_some();
-    expect!(&maybe_value).to_contain_value(42);
+    expect!(&maybe_value).to_contain(&42);
 
     let empty_option: Option<i32> = None;
     expect!(&empty_option).to_be_none();
@@ -19,11 +20,11 @@ fn main() {
     // Result matchers
     let success_result: Result<i32, &str> = Ok(42);
     expect!(&success_result).to_be_ok();
-    expect!(&success_result).to_contain_ok(42);
+    expect!(&success_result).to_contain_ok(&42);
 
     let error_result: Result<i32, &str> = Err("failed");
     expect!(&error_result).to_be_err();
-    expect!(&error_result).to_contain_err("failed");
+    expect!(&error_result).to_contain_err(&"failed");
 
     // Collection matchers
     let numbers = vec![1, 2, 3, 4, 5];
@@ -31,7 +32,7 @@ fn main() {
     expect!(numbers_slice).to_have_length(5);
     expect!(numbers_slice).to_contain(3);
     expect!(numbers_slice).to_contain_all_of(&[1, 5]);
-    expect!(numbers_slice).to_equal_collection(vec![1, 2, 3, 4, 5]);
+    expect!(numbers_slice).to_equal_collection(&[1, 2, 3, 4, 5]);
 
     let empty_vec: Vec<i32> = vec![];
     let empty_slice = empty_vec.as_slice();
