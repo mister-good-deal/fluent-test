@@ -38,7 +38,7 @@ jobs:
       
       - name: Run examples
         run: |
-          for example in $(cargo metadata --no-deps --format-version=1 | jq -r '.packages[].targets[] | select(.kind | contains(["example"])) | .name'); do
+          for example in ["basic", "combined_matchers", "logical_chain", "modifiers", "new_matchers", "not_modifier"]; do
             echo "Running example: $example"
             cargo run --example "$example"
           done
