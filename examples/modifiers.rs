@@ -1,6 +1,5 @@
 use fluent_test::prelude::*;
-mod helpers;
-use helpers::run_test;
+use fluent_test::helpers::run_test;
 
 fn main() {
     println!("\n=== Testing AND modifier (all true) ===");

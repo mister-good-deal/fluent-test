@@ -1,7 +1,6 @@
 use fluent_test::prelude::*;
+use fluent_test::helpers::run_test;
 use std::collections::HashMap;
-mod helpers;
-use helpers::run_test;
 
 fn main() {
     println!("FluentTest Example: Combined Matchers with Logical Chaining");
