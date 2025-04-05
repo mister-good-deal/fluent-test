@@ -38,7 +38,8 @@ jobs:
       
       - name: Run examples
         run: |
-          for example in ["basic", "combined_matchers", "logical_chain", "modifiers", "new_matchers", "not_modifier"]; do
+          examples=("basic" "combined_matchers" "logical_chain" "modifiers" "new_matchers" "not_modifier")
+          for example in "${examples[@]}"; do
             echo "Running example: $example"
             cargo run --example "$example"
           done
