@@ -1,6 +1,5 @@
 use fluent_test::prelude::*;
 use std::collections::HashMap;
-mod helpers;
 
 fn main() {
     // Boolean matchers

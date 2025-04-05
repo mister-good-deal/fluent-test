@@ -1,5 +1,5 @@
-use crate::backend::LogicalOp;
 use crate::backend::Expectation;
+use crate::backend::LogicalOp;
 
 /// OR modifier trait for chaining expectations
 pub trait OrModifier<T> {

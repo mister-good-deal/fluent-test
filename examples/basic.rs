@@ -1,5 +1,4 @@
 use fluent_test::prelude::*;
-mod helpers;
 
 fn main() {
     // Just to demonstrate the API

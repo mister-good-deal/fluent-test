@@ -1,5 +1,4 @@
 use fluent_test::prelude::*;
-mod helpers;
 
 fn main() {
     println!("Running not modifier examples");
