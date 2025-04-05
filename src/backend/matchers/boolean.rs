@@ -1,4 +1,5 @@
-use crate::expectation::Expectation;
+use crate::backend::Expectation;
+use crate::backend::assertions::sentence::AssertionSentence;
 
 pub trait BooleanMatchers {
     fn to_be_true(self) -> Self;
@@ -8,24 +9,33 @@ pub trait BooleanMatchers {
 impl BooleanMatchers for Expectation<bool> {
     fn to_be_true(self) -> Self {
         let result = self.value;
-        let success = if self.negated { !result } else { result };
-        let not = if self.negated { " not" } else { "" };
+        let sentence = AssertionSentence::new("be", "true");
 
-        let description = format!("is{not} true");
-
-        // Add to the assertion chain
-        self.add_assertion_step(description, success)
+        return self.add_assertion_step(sentence, result);
     }
 
     fn to_be_false(self) -> Self {
         let result = !self.value;
-        let success = if self.negated { !result } else { result };
-        let not = if self.negated { " not" } else { "" };
+        let sentence = AssertionSentence::new("be", "false");
 
-        let description = format!("is{not} false");
+        return self.add_assertion_step(sentence, result);
+    }
+}
 
-        // Add to the assertion chain
-        self.add_assertion_step(description, success)
+// Implementation for references to bool
+impl BooleanMatchers for Expectation<&bool> {
+    fn to_be_true(self) -> Self {
+        let result = *self.value;
+        let sentence = AssertionSentence::new("be", "true");
+
+        return self.add_assertion_step(sentence, result);
+    }
+
+    fn to_be_false(self) -> Self {
+        let result = !*self.value;
+        let sentence = AssertionSentence::new("be", "false");
+
+        return self.add_assertion_step(sentence, result);
     }
 }
 
@@ -44,7 +54,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is not true")]
+    #[should_panic(expected = "not be true")]
     fn test_not_true_fails() {
         // This will evaluate and panic when the Expectation is dropped
         let _assertion = expect!(true).not().to_be_true();
@@ -53,7 +63,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is true")]
+    #[should_panic(expected = "be true")]
     fn test_false_to_be_true_fails() {
         // This will evaluate and panic when the Expectation is dropped
         let _assertion = expect!(false).to_be_true();
@@ -72,7 +82,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is not false")]
+    #[should_panic(expected = "not be false")]
     fn test_not_false_fails() {
         // This will evaluate and panic when the Expectation is dropped
         let _assertion = expect!(false).not().to_be_false();
@@ -81,7 +91,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is false")]
+    #[should_panic(expected = "be false")]
     fn test_true_to_be_false_fails() {
         // This will evaluate and panic when the Expectation is dropped
         let _assertion = expect!(true).to_be_false();

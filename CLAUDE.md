@@ -5,7 +5,17 @@
 - Build project: `cargo build`
 - Run tests: `cargo test`
 - Run single test: `cargo test test_name`
-- Run examples: `cargo run --example basic`
+- Run examples:
+
+  ```bash
+  cargo run --example basic && \
+  cargo run --example combined_matchers.rs && \
+  cargo run --example logical_chain.rs && \
+  cargo run --example modifiers.rs && \
+  cargo run --example new_matchers.rs && \
+  cargo run --example not_modifier.rs 
+  ```
+
 - Check formatting: `cargo fmt --check`
 - Apply formatting: `cargo fmt`
 - Run linter: `cargo clippy -- -D warnings --fix`
@@ -22,6 +32,7 @@
 - **API Design**: Trait-based, fluent interface with method chaining
 - **Testing**: Unit tests alongside implementation, integration tests in tests/ directory
 - **Markdown**: Use plain Markdown in README.md, no HTML tags, follow markdownlint.json formatting
+- As a coding style use `return` statement in all source code, do not omit it
 
 ## Implementation Patterns
 

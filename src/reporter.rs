@@ -1,29 +1,15 @@
+use crate::backend::{AssertionResult, TestSessionResult};
 use crate::config::Config;
-use colored::*;
+use crate::frontend::ConsoleRenderer;
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
+use std::collections::HashSet;
 use std::sync::RwLock;
-
-struct TestReport {
-    passed: usize,
-    failed: usize,
-    failures: Vec<(String, String)>,
-}
-
-impl TestReport {
-    fn new() -> Self {
-        Self { passed: 0, failed: 0, failures: Vec::new() }
-    }
-}
 
 pub(crate) static GLOBAL_CONFIG: Lazy<RwLock<Config>> = Lazy::new(|| RwLock::new(Config::new()));
 
 thread_local! {
-    static REPORT: RefCell<TestReport> = RefCell::new(TestReport::new());
-}
-
-use std::collections::HashSet;
-thread_local! {
+    static TEST_SESSION: RefCell<TestSessionResult> = RefCell::new(TestSessionResult::default());
     // Track already reported messages to avoid duplicates
     static REPORTED_MESSAGES: RefCell<HashSet<String>> = RefCell::new(HashSet::new());
     // Flag to enable/disable deduplication
@@ -32,10 +18,10 @@ thread_local! {
     static SILENT_MODE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn report_success(message: &str) {
-    REPORT.with(|r| {
-        let mut report = r.borrow_mut();
-        report.passed += 1;
+pub fn report_success(result: AssertionResult) {
+    TEST_SESSION.with(|session| {
+        let mut session = session.borrow_mut();
+        session.passed_count += 1;
     });
 
     // Check if silent mode is enabled
@@ -53,9 +39,10 @@ pub fn report_success(message: &str) {
 
         // Only report each unique success message once
         REPORTED_MESSAGES.with(|msgs| {
+            let key = format!("{:?}", result);
             let mut messages = msgs.borrow_mut();
-            if !messages.contains(message) {
-                messages.insert(message.to_string());
+            if !messages.contains(&key) {
+                messages.insert(key);
                 true
             } else {
                 false
@@ -65,20 +52,20 @@ pub fn report_success(message: &str) {
 
     if should_report {
         let config = GLOBAL_CONFIG.read().unwrap();
-        if config.show_success_details {
-            let prefix = if config.use_unicode_symbols { "✓ " } else { "+ " };
-            let formatted =
-                if config.use_colors { format!("{}{}", prefix.green(), message.green()) } else { format!("{}{}", prefix, message) };
-            println!("{}", formatted);
-        }
+        let renderer = ConsoleRenderer::new(Config {
+            use_colors: config.use_colors,
+            use_unicode_symbols: config.use_unicode_symbols,
+            show_success_details: config.show_success_details,
+        });
+        renderer.print_success(&result);
     }
 }
 
-pub fn report_failure(expected: &str, received: &str) {
-    REPORT.with(|r| {
-        let mut report = r.borrow_mut();
-        report.failed += 1;
-        report.failures.push((expected.to_string(), received.to_string()));
+pub fn report_failure(result: AssertionResult) {
+    TEST_SESSION.with(|session| {
+        let mut session = session.borrow_mut();
+        session.failed_count += 1;
+        session.failures.push(result.clone());
     });
 
     // Check if silent mode is enabled
@@ -95,7 +82,7 @@ pub fn report_failure(expected: &str, received: &str) {
         }
 
         // Only report each unique failure message once
-        let key = format!("{}:{}", expected, received);
+        let key = format!("{:?}", result);
         REPORTED_MESSAGES.with(|msgs| {
             let mut messages = msgs.borrow_mut();
             if !messages.contains(&key) {
@@ -109,29 +96,12 @@ pub fn report_failure(expected: &str, received: &str) {
 
     if should_report {
         let config = GLOBAL_CONFIG.read().unwrap();
-        let prefix = if config.use_unicode_symbols { "✗ " } else { "- " };
-
-        let expected_msg = if config.use_colors { expected.red().bold() } else { expected.normal() };
-
-        // Print the main error message
-        println!("{}{}", prefix, expected_msg);
-
-        // The details will have been properly formatted in the assertion.rs
-        if config.use_colors {
-            // Print the details with colors
-            for line in received.lines() {
-                if line.contains("✓") {
-                    println!("{}", line.green());
-                } else if line.contains("✗") {
-                    println!("{}", line.red());
-                } else {
-                    println!("{}", line);
-                }
-            }
-        } else {
-            // Print without colors
-            println!("{}", received);
-        }
+        let renderer = ConsoleRenderer::new(Config {
+            use_colors: config.use_colors,
+            use_unicode_symbols: config.use_unicode_symbols,
+            show_success_details: config.show_success_details,
+        });
+        renderer.print_failure(&result);
     }
 }
 
@@ -174,36 +144,15 @@ impl Reporter {
     }
 
     pub fn summarize() {
-        REPORT.with(|r| {
-            let report = r.borrow();
+        TEST_SESSION.with(|session| {
+            let session = session.borrow();
             let config = GLOBAL_CONFIG.read().unwrap();
-
-            println!("\nTest Results:");
-
-            let passed_msg = format!("{} passed", report.passed);
-            let failed_msg = format!("{} failed", report.failed);
-
-            if config.use_colors {
-                println!(
-                    "  {} / {}",
-                    if report.passed > 0 { passed_msg.green() } else { passed_msg.normal() },
-                    if report.failed > 0 { failed_msg.red().bold() } else { failed_msg.normal() }
-                );
-            } else {
-                println!("  {} / {}", passed_msg, failed_msg);
-            }
-
-            if report.failed > 0 {
-                println!("\nFailure Details:");
-                for (i, (expected, received)) in report.failures.iter().enumerate() {
-                    println!("  {}. {}", i + 1, expected);
-
-                    // Process each line of the details and ensure proper indentation
-                    for line in received.lines() {
-                        println!("     {}", line);
-                    }
-                }
-            }
+            let renderer = ConsoleRenderer::new(Config {
+                use_colors: config.use_colors,
+                use_unicode_symbols: config.use_unicode_symbols,
+                show_success_details: config.show_success_details,
+            });
+            renderer.print_session_summary(&session);
         });
 
         // Clear reported messages

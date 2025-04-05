@@ -1,5 +1,5 @@
-use crate::assertion::LogicalOp;
-use crate::expectation::Expectation;
+use crate::backend::LogicalOp;
+use crate::backend::Expectation;
 
 /// OR modifier trait for chaining expectations
 pub trait OrModifier<T> {
@@ -19,14 +19,14 @@ impl<T: Clone> OrModifier<T> for Expectation<T> {
         let mut new_chain = result.chain.clone();
         new_chain.set_last_logic(LogicalOp::Or);
 
-        Self {
+        return Self {
             value: result.value.clone(),
             expr_str: result.expr_str,
             negated: result.negated,
             chain: new_chain,
             in_chain: true,  // Always mark as part of a chain
             is_final: false, // This is not the final step - there will be more after 'or()'
-        }
+        };
     }
 }
 

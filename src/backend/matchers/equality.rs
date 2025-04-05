@@ -1,4 +1,5 @@
-use crate::expectation::Expectation;
+use crate::backend::Expectation;
+use crate::backend::assertions::sentence::AssertionSentence;
 use std::fmt::Debug;
 
 pub trait EqualityMatchers<T> {
@@ -8,13 +9,29 @@ pub trait EqualityMatchers<T> {
 impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Expectation<T> {
     fn to_equal(self, expected: T) -> Self {
         let result = self.value == expected;
-        let success = if self.negated { !result } else { result };
-        let not = if self.negated { " not" } else { "" };
+        let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
 
-        let description = format!("is{not} equal to {:?}", expected);
+        return self.add_assertion_step(sentence, result);
+    }
+}
 
-        // Add this assertion to the chain instead of immediately evaluating
-        self.add_assertion_step(description, success)
+// Implementation for references to T
+impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Expectation<&T> {
+    fn to_equal(self, expected: T) -> Self {
+        let result = *self.value == expected;
+        let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
+
+        return self.add_assertion_step(sentence, result);
+    }
+}
+
+// Also implement EqualityMatchers<&T> for Expectation<T> to allow comparing with references
+impl<T: Debug + PartialEq + Clone> EqualityMatchers<&T> for Expectation<T> {
+    fn to_equal(self, expected: &T) -> Self {
+        let result = self.value == *expected;
+        let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
+
+        return self.add_assertion_step(sentence, result);
     }
 }
 
@@ -45,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is equal to")]
+    #[should_panic(expected = "be equal to")]
     fn test_equality_fails() {
         // This should fail because 42 != 43
         let _assertion = expect!(42).to_equal(43);
@@ -53,7 +70,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is not equal to")]
+    #[should_panic(expected = "not be equal to")]
     fn test_equality_not_fails() {
         // This should fail because !(42 != 42)
         let _assertion = expect!(42).not().to_equal(42);
