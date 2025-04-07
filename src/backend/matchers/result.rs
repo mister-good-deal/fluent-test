@@ -100,10 +100,10 @@ mod tests {
         let err_value: Result<i32, &str> = Err("error");
 
         // These should pass
-        expect!(ok_value.clone()).to_be_ok();
-        expect!(err_value.clone()).to_be_err();
-        expect!(err_value.clone()).not().to_be_ok();
-        expect!(ok_value.clone()).not().to_be_err();
+        expect!(ok_value).to_be_ok();
+        expect!(err_value).to_be_err();
+        expect!(err_value).not().to_be_ok();
+        expect!(ok_value).not().to_be_err();
     }
 
     #[test]
@@ -131,10 +131,10 @@ mod tests {
         let err_value: Result<i32, &str> = Err("error");
 
         // These should pass
-        expect!(ok_value.clone()).to_contain_ok(&42);
-        expect!(ok_value.clone()).not().to_contain_ok(&43);
-        expect!(err_value.clone()).to_contain_err(&"error");
-        expect!(err_value.clone()).not().to_contain_err(&"different");
+        expect!(ok_value).to_contain_ok(&42);
+        expect!(ok_value).not().to_contain_ok(&43);
+        expect!(err_value).to_contain_err(&"error");
+        expect!(err_value).not().to_contain_err(&"different");
     }
 
     #[test]

@@ -4,7 +4,7 @@ use std::panic;
 ///
 /// This function suppresses panic output and safely runs test assertions
 /// It returns true if the test passes (no panic) and false if it fails (panics)
-pub fn run_test<F>(test_fn: F) -> bool
+pub fn guard_test<F>(test_fn: F) -> bool
 where
     F: FnOnce() + panic::UnwindSafe,
 {

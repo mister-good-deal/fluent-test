@@ -84,10 +84,10 @@ mod tests {
         let none_value: Option<i32> = None;
 
         // These should pass
-        expect!(some_value.clone()).to_be_some();
-        expect!(none_value.clone()).to_be_none();
-        expect!(none_value.clone()).not().to_be_some();
-        expect!(some_value.clone()).not().to_be_none();
+        expect!(some_value).to_be_some();
+        expect!(none_value).to_be_none();
+        expect!(none_value).not().to_be_some();
+        expect!(some_value).not().to_be_none();
     }
 
     #[test]
@@ -114,8 +114,8 @@ mod tests {
         let value: Option<i32> = Some(42);
 
         // These should pass
-        expect!(value.clone()).to_contain(&42);
-        expect!(value.clone()).not().to_contain(&43);
+        expect!(value).to_contain(&42);
+        expect!(value).not().to_contain(&43);
 
         let none_value: Option<i32> = None;
         expect!(none_value).not().to_contain(&42);

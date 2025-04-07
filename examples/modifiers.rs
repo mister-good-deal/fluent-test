@@ -1,4 +1,4 @@
-use fluent_test::helpers::run_test;
+use fluent_test::helpers::guard_test;
 use fluent_test::prelude::*;
 
 fn main() {
@@ -17,7 +17,7 @@ fn main() {
 
     println!("\n=== Testing OR chain (all false) ===");
     // All conditions fail - should report failure and handle the panic
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(number).to_be_greater_than(50).or().to_be_less_than(30).or().to_be_greater_than(100);
     });
 

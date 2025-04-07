@@ -1,4 +1,4 @@
-use fluent_test::helpers::run_test;
+use fluent_test::helpers::guard_test;
 use fluent_test::prelude::*;
 use std::collections::HashMap;
 
@@ -9,7 +9,7 @@ fn main() {
     let number = 42;
     println!("\n--- Numeric assertions ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(number).to_be_greater_than(30).and().to_be_less_than(50).and().to_be_even();
     });
 
@@ -21,7 +21,7 @@ fn main() {
     let greeting = "Hello, World!";
     println!("\n--- String assertions ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(greeting).to_contain("Hello").and().to_start_with("Hello").and().to_have_length(13);
     });
 
@@ -33,7 +33,7 @@ fn main() {
     let numbers = vec![1, 2, 3, 4, 5];
     println!("\n--- Collection assertions ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(&numbers).to_have_length(5).and().to_contain(3).and().not().to_be_empty();
     });
 
@@ -45,7 +45,7 @@ fn main() {
     let maybe_value: Option<i32> = Some(42);
     println!("\n--- Option assertions ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(&maybe_value).to_be_some().and().to_contain(&42);
     });
 
@@ -57,7 +57,7 @@ fn main() {
     let result: Result<i32, &str> = Ok(42);
     println!("\n--- Result assertions ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(&result).to_be_ok().and().to_contain_ok(&42);
     });
 
@@ -71,7 +71,7 @@ fn main() {
     map.insert("key2", "value2");
     println!("\n--- HashMap assertions ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(&map).to_have_length(2).and().to_contain_key("key1").and().to_contain_entry("key2", "value2");
     });
 
@@ -82,11 +82,11 @@ fn main() {
     // Combined complex assertion with AND, OR, and NOT
     println!("\n--- Complex combined assertion ---");
 
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(number).to_be_greater_than(40).and().to_be_less_than(50).or().to_be_even();
     });
 
-    let success2 = run_test(|| {
+    let success2 = guard_test(|| {
         expect!(&numbers).not().to_be_empty().and().to_contain(3).or().to_have_length(10);
     });
 

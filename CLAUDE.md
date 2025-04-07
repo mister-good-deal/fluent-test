@@ -9,11 +9,11 @@
 
   ```bash
   cargo run --example basic && \
-  cargo run --example combined_matchers.rs && \
-  cargo run --example logical_chain.rs && \
-  cargo run --example modifiers.rs && \
-  cargo run --example new_matchers.rs && \
-  cargo run --example not_modifier.rs 
+  cargo run --example combined_matchers && \
+  cargo run --example logical_chain && \
+  cargo run --example modifiers && \
+  cargo run --example new_matchers && \
+  cargo run --example not_modifier 
   ```
 
 - Check formatting: `cargo fmt --check`

@@ -1,4 +1,4 @@
-use fluent_test::helpers::run_test;
+use fluent_test::helpers::guard_test;
 use fluent_test::prelude::*;
 
 fn main() {
@@ -14,7 +14,7 @@ fn main() {
 
     // A failing chain - one condition is false
     println!("\nExpecting value to be greater than 30 AND less than 40 AND odd (will fail):");
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(value).to_be_greater_than(30).and().to_be_less_than(40).and().to_be_odd();
     });
 
@@ -27,7 +27,7 @@ fn main() {
 
     // A passing chain - at least one condition is true
     println!("\nExpecting value to be less than 30 OR greater than 40 (will pass):");
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(value).to_be_less_than(30).or().to_be_greater_than(40);
     });
 
@@ -37,7 +37,7 @@ fn main() {
 
     // A failing chain - all conditions are false
     println!("\nExpecting value to be less than 30 OR negative (will fail):");
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(value).to_be_less_than(30).or().to_be_negative();
     });
 
@@ -50,7 +50,7 @@ fn main() {
 
     // A complex passing chain
     println!("\nComplex passing chain with mixed AND/OR:");
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(value).to_be_greater_than(30).and().to_be_less_than(50).or().to_be_even();
     });
 
@@ -62,7 +62,7 @@ fn main() {
     println!("\n----- Testing with NOT modifier -----");
 
     println!("\nExpecting value to NOT be greater than 50 AND to NOT be less than 30:");
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(value).not().to_be_greater_than(50).and().not().to_be_less_than(30);
     });
 
@@ -75,7 +75,7 @@ fn main() {
 
     let text = "Hello, world!";
     println!("\nString tests: text = \"{}\"", text);
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(text).to_contain("Hello").and().to_end_with("!").and().not().to_be_empty();
     });
 
@@ -85,7 +85,7 @@ fn main() {
 
     let numbers = vec![1, 2, 3, 4, 5];
     println!("\nVec tests: numbers = {:?}", numbers);
-    let success = run_test(|| {
+    let success = guard_test(|| {
         expect!(&numbers).to_contain(3).and().to_have_length(5).and().not().to_be_empty();
     });
 

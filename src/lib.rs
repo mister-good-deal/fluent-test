@@ -64,20 +64,6 @@ macro_rules! expect_not {
     }};
 }
 
-// Special module for test support
-#[cfg(test)]
-pub mod test_utils {
-    // Just re-export all the traits for easy importing in tests
-    pub use crate::backend::matchers::boolean::BooleanMatchers;
-    pub use crate::backend::matchers::collection::{CollectionExtensions, CollectionMatchers};
-    pub use crate::backend::matchers::equality::EqualityMatchers;
-    pub use crate::backend::matchers::hashmap::HashMapMatchers;
-    pub use crate::backend::matchers::numeric::NumericMatchers;
-    pub use crate::backend::matchers::option::OptionMatchers;
-    pub use crate::backend::matchers::result::ResultMatchers;
-    pub use crate::backend::matchers::string::StringMatchers;
-}
-
 /// Run all FluentTest tests in a module
 ///
 /// This can be used as a test harness to handle initialization
@@ -102,4 +88,18 @@ macro_rules! fluent_test {
             // The test itself runs normally
         }
     };
+}
+
+// Special module for test support
+#[cfg(test)]
+pub mod test_utils {
+    // Just re-export all the traits for easy importing in tests
+    pub use crate::backend::matchers::boolean::BooleanMatchers;
+    pub use crate::backend::matchers::collection::{CollectionExtensions, CollectionMatchers};
+    pub use crate::backend::matchers::equality::EqualityMatchers;
+    pub use crate::backend::matchers::hashmap::HashMapMatchers;
+    pub use crate::backend::matchers::numeric::NumericMatchers;
+    pub use crate::backend::matchers::option::OptionMatchers;
+    pub use crate::backend::matchers::result::ResultMatchers;
+    pub use crate::backend::matchers::string::StringMatchers;
 }

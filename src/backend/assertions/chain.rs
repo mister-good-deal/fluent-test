@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
+use crate::backend::assertions::assertion::{AssertionResult, AssertionStepResult};
 use crate::backend::assertions::sentence::AssertionSentence;
-use crate::backend::test_result::{AssertionResult, AssertionStepResult};
 use crate::reporter::{report_failure, report_success};
 
 /// Represents a logical operation in an assertion chain
