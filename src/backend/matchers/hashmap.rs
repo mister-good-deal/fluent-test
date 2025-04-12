@@ -1,4 +1,4 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::collections::HashMap;
 use std::fmt::Debug;
@@ -21,7 +21,7 @@ pub trait HashMapMatchers<K, V> {
 
 use std::borrow::Borrow;
 
-impl<K, V> HashMapMatchers<K, V> for Expectation<&HashMap<K, V>>
+impl<K, V> HashMapMatchers<K, V> for Assertion<&HashMap<K, V>>
 where
     K: Hash + Eq + Debug + Clone,
     V: Debug + Clone,
@@ -30,7 +30,7 @@ where
         let result = self.value.is_empty();
         let sentence = AssertionSentence::new("be", "empty");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_have_length(self, expected: usize) -> Self {
@@ -38,7 +38,7 @@ where
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_key<Q>(self, key: &Q) -> Self
@@ -49,7 +49,7 @@ where
         let result = self.value.contains_key(key);
         let sentence = AssertionSentence::new("contain", format!("key {:?}", key));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_entry<Q, R>(self, key: &Q, value: &R) -> Self
@@ -62,12 +62,12 @@ where
         let result = self.value.get(key).is_some_and(|v| v.borrow() == value);
         let sentence = AssertionSentence::new("contain", format!("entry ({:?}, {:?})", key, value));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implementation for owned HashMap
-impl<K, V> HashMapMatchers<K, V> for Expectation<HashMap<K, V>>
+impl<K, V> HashMapMatchers<K, V> for Assertion<HashMap<K, V>>
 where
     K: Hash + Eq + Debug + Clone,
     V: Debug + Clone,
@@ -76,7 +76,7 @@ where
         let result = self.value.is_empty();
         let sentence = AssertionSentence::new("be", "empty");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_have_length(self, expected: usize) -> Self {
@@ -84,7 +84,7 @@ where
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_key<Q>(self, key: &Q) -> Self
@@ -95,7 +95,7 @@ where
         let result = self.value.contains_key(key);
         let sentence = AssertionSentence::new("contain", format!("key {:?}", key));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_entry<Q, R>(self, key: &Q, value: &R) -> Self
@@ -108,7 +108,7 @@ where
         let result = self.value.get(key).is_some_and(|v| v.borrow() == value);
         let sentence = AssertionSentence::new("contain", format!("entry ({:?}, {:?})", key, value));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 

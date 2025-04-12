@@ -1,4 +1,4 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::ops::Range;
 
@@ -16,148 +16,148 @@ pub trait NumericMatchers<T> {
     fn to_be_odd(self) -> Self;
 }
 
-impl NumericMatchers<i32> for Expectation<i32> {
+impl NumericMatchers<i32> for Assertion<i32> {
     fn to_be_positive(self) -> Self {
         let result = self.value > 0;
         let sentence = AssertionSentence::new("be", "positive");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_negative(self) -> Self {
         let result = self.value < 0;
         let sentence = AssertionSentence::new("be", "negative");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_zero(self) -> Self {
         let result = self.value == 0;
         let sentence = AssertionSentence::new("be", "zero");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_greater_than(self, expected: i32) -> Self {
         let result = self.value > expected;
         let sentence = AssertionSentence::new("be", format!("greater than {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_greater_than_or_equal(self, expected: i32) -> Self {
         let result = self.value >= expected;
         let sentence = AssertionSentence::new("be", format!("greater than or equal to {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_less_than(self, expected: i32) -> Self {
         let result = self.value < expected;
         let sentence = AssertionSentence::new("be", format!("less than {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_less_than_or_equal(self, expected: i32) -> Self {
         let result = self.value <= expected;
         let sentence = AssertionSentence::new("be", format!("less than or equal to {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_in_range(self, range: Range<i32>) -> Self {
         let result = range.contains(&self.value);
         let sentence = AssertionSentence::new("be", format!("in range {}..{}", range.start, range.end));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_even(self) -> Self {
         let result = self.value % 2 == 0;
         let sentence = AssertionSentence::new("be", "even");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_odd(self) -> Self {
         let result = self.value % 2 != 0;
         let sentence = AssertionSentence::new("be", "odd");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implementation for references to i32
-impl NumericMatchers<i32> for Expectation<&i32> {
+impl NumericMatchers<i32> for Assertion<&i32> {
     fn to_be_positive(self) -> Self {
         let result = *self.value > 0;
         let sentence = AssertionSentence::new("be", "positive");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_negative(self) -> Self {
         let result = *self.value < 0;
         let sentence = AssertionSentence::new("be", "negative");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_zero(self) -> Self {
         let result = *self.value == 0;
         let sentence = AssertionSentence::new("be", "zero");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_greater_than(self, expected: i32) -> Self {
         let result = *self.value > expected;
         let sentence = AssertionSentence::new("be", format!("greater than {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_greater_than_or_equal(self, expected: i32) -> Self {
         let result = *self.value >= expected;
         let sentence = AssertionSentence::new("be", format!("greater than or equal to {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_less_than(self, expected: i32) -> Self {
         let result = *self.value < expected;
         let sentence = AssertionSentence::new("be", format!("less than {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_less_than_or_equal(self, expected: i32) -> Self {
         let result = *self.value <= expected;
         let sentence = AssertionSentence::new("be", format!("less than or equal to {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_in_range(self, range: Range<i32>) -> Self {
         let result = range.contains(self.value);
         let sentence = AssertionSentence::new("be", format!("in range {}..{}", range.start, range.end));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_even(self) -> Self {
         let result = *self.value % 2 == 0;
         let sentence = AssertionSentence::new("be", "even");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_odd(self) -> Self {
         let result = *self.value % 2 != 0;
         let sentence = AssertionSentence::new("be", "odd");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 

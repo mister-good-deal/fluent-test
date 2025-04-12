@@ -5,4 +5,4 @@ pub mod matchers;
 pub mod modifiers;
 
 pub use assertions::sentence::AssertionSentence;
-pub use assertions::{AssertionChain, AssertionResult, AssertionStep, AssertionStepResult, Expectation, LogicalOp, TestSessionResult};
+pub use assertions::{Assertion, AssertionStep, LogicalOp, TestSessionResult};

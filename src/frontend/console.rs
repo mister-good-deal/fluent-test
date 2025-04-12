@@ -1,5 +1,5 @@
 use crate::backend::LogicalOp;
-use crate::backend::{AssertionResult, TestSessionResult};
+use crate::backend::{Assertion, TestSessionResult};
 use crate::config::Config;
 use colored::*;
 
@@ -15,7 +15,7 @@ impl ConsoleRenderer {
     }
 
     /// Render a successful assertion result
-    pub fn render_success(&self, result: &AssertionResult) -> String {
+    pub fn render_success(&self, result: &Assertion<()>) -> String {
         let message = self.build_assertion_message(result);
 
         if self.config.show_success_details {
@@ -31,7 +31,7 @@ impl ConsoleRenderer {
     }
 
     /// Render a failed assertion result
-    pub fn render_failure(&self, result: &AssertionResult) -> (String, String) {
+    pub fn render_failure(&self, result: &Assertion<()>) -> (String, String) {
         let message = self.build_assertion_message(result);
         let details = self.build_failure_details(result);
 
@@ -42,7 +42,7 @@ impl ConsoleRenderer {
     }
 
     /// Build a failure details string
-    fn build_failure_details(&self, result: &AssertionResult) -> String {
+    fn build_failure_details(&self, result: &Assertion<()>) -> String {
         let mut details = String::new();
 
         // Add individual step results with proper formatting
@@ -58,7 +58,7 @@ impl ConsoleRenderer {
     }
 
     /// Build the main assertion message
-    fn build_assertion_message(&self, result: &AssertionResult) -> String {
+    fn build_assertion_message(&self, result: &Assertion<()>) -> String {
         if result.steps.is_empty() {
             return "No assertions made".to_string();
         }
@@ -120,7 +120,7 @@ impl ConsoleRenderer {
     }
 
     /// Format and print a successful test result to the console
-    pub fn print_success(&self, result: &AssertionResult) {
+    pub fn print_success(&self, result: &Assertion<()>) {
         let message = self.render_success(result);
         if !message.is_empty() {
             println!("{}", message);
@@ -128,7 +128,7 @@ impl ConsoleRenderer {
     }
 
     /// Format and print a failed test result to the console
-    pub fn print_failure(&self, result: &AssertionResult) {
+    pub fn print_failure(&self, result: &Assertion<()>) {
         let (header, details) = self.render_failure(result);
 
         // Print the main error message

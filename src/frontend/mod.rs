@@ -2,5 +2,5 @@
 
 mod console;
 
-pub use crate::backend::{AssertionResult, AssertionStepResult, TestSessionResult};
+pub use crate::backend::{Assertion, AssertionStep, TestSessionResult};
 pub use console::ConsoleRenderer;

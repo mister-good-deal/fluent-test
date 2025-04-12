@@ -1,37 +1,53 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::fmt::Debug;
 
 pub trait EqualityMatchers<T> {
+    /// Check if the value is equal to the expected value
     fn to_equal(self, expected: T) -> Self;
+
+    /// Type-specific version of to_equal to avoid trait conflicts
+    fn to_equal_value(self, expected: T) -> Self;
 }
 
-impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Expectation<T> {
+impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Assertion<T> {
     fn to_equal(self, expected: T) -> Self {
+        return self.to_equal_value(expected);
+    }
+
+    fn to_equal_value(self, expected: T) -> Self {
         let result = self.value == expected;
         let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implementation for references to T
-impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Expectation<&T> {
+impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Assertion<&T> {
     fn to_equal(self, expected: T) -> Self {
+        return self.to_equal_value(expected);
+    }
+
+    fn to_equal_value(self, expected: T) -> Self {
         let result = *self.value == expected;
         let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
-// Also implement EqualityMatchers<&T> for Expectation<T> to allow comparing with references
-impl<T: Debug + PartialEq + Clone> EqualityMatchers<&T> for Expectation<T> {
+// Also implement EqualityMatchers<&T> for Assertion<T> to allow comparing with references
+impl<T: Debug + PartialEq + Clone> EqualityMatchers<&T> for Assertion<T> {
     fn to_equal(self, expected: &T) -> Self {
+        return self.to_equal_value(expected);
+    }
+
+    fn to_equal_value(self, expected: &T) -> Self {
         let result = self.value == *expected;
         let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 

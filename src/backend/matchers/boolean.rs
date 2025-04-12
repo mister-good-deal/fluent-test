@@ -1,4 +1,4 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 
 pub trait BooleanMatchers {
@@ -6,36 +6,36 @@ pub trait BooleanMatchers {
     fn to_be_false(self) -> Self;
 }
 
-impl BooleanMatchers for Expectation<bool> {
+impl BooleanMatchers for Assertion<bool> {
     fn to_be_true(self) -> Self {
         let result = self.value;
         let sentence = AssertionSentence::new("be", "true");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_false(self) -> Self {
         let result = !self.value;
         let sentence = AssertionSentence::new("be", "false");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implementation for references to bool
-impl BooleanMatchers for Expectation<&bool> {
+impl BooleanMatchers for Assertion<&bool> {
     fn to_be_true(self) -> Self {
         let result = *self.value;
         let sentence = AssertionSentence::new("be", "true");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_false(self) -> Self {
         let result = !*self.value;
         let sentence = AssertionSentence::new("be", "false");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
@@ -56,7 +56,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "not be true")]
     fn test_not_true_fails() {
-        // This will evaluate and panic when the Expectation is dropped
+        // This will evaluate and panic when the Assertion is dropped
         let _assertion = expect!(true).not().to_be_true();
         // Force the value to be dropped at the end of the function
         std::hint::black_box(_assertion);
@@ -65,7 +65,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "be true")]
     fn test_false_to_be_true_fails() {
-        // This will evaluate and panic when the Expectation is dropped
+        // This will evaluate and panic when the Assertion is dropped
         let _assertion = expect!(false).to_be_true();
         // Force the value to be dropped at the end of the function
         std::hint::black_box(_assertion);
@@ -84,7 +84,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "not be false")]
     fn test_not_false_fails() {
-        // This will evaluate and panic when the Expectation is dropped
+        // This will evaluate and panic when the Assertion is dropped
         let _assertion = expect!(false).not().to_be_false();
         // Force the value to be dropped at the end of the function
         std::hint::black_box(_assertion);
@@ -93,7 +93,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "be false")]
     fn test_true_to_be_false_fails() {
-        // This will evaluate and panic when the Expectation is dropped
+        // This will evaluate and panic when the Assertion is dropped
         let _assertion = expect!(true).to_be_false();
         // Force the value to be dropped at the end of the function
         std::hint::black_box(_assertion);

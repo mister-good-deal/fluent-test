@@ -28,9 +28,10 @@
 ## Current Challenges
 
 1. **Trait Conflicts**
-   - Method name conflicts between different matcher traits (e.g., multiple `to_equal` methods)
-   - In the collection matcher, we renamed `to_equal` to `to_equal_collection` to avoid conflicts
-   - Need a consistent way to handle this across all matcher traits
+   - ✅ Method name conflicts between different matcher traits (e.g., multiple `to_equal` methods)
+   - ✅ Added type-specific method variants (`to_equal_value`, `to_equal_collection`, `to_contain_substring`)
+   - ✅ Implemented backward compatibility by maintaining original method names
+   - ✅ Established a consistent naming convention pattern (documented in Implementation Guidelines)
 
 2. **Trait Import Issues in Tests**
    - Tests need to explicitly import the matcher traits to use the methods
@@ -44,9 +45,10 @@
 ## Remaining Work
 
 1. **Finalize Trait Conflicts Resolution**
-   - Complete the renaming of ambiguous methods across all matchers
-   - Update examples and tests to use the new method names
-   - Document the naming convention for similar methods across different types
+   - ✅ Complete the renaming of ambiguous methods across all matchers
+   - ✅ Maintain backward compatibility through method forwarding
+   - ✅ Document the naming convention for similar methods across different types
+   - Continue updating any remaining matchers that have conflicting method names (to_have_length, to_be_empty, etc.)
 
 2. **Improve Modifier Integration**
    - Update the modifiers to work seamlessly with the new sentence structure
@@ -64,9 +66,14 @@
 ## Implementation Guidelines
 
 1. For method naming conflicts:
-   - Use type-specific prefixes for methods (e.g., `to_equal_collection`, `to_equal_string`)
+   - Use type-specific prefixes for methods (e.g., `to_equal_collection`, `to_equal_value`, `to_contain_substring`)
    - Document the naming convention clearly in comments
-   - Provide backward compatibility where possible
+   - Provide backward compatibility by keeping the original method and having it call the type-specific version
+   - Use the following naming conventions:
+     - `to_equal` → `to_equal_value` for basic equality
+     - `to_equal` → `to_equal_collection` for collections
+     - `to_contain` → `to_contain_substring` for strings
+     - `to_contain` → `to_contain_element` for collections (future rename)
 
 2. For test maintenance:
    - Explicitly import the needed traits at the top of test modules

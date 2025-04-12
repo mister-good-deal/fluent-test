@@ -1,4 +1,4 @@
-use crate::backend::{AssertionResult, TestSessionResult};
+use crate::backend::{Assertion, TestSessionResult};
 use crate::config::Config;
 use crate::frontend::ConsoleRenderer;
 use once_cell::sync::Lazy;
@@ -18,7 +18,7 @@ thread_local! {
     static SILENT_MODE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn report_success(result: AssertionResult) {
+pub fn report_success(result: Assertion<()>) {
     TEST_SESSION.with(|session| {
         let mut session = session.borrow_mut();
         session.passed_count += 1;
@@ -61,7 +61,7 @@ pub fn report_success(result: AssertionResult) {
     }
 }
 
-pub fn report_failure(result: AssertionResult) {
+pub fn report_failure(result: Assertion<()>) {
     TEST_SESSION.with(|session| {
         let mut session = session.borrow_mut();
         session.failed_count += 1;

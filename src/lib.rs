@@ -25,7 +25,7 @@ pub mod matchers {
 
 /// Main prelude module containing everything needed for fluent testing
 pub mod prelude {
-    pub use crate::backend::Expectation;
+    pub use crate::backend::Assertion;
     pub use crate::expect;
     pub use crate::expect_not;
 
@@ -49,7 +49,7 @@ pub fn config() -> Config {
 #[macro_export]
 macro_rules! expect {
     ($expr:expr) => {
-        $crate::backend::Expectation::new($expr, stringify!($expr))
+        $crate::backend::Assertion::new($expr, stringify!($expr))
     };
 }
 
@@ -59,7 +59,7 @@ macro_rules! expect {
 macro_rules! expect_not {
     ($expr:expr) => {{
         use $crate::backend::modifiers::NotModifier;
-        $crate::backend::Expectation::new($expr, stringify!($expr)).not()
+        $crate::backend::Assertion::new($expr, stringify!($expr)).not()
     }};
 }
 

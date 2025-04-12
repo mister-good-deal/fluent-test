@@ -1,4 +1,4 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::fmt::Debug;
 
@@ -12,19 +12,19 @@ pub trait OptionMatchers<T: Debug> {
 }
 
 // Implementation for owned Option<T>
-impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Expectation<Option<T>> {
+impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Assertion<Option<T>> {
     fn to_be_some(self) -> Self {
         let result = self.value.is_some();
         let sentence = AssertionSentence::new("be", "some");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_none(self) -> Self {
         let result = self.value.is_none();
         let sentence = AssertionSentence::new("be", "none");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain(self, expected: &T) -> Self
@@ -37,24 +37,24 @@ impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Expectation<Option<T>> 
         };
         let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implementation for references to Option<T>
-impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Expectation<&Option<T>> {
+impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Assertion<&Option<T>> {
     fn to_be_some(self) -> Self {
         let result = self.value.is_some();
         let sentence = AssertionSentence::new("be", "some");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_none(self) -> Self {
         let result = self.value.is_none();
         let sentence = AssertionSentence::new("be", "none");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain(self, expected: &T) -> Self
@@ -67,7 +67,7 @@ impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Expectation<&Option<T>>
         };
         let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 

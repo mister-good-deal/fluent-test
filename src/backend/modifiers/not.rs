@@ -1,21 +1,21 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 
-/// Not modifier trait for negating expectations
+/// Not modifier trait for negating assertions
 pub trait NotModifier<T> {
-    /// Creates a negated expectation
+    /// Creates a negated assertion
     fn not(self) -> Self;
 }
 
-impl<T: Clone> NotModifier<T> for Expectation<T> {
-    /// Creates a negated expectation
-    /// This provides a fluent API for negated expectations:
+impl<T: Clone> NotModifier<T> for Assertion<T> {
+    /// Creates a negated assertion
+    /// This provides a fluent API for negated assertions:
     /// expect(value).not().to_equal(x)
     fn not(self) -> Self {
         return Self {
             value: self.value.clone(),
             expr_str: self.expr_str,
             negated: !self.negated,
-            chain: self.chain.clone(),
+            steps: self.steps.clone(),
             in_chain: self.in_chain, // Preserve chain status
             is_final: self.is_final, // Preserve finality status
         };

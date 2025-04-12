@@ -1,22 +1,28 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 
 /// Trait for string assertions
 pub trait StringMatchers {
     fn to_be_empty(self) -> Self;
     fn to_have_length(self, expected: usize) -> Self;
+
+    /// Check if the string contains a substring
     fn to_contain(self, substring: &str) -> Self;
+
+    /// Type-specific version of to_contain to avoid trait conflicts
+    fn to_contain_substring(self, substring: &str) -> Self;
+
     fn to_start_with(self, prefix: &str) -> Self;
     fn to_end_with(self, suffix: &str) -> Self;
     fn to_match(self, pattern: &str) -> Self;
 }
 
-impl StringMatchers for Expectation<String> {
+impl StringMatchers for Assertion<String> {
     fn to_be_empty(self) -> Self {
         let result = self.value.is_empty();
         let sentence = AssertionSentence::new("be", "empty");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_have_length(self, expected: usize) -> Self {
@@ -24,28 +30,32 @@ impl StringMatchers for Expectation<String> {
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain(self, substring: &str) -> Self {
+        return self.to_contain_substring(substring);
+    }
+
+    fn to_contain_substring(self, substring: &str) -> Self {
         let result = self.value.contains(substring);
         let sentence = AssertionSentence::new("contain", format!("\"{}\"", substring));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_start_with(self, prefix: &str) -> Self {
         let result = self.value.starts_with(prefix);
         let sentence = AssertionSentence::new("start with", format!("\"{}\"", prefix));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_end_with(self, suffix: &str) -> Self {
         let result = self.value.ends_with(suffix);
         let sentence = AssertionSentence::new("end with", format!("\"{}\"", suffix));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_match(self, pattern: &str) -> Self {
@@ -54,17 +64,17 @@ impl StringMatchers for Expectation<String> {
         let result = self.value.contains(pattern);
         let sentence = AssertionSentence::new("match", format!("pattern \"{}\"", pattern));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implement for &str references
-impl StringMatchers for Expectation<&str> {
+impl StringMatchers for Assertion<&str> {
     fn to_be_empty(self) -> Self {
         let result = self.value.is_empty();
         let sentence = AssertionSentence::new("be", "empty");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_have_length(self, expected: usize) -> Self {
@@ -72,28 +82,32 @@ impl StringMatchers for Expectation<&str> {
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain(self, substring: &str) -> Self {
+        return self.to_contain_substring(substring);
+    }
+
+    fn to_contain_substring(self, substring: &str) -> Self {
         let result = self.value.contains(substring);
         let sentence = AssertionSentence::new("contain", format!("\"{}\"", substring));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_start_with(self, prefix: &str) -> Self {
         let result = self.value.starts_with(prefix);
         let sentence = AssertionSentence::new("start with", format!("\"{}\"", prefix));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_end_with(self, suffix: &str) -> Self {
         let result = self.value.ends_with(suffix);
         let sentence = AssertionSentence::new("end with", format!("\"{}\"", suffix));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_match(self, pattern: &str) -> Self {
@@ -102,7 +116,7 @@ impl StringMatchers for Expectation<&str> {
         let result = self.value.contains(pattern);
         let sentence = AssertionSentence::new("match", format!("pattern \"{}\"", pattern));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 

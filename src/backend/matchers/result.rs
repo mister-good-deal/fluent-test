@@ -1,4 +1,4 @@
-use crate::backend::Expectation;
+use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::fmt::Debug;
 
@@ -10,19 +10,19 @@ pub trait ResultMatchers<T: Debug, E: Debug> {
     fn to_contain_err<U: PartialEq<E> + Debug>(self, expected: &U) -> Self;
 }
 
-impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Expectation<Result<T, E>> {
+impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Assertion<Result<T, E>> {
     fn to_be_ok(self) -> Self {
         let result = self.value.is_ok();
         let sentence = AssertionSentence::new("be", "ok");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_err(self) -> Self {
         let result = self.value.is_err();
         let sentence = AssertionSentence::new("be", "err");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_ok<U: PartialEq<T> + Debug>(self, expected: &U) -> Self {
@@ -33,7 +33,7 @@ impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Expectation<Re
 
         let sentence = AssertionSentence::new("contain", format!("ok value {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_err<U: PartialEq<E> + Debug>(self, expected: &U) -> Self {
@@ -44,24 +44,24 @@ impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Expectation<Re
 
         let sentence = AssertionSentence::new("contain", format!("err value {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
 // Implementation for references to Result<T, E>
-impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Expectation<&Result<T, E>> {
+impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Assertion<&Result<T, E>> {
     fn to_be_ok(self) -> Self {
         let result = self.value.is_ok();
         let sentence = AssertionSentence::new("be", "ok");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_be_err(self) -> Self {
         let result = self.value.is_err();
         let sentence = AssertionSentence::new("be", "err");
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_ok<U: PartialEq<T> + Debug>(self, expected: &U) -> Self {
@@ -72,7 +72,7 @@ impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Expectation<&R
 
         let sentence = AssertionSentence::new("contain", format!("ok value {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 
     fn to_contain_err<U: PartialEq<E> + Debug>(self, expected: &U) -> Self {
@@ -83,7 +83,7 @@ impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Expectation<&R
 
         let sentence = AssertionSentence::new("contain", format!("err value {:?}", expected));
 
-        return self.add_assertion_step(sentence, result);
+        return self.add_step(sentence, result);
     }
 }
 
