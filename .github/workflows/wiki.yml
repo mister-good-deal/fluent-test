@@ -1,0 +1,32 @@
+name: Update Wiki
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'wiki/**'  # Only trigger on changes to the wiki directory
+      - '.github/workflows/wiki.yml'  # Or changes to this workflow
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+    name: Update GitHub Wiki
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Update Wiki
+        uses: Andrew-Chen-Wang/github-wiki-action@v4
+        env:
+          WIKI_DIR: wiki/  # Directory containing wiki content
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_MAIL: actions@github.com
+          GH_NAME: "GitHub Actions"
+          REPO: ${{ github.repository }}
