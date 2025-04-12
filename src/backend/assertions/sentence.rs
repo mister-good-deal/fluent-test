@@ -34,8 +34,33 @@ impl AssertionSentence {
     }
 
     /// Format the sentence into a readable string (raw format, without subject)
+    /// This version keeps the original format (with 'not' before the verb) for backwards
+    /// compatibility with tests
     pub fn format(&self) -> String {
-        let mut result = if self.negated { format!("not {} {}", self.verb, self.object) } else { format!("{} {}", self.verb, self.object) };
+        let mut result = if self.negated {
+            // Keep original format for test backward compatibility
+            format!("not {} {}", self.verb, self.object)
+        } else {
+            format!("{} {}", self.verb, self.object)
+        };
+
+        if !self.qualifiers.is_empty() {
+            result.push(' ');
+            result.push_str(&self.qualifiers.join(" "));
+        }
+
+        return result;
+    }
+
+    /// Format the sentence with grammatically correct 'not' placement (after the verb)
+    /// This is used for display purposes where improved grammar is desired
+    pub fn format_grammatical(&self) -> String {
+        let mut result = if self.negated {
+            // Place "not" after the verb for grammatical correctness
+            format!("{} not {}", self.verb, self.object)
+        } else {
+            format!("{} {}", self.verb, self.object)
+        };
 
         if !self.qualifiers.is_empty() {
             result.push(' ');
@@ -53,8 +78,12 @@ impl AssertionSentence {
         // Convert the infinitive verb to the correct form based on plurality
         let conjugated_verb = self.conjugate_verb(is_plural);
 
-        let mut result =
-            if self.negated { format!("not {} {}", conjugated_verb, self.object) } else { format!("{} {}", conjugated_verb, self.object) };
+        let mut result = if self.negated {
+            // Place "not" after the conjugated verb for grammatical correctness
+            format!("{} not {}", conjugated_verb, self.object)
+        } else {
+            format!("{} {}", conjugated_verb, self.object)
+        };
 
         if !self.qualifiers.is_empty() {
             result.push(' ');
@@ -146,6 +175,20 @@ impl AssertionSentence {
                     "contain".to_string()
                 } else {
                     "contains".to_string()
+                }
+            }
+            "start with" => {
+                if is_plural {
+                    "start with".to_string()
+                } else {
+                    "starts with".to_string()
+                }
+            }
+            "end with" => {
+                if is_plural {
+                    "end with".to_string()
+                } else {
+                    "ends with".to_string()
                 }
             }
             // For other verbs, add 's' in singular form

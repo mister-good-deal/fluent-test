@@ -70,8 +70,9 @@ impl<T> Assertion<T> {
         // Set the negation
         sentence = sentence.with_negation(self.negated);
 
-        // Set the subject from the expression string
-        sentence.subject = self.expr_str.to_string();
+        // Clean and set the subject from the expression string
+        // Remove reference symbols like '&' for cleaner output
+        sentence.subject = self.expr_str.trim_start_matches('&').to_string();
 
         // Calculate the final pass/fail result with negation applied
         let passed = if self.negated { !result } else { result };

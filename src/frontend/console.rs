@@ -86,9 +86,9 @@ impl ConsoleRenderer {
                 None => " [MISSING OP] ",
             };
 
-            // Use the base form for all subsequent parts in a chain
-            // since the subject is already established
-            message.push_str(&format!("{}{}", op_str, curr.sentence.format()));
+            // For all subsequent parts in a chain, use conjugated verbs with grammatical format for consistency
+            // This makes phrases like "is greater than X AND is less than Y" instead of "is greater than X AND be less than Y"
+            message.push_str(&format!("{}{}", op_str, curr.sentence.format_with_conjugation(result.expr_str)));
         }
 
         return message;
