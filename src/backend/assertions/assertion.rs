@@ -190,97 +190,111 @@ impl<T> Assertion<T> {
 
     /// Report the assertion result
     fn emit_result(&self, passed: bool) {
-        // Check if enhanced output is enabled in the configuration
-        let enhanced_output = crate::config::is_enhanced_output_enabled();
+        // Get thread context information once
+        let context = self.get_thread_context();
 
-        // Check if we're in a test context
-        let thread_name = std::thread::current().name().unwrap_or("").to_string();
-        let is_test = thread_name.starts_with("test_");
-
-        // For internal library tests with #[should_panic], special handling is needed
-        let force_enhanced_for_tests = is_test && !thread_name.contains("integration_test");
-
-        // For examples and normal usage (not tests), use configured value
-        let use_enhanced = enhanced_output || force_enhanced_for_tests;
-
-        // Skip event emission if enhanced output is disabled
-        if use_enhanced {
-            use crate::events::{AssertionEvent, EventEmitter};
-
-            // Check if this is the final result or an intermediate chained result
-            let is_final = !self.steps.is_empty() && (self.steps.last().unwrap().logical_op.is_none() || self.steps.len() > 1);
-
-            // Convert to a type-erased assertion for reporting
-            let type_erased = Assertion::<()> {
-                value: (),
-                expr_str: self.expr_str,
-                negated: self.negated,
-                steps: self.steps.clone(),
-                in_chain: self.in_chain,
-                is_final: self.is_final,
-            };
-
-            if passed && is_final {
-                // Emit a success event
-                EventEmitter::emit(AssertionEvent::Success(type_erased));
-            } else if !passed {
-                // Emit a failure event
-                EventEmitter::emit(AssertionEvent::Failure(type_erased.clone()));
-            }
+        // Emit events when enhanced output is enabled
+        if context.use_enhanced_output {
+            self.emit_assertion_events(passed, &context);
         }
 
-        // If the assertion failed, panic with appropriate message
-        if !passed {
-            // Skip panicking in special test cases that check the evaluation result
-            let thread_name = std::thread::current().name().unwrap_or("").to_string();
-            let is_special_test = thread_name.contains("test_or_modifier")
-                || thread_name.contains("test_and_modifier")
-                || thread_name.contains("test_not_with_and_or");
-
-            // Always panic in other test files that expect panic behavior
-            if !is_special_test {
-                if !self.steps.is_empty() {
-                    let step = &self.steps[0];
-
-                    // Generate the failure message
-                    let message;
-
-                    // Check if this is a test that expects a panic message
-                    // Unit tests use #[should_panic(expected="...")] which needs exact format
-                    if thread_name.contains("::tests::test_") {
-                        // For tests inside module::tests::test_* functions
-                        if self.negated {
-                            message = format!("not {}", step.sentence.format());
-                        } else {
-                            message = step.sentence.format();
-                        }
-                    } else if is_test {
-                        // Other test functions
-                        if self.negated {
-                            message = format!("not {}", step.sentence.format());
-                        } else {
-                            message = step.sentence.format();
-                        }
-                    } else if use_enhanced {
-                        // For normal usage with enhanced output enabled
-                        if self.expr_str.contains("vec") && !step.sentence.subject.contains("vec") {
-                            // Fix for vec literals, which don't get their subject set properly
-                            message = format!("{} does not {}", self.expr_str, step.sentence.format())
-                        } else {
-                            message = step.sentence.format();
-                        }
-                    } else {
-                        // Standard Rust-like assertion failure messages when enhanced output disabled
-                        message = format!("assertion failed: {}", self.expr_str);
-                    };
-
-                    panic!("{}", message);
-                } else {
-                    panic!("assertion failed: {}", self.expr_str);
-                }
-            }
+        // Handle failure cases with panic
+        if !passed && !context.is_special_test {
+            self.handle_assertion_failure(&context);
         }
     }
+
+    /// Get information about the current thread context
+    fn get_thread_context(&self) -> ThreadContext {
+        let thread_name = std::thread::current().name().unwrap_or("").to_string();
+        let is_test = thread_name.starts_with("test_");
+        let is_module_test = thread_name.contains("::tests::test_");
+        let force_enhanced_for_tests = is_test && !thread_name.contains("integration_test");
+        let enhanced_output = crate::config::is_enhanced_output_enabled();
+        let use_enhanced_output = enhanced_output || force_enhanced_for_tests;
+
+        // Special test cases that check evaluation results without panicking
+        let is_special_test = thread_name.contains("test_or_modifier")
+            || thread_name.contains("test_and_modifier")
+            || thread_name.contains("test_not_with_and_or");
+
+        return ThreadContext { is_test, is_module_test, use_enhanced_output, is_special_test };
+    }
+
+    /// Emit assertion events for reporting
+    fn emit_assertion_events(&self, passed: bool, _context: &ThreadContext) {
+        use crate::events::{AssertionEvent, EventEmitter};
+
+        // Check if this is the final result or an intermediate chained result
+        let is_final = !self.steps.is_empty() && (self.steps.last().unwrap().logical_op.is_none() || self.steps.len() > 1);
+
+        // Convert to a type-erased assertion for reporting
+        let type_erased = Assertion::<()> {
+            value: (),
+            expr_str: self.expr_str,
+            negated: self.negated,
+            steps: self.steps.clone(),
+            in_chain: self.in_chain,
+            is_final: self.is_final,
+        };
+
+        // Emit appropriate events based on assertion result
+        if passed && is_final {
+            // Emit a success event
+            EventEmitter::emit(AssertionEvent::Success(type_erased));
+        } else if !passed {
+            // Emit a failure event
+            EventEmitter::emit(AssertionEvent::Failure(type_erased));
+        }
+    }
+
+    /// Handle assertion failures with appropriate panic messages
+    fn handle_assertion_failure(&self, context: &ThreadContext) {
+        // If there are no steps, use a simple default message
+        if self.steps.is_empty() {
+            panic!("assertion failed: {}", self.expr_str);
+        }
+
+        // Get the first step for error message generation
+        let step = &self.steps[0];
+        let message = self.format_error_message(step, context);
+
+        panic!("{}", message);
+    }
+
+    /// Format appropriate error message based on context
+    fn format_error_message(&self, step: &AssertionStep, context: &ThreadContext) -> String {
+        // In test modules, we need exact format for #[should_panic(expected="...")] checks
+        if context.is_module_test || context.is_test {
+            if self.negated {
+                return format!("not {}", step.sentence.format());
+            } else {
+                return step.sentence.format();
+            }
+        }
+
+        // For enhanced output
+        if context.use_enhanced_output {
+            // Special case for vec literals that don't get proper subject
+            if self.expr_str.contains("vec") && !step.sentence.subject.contains("vec") {
+                return format!("{} does not {}", self.expr_str, step.sentence.format());
+            } else {
+                return step.sentence.format();
+            }
+        }
+
+        // Default to standard Rust-like assertion messages
+        return format!("assertion failed: {}", self.expr_str);
+    }
+}
+
+/// Context information about the current thread
+struct ThreadContext {
+    // No need to store thread_name since it's only used during context creation
+    is_test: bool,
+    is_module_test: bool,
+    use_enhanced_output: bool,
+    is_special_test: bool,
 }
 
 thread_local! {
