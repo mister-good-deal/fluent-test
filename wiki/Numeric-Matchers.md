@@ -13,6 +13,20 @@ fn test_greater_than() {
 }
 ```
 
+## to_be_greater_than_or_equal
+
+Checks if a number is greater than or equal to another number.
+
+```rust
+fn test_greater_than_or_equal() {
+    let value = 42;
+    
+    expect!(value).to_be_greater_than_or_equal(42);       // Passes
+    expect!(value).to_be_greater_than_or_equal(40);       // Passes
+    expect!(value).not().to_be_greater_than_or_equal(50); // Passes
+}
+```
+
 ## to_be_less_than
 
 Checks if a number is less than another number.
@@ -23,6 +37,20 @@ fn test_less_than() {
     
     expect!(value).to_be_less_than(50);       // Passes
     expect!(value).not().to_be_less_than(30); // Passes
+}
+```
+
+## to_be_less_than_or_equal
+
+Checks if a number is less than or equal to another number.
+
+```rust
+fn test_less_than_or_equal() {
+    let value = 42;
+    
+    expect!(value).to_be_less_than_or_equal(42);       // Passes
+    expect!(value).to_be_less_than_or_equal(50);       // Passes
+    expect!(value).not().to_be_less_than_or_equal(30); // Passes
 }
 ```
 
@@ -54,16 +82,17 @@ fn test_odd() {
 }
 ```
 
-## to_be_divisible_by
+## to_be_zero
 
-Checks if a number is divisible by another number.
+Checks if a number is zero.
 
 ```rust
-fn test_divisible_by() {
-    let value = 42;
+fn test_zero() {
+    let zero = 0;
+    let non_zero = 42;
     
-    expect!(value).to_be_divisible_by(7);   // Passes (42 is divisible by 7)
-    expect!(value).not().to_be_divisible_by(5); // Not divisible by 5
+    expect!(zero).to_be_zero();        // Passes
+    expect!(non_zero).not().to_be_zero(); // Passes
 }
 ```
 

@@ -53,16 +53,16 @@ fn test_string_ends_with() {
 }
 ```
 
-## to_match_regex
+## to_match
 
-Checks if a string matches a regular expression pattern.
+Checks if a string matches a pattern. 
 
 ```rust
-fn test_string_matches_regex() {
+fn test_string_matches() {
     let greeting = "Hello, world!";
     
-    expect!(greeting).to_match_regex(r"^Hello.*!$");        // Passes
-    expect!(greeting).not().to_match_regex(r"^Goodbye.*\?$"); // Passes
+    expect!(greeting).to_match("world");        // Passes
+    expect!(greeting).not().to_match("goodbye"); // Passes
 }
 ```
 
@@ -76,31 +76,5 @@ fn test_string_length() {
     
     expect!(greeting).to_have_length(13);        // Passes
     expect!(greeting).not().to_have_length(10);  // Passes
-}
-```
-
-## to_have_length_greater_than
-
-Checks if a string length is greater than a specified value.
-
-```rust
-fn test_string_length_greater_than() {
-    let greeting = "Hello, world!";
-    
-    expect!(greeting).to_have_length_greater_than(10);        // Passes
-    expect!(greeting).not().to_have_length_greater_than(15);  // Passes
-}
-```
-
-## to_have_length_less_than
-
-Checks if a string length is less than a specified value.
-
-```rust
-fn test_string_length_less_than() {
-    let greeting = "Hello, world!";
-    
-    expect!(greeting).to_have_length_less_than(20);        // Passes
-    expect!(greeting).not().to_have_length_less_than(10);  // Passes
 }
 ```
