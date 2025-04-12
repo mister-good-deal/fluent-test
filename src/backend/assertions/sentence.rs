@@ -213,3 +213,217 @@ impl Display for AssertionSentence {
         return write!(f, "{}", self.format());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_assertion_sentence_new() {
+        let sentence = AssertionSentence::new("be", "positive");
+
+        assert_eq!(sentence.subject, "");
+        assert_eq!(sentence.verb, "be");
+        assert_eq!(sentence.object, "positive");
+        assert_eq!(sentence.qualifiers.len(), 0);
+        assert_eq!(sentence.negated, false);
+    }
+
+    #[test]
+    fn test_with_negation() {
+        let sentence = AssertionSentence::new("be", "positive").with_negation(true);
+
+        assert_eq!(sentence.negated, true);
+
+        // Test chaining and toggle
+        let toggled_sentence = sentence.with_negation(false);
+
+        assert_eq!(toggled_sentence.negated, false);
+    }
+
+    #[test]
+    fn test_with_qualifier() {
+        let sentence = AssertionSentence::new("be", "in range").with_qualifier("when rounded");
+
+        assert_eq!(sentence.qualifiers, vec!["when rounded"]);
+
+        // Test multiple qualifiers
+        let updated_sentence = sentence.with_qualifier("with tolerance");
+
+        assert_eq!(updated_sentence.qualifiers, vec!["when rounded", "with tolerance"]);
+    }
+
+    #[test]
+    fn test_format_basic() {
+        let sentence = AssertionSentence::new("be", "positive");
+
+        assert_eq!(sentence.format(), "be positive");
+    }
+
+    #[test]
+    fn test_format_with_negation() {
+        let sentence = AssertionSentence::new("be", "positive").with_negation(true);
+
+        assert_eq!(sentence.format(), "not be positive");
+    }
+
+    #[test]
+    fn test_format_with_qualifiers() {
+        let sentence = AssertionSentence::new("be", "in range").with_qualifier("when rounded").with_qualifier("with tolerance");
+
+        assert_eq!(sentence.format(), "be in range when rounded with tolerance");
+    }
+
+    #[test]
+    fn test_format_with_negation_and_qualifiers() {
+        let sentence = AssertionSentence::new("be", "in range").with_negation(true).with_qualifier("when rounded");
+
+        assert_eq!(sentence.format(), "not be in range when rounded");
+    }
+
+    #[test]
+    fn test_format_grammatical() {
+        let sentence = AssertionSentence::new("be", "positive");
+
+        assert_eq!(sentence.format_grammatical(), "be positive");
+
+        let negated = sentence.clone().with_negation(true);
+
+        // The "not" should be after the verb for grammatical correctness
+        assert_eq!(negated.format_grammatical(), "be not positive");
+    }
+
+    #[test]
+    fn test_format_grammatical_with_qualifiers() {
+        let sentence = AssertionSentence::new("be", "in range").with_negation(true).with_qualifier("when rounded");
+
+        assert_eq!(sentence.format_grammatical(), "be not in range when rounded");
+    }
+
+    #[test]
+    fn test_is_plural_subject() {
+        // Test singular subjects
+        assert_eq!(AssertionSentence::is_plural_subject("value"), false);
+        assert_eq!(AssertionSentence::is_plural_subject("number"), false);
+        assert_eq!(AssertionSentence::is_plural_subject("count"), false);
+        assert_eq!(AssertionSentence::is_plural_subject("item"), false);
+
+        // Test plural subjects
+        assert_eq!(AssertionSentence::is_plural_subject("values"), true);
+        assert_eq!(AssertionSentence::is_plural_subject("numbers"), true);
+        assert_eq!(AssertionSentence::is_plural_subject("items"), true);
+        assert_eq!(AssertionSentence::is_plural_subject("lists"), true);
+
+        // Test common plural variable names
+        assert_eq!(AssertionSentence::is_plural_subject("data"), true);
+        assert_eq!(AssertionSentence::is_plural_subject("children"), true);
+    }
+
+    #[test]
+    fn test_extract_base_name() {
+        // Test reference extraction
+        assert_eq!(AssertionSentence::extract_base_name("&value"), "value");
+
+        // Test method call extraction
+        assert_eq!(AssertionSentence::extract_base_name("values.len()"), "values");
+
+        // Test array indexing extraction
+        assert_eq!(AssertionSentence::extract_base_name("items[0]"), "items");
+
+        // Test combined cases
+        assert_eq!(AssertionSentence::extract_base_name("&items[0]"), "items");
+        assert_eq!(AssertionSentence::extract_base_name("&values.len()"), "values");
+    }
+
+    #[test]
+    fn test_conjugate_verb() {
+        // Create a test sentence
+        let sentence = AssertionSentence::new("", "");
+
+        // Test special case verbs
+        let special_verbs = [
+            ("be", "is", "are"),
+            ("have", "has", "have"),
+            ("contain", "contains", "contain"),
+            ("start with", "starts with", "start with"),
+            ("end with", "ends with", "end with"),
+        ];
+
+        for (base, singular, plural) in special_verbs.iter() {
+            let mut test_sentence = sentence.clone();
+            test_sentence.verb = base.to_string();
+
+            assert_eq!(test_sentence.conjugate_verb(false), *singular);
+            assert_eq!(test_sentence.conjugate_verb(true), *plural);
+        }
+
+        // Test regular verbs
+        let regular_verbs = [("match", "matches"), ("exceed", "exceeds"), ("include", "includes")];
+
+        for (base, singular) in regular_verbs.iter() {
+            let mut test_sentence = sentence.clone();
+            test_sentence.verb = base.to_string();
+
+            assert_eq!(test_sentence.conjugate_verb(false), *singular);
+            assert_eq!(test_sentence.conjugate_verb(true), *base);
+        }
+
+        // Test verbs with special spelling rules
+        let special_spelling = [
+            // Verbs ending in s, x, z, sh, ch get 'es'
+            ("pass", "passes"),
+            ("fix", "fixes"),
+            ("buzz", "buzzes"),
+            ("wash", "washes"),
+            ("match", "matches"),
+            // Verbs ending in y (not preceded by a vowel) get 'ies'
+            ("try", "tries"),
+            ("fly", "flies"),
+            ("comply", "complies"),
+            // Verbs ending in y preceded by a vowel just get 's'
+            ("play", "plays"),
+            ("enjoy", "enjoys"),
+        ];
+
+        for (base, singular) in special_spelling.iter() {
+            let mut test_sentence = sentence.clone();
+            test_sentence.verb = base.to_string();
+
+            assert_eq!(test_sentence.conjugate_verb(false), *singular);
+            assert_eq!(test_sentence.conjugate_verb(true), *base);
+        }
+    }
+
+    #[test]
+    fn test_format_with_conjugation() {
+        // Test singular subject conjugation
+        let sentence = AssertionSentence::new("be", "positive");
+        assert_eq!(sentence.format_with_conjugation("value"), "is positive");
+
+        // Test plural subject conjugation
+        assert_eq!(sentence.format_with_conjugation("values"), "are positive");
+
+        // Test with negation - Note: we need to clone since with_negation consumes self
+        let negated = sentence.clone().with_negation(true);
+        assert_eq!(negated.format_with_conjugation("value"), "is not positive");
+        assert_eq!(negated.format_with_conjugation("values"), "are not positive");
+
+        // Test with qualifiers - Note: we need to clone since with_qualifier consumes self
+        let qualified = sentence.clone().with_qualifier("always");
+        assert_eq!(qualified.format_with_conjugation("value"), "is positive always");
+
+        // Test different verbs
+        let contain_sentence = AssertionSentence::new("contain", "element");
+        assert_eq!(contain_sentence.format_with_conjugation("list"), "contains element");
+        assert_eq!(contain_sentence.format_with_conjugation("lists"), "contain element");
+    }
+
+    #[test]
+    fn test_display_trait() {
+        let sentence = AssertionSentence::new("be", "positive");
+        assert_eq!(format!("{}", sentence), "be positive");
+
+        let negated = sentence.clone().with_negation(true);
+        assert_eq!(format!("{}", negated), "not be positive");
+    }
+}
