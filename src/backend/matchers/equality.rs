@@ -10,46 +10,44 @@ pub trait EqualityMatchers<T> {
     fn to_equal_value(self, expected: T) -> Self;
 }
 
-impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Assertion<T> {
+/// Helper trait for equality comparison
+trait AsEqualityComparable<T> {
+    fn equals<U: PartialEq<T>>(&self, expected: &U) -> bool;
+}
+
+// Implementation for T comparing with anything that can be compared with T
+impl<T: PartialEq> AsEqualityComparable<T> for T {
+    fn equals<U: PartialEq<T>>(&self, expected: &U) -> bool {
+        expected == self
+    }
+}
+
+// Implementation for &T comparing with anything that can be compared with T
+impl<T: PartialEq> AsEqualityComparable<T> for &T {
+    fn equals<U: PartialEq<T>>(&self, expected: &U) -> bool {
+        expected == *self
+    }
+}
+
+// Generic implementation for both T and &T expected values
+impl<V, T> EqualityMatchers<T> for Assertion<V>
+where
+    T: Debug + PartialEq + Clone,
+    V: AsEqualityComparable<T> + Debug + Clone,
+{
     fn to_equal(self, expected: T) -> Self {
         return self.to_equal_value(expected);
     }
 
     fn to_equal_value(self, expected: T) -> Self {
-        let result = self.value == expected;
+        let result = self.value.equals(&expected);
         let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
 
         return self.add_step(sentence, result);
     }
 }
 
-// Implementation for references to T
-impl<T: Debug + PartialEq + Clone> EqualityMatchers<T> for Assertion<&T> {
-    fn to_equal(self, expected: T) -> Self {
-        return self.to_equal_value(expected);
-    }
-
-    fn to_equal_value(self, expected: T) -> Self {
-        let result = *self.value == expected;
-        let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-}
-
-// Also implement EqualityMatchers<&T> for Assertion<T> to allow comparing with references
-impl<T: Debug + PartialEq + Clone> EqualityMatchers<&T> for Assertion<T> {
-    fn to_equal(self, expected: &T) -> Self {
-        return self.to_equal_value(expected);
-    }
-
-    fn to_equal_value(self, expected: &T) -> Self {
-        let result = self.value == *expected;
-        let sentence = AssertionSentence::new("be", format!("equal to {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-}
+// We no longer need a separate implementation for &T, since the generic implementation handles it
 
 #[cfg(test)]
 mod tests {

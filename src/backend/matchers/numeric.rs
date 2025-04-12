@@ -1,5 +1,6 @@
 use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
+use std::fmt::Debug;
 use std::ops::Range;
 
 /// Trait for numeric assertions
@@ -16,145 +17,176 @@ pub trait NumericMatchers<T> {
     fn to_be_odd(self) -> Self;
 }
 
-impl NumericMatchers<i32> for Assertion<i32> {
-    fn to_be_positive(self) -> Self {
-        let result = self.value > 0;
-        let sentence = AssertionSentence::new("be", "positive");
+/// Helper trait for numeric-like types
+trait AsNumeric {
+    fn is_positive(&self) -> bool;
+    fn is_negative(&self) -> bool;
+    fn is_zero(&self) -> bool;
+    fn is_greater_than(&self, expected: i32) -> bool;
+    fn is_greater_than_or_equal(&self, expected: i32) -> bool;
+    fn is_less_than(&self, expected: i32) -> bool;
+    fn is_less_than_or_equal(&self, expected: i32) -> bool;
+    fn is_in_range(&self, range: Range<i32>) -> bool;
+    fn is_even(&self) -> bool;
+    fn is_odd(&self) -> bool;
+}
 
-        return self.add_step(sentence, result);
+// Implementation for i32
+impl AsNumeric for i32 {
+    fn is_positive(&self) -> bool {
+        *self > 0
     }
 
-    fn to_be_negative(self) -> Self {
-        let result = self.value < 0;
-        let sentence = AssertionSentence::new("be", "negative");
-
-        return self.add_step(sentence, result);
+    fn is_negative(&self) -> bool {
+        *self < 0
     }
 
-    fn to_be_zero(self) -> Self {
-        let result = self.value == 0;
-        let sentence = AssertionSentence::new("be", "zero");
-
-        return self.add_step(sentence, result);
+    fn is_zero(&self) -> bool {
+        *self == 0
     }
 
-    fn to_be_greater_than(self, expected: i32) -> Self {
-        let result = self.value > expected;
-        let sentence = AssertionSentence::new("be", format!("greater than {}", expected));
-
-        return self.add_step(sentence, result);
+    fn is_greater_than(&self, expected: i32) -> bool {
+        *self > expected
     }
 
-    fn to_be_greater_than_or_equal(self, expected: i32) -> Self {
-        let result = self.value >= expected;
-        let sentence = AssertionSentence::new("be", format!("greater than or equal to {}", expected));
-
-        return self.add_step(sentence, result);
+    fn is_greater_than_or_equal(&self, expected: i32) -> bool {
+        *self >= expected
     }
 
-    fn to_be_less_than(self, expected: i32) -> Self {
-        let result = self.value < expected;
-        let sentence = AssertionSentence::new("be", format!("less than {}", expected));
-
-        return self.add_step(sentence, result);
+    fn is_less_than(&self, expected: i32) -> bool {
+        *self < expected
     }
 
-    fn to_be_less_than_or_equal(self, expected: i32) -> Self {
-        let result = self.value <= expected;
-        let sentence = AssertionSentence::new("be", format!("less than or equal to {}", expected));
-
-        return self.add_step(sentence, result);
+    fn is_less_than_or_equal(&self, expected: i32) -> bool {
+        *self <= expected
     }
 
-    fn to_be_in_range(self, range: Range<i32>) -> Self {
-        let result = range.contains(&self.value);
-        let sentence = AssertionSentence::new("be", format!("in range {}..{}", range.start, range.end));
-
-        return self.add_step(sentence, result);
+    fn is_in_range(&self, range: Range<i32>) -> bool {
+        range.contains(self)
     }
 
-    fn to_be_even(self) -> Self {
-        let result = self.value % 2 == 0;
-        let sentence = AssertionSentence::new("be", "even");
-
-        return self.add_step(sentence, result);
+    fn is_even(&self) -> bool {
+        *self % 2 == 0
     }
 
-    fn to_be_odd(self) -> Self {
-        let result = self.value % 2 != 0;
-        let sentence = AssertionSentence::new("be", "odd");
-
-        return self.add_step(sentence, result);
+    fn is_odd(&self) -> bool {
+        *self % 2 != 0
     }
 }
 
-// Implementation for references to i32
-impl NumericMatchers<i32> for Assertion<&i32> {
+// Implementation for &i32
+impl AsNumeric for &i32 {
+    fn is_positive(&self) -> bool {
+        **self > 0
+    }
+
+    fn is_negative(&self) -> bool {
+        **self < 0
+    }
+
+    fn is_zero(&self) -> bool {
+        **self == 0
+    }
+
+    fn is_greater_than(&self, expected: i32) -> bool {
+        **self > expected
+    }
+
+    fn is_greater_than_or_equal(&self, expected: i32) -> bool {
+        **self >= expected
+    }
+
+    fn is_less_than(&self, expected: i32) -> bool {
+        **self < expected
+    }
+
+    fn is_less_than_or_equal(&self, expected: i32) -> bool {
+        **self <= expected
+    }
+
+    fn is_in_range(&self, range: Range<i32>) -> bool {
+        range.contains(*self)
+    }
+
+    fn is_even(&self) -> bool {
+        **self % 2 == 0
+    }
+
+    fn is_odd(&self) -> bool {
+        **self % 2 != 0
+    }
+}
+
+// Single implementation for any type that implements AsNumeric
+impl<V> NumericMatchers<i32> for Assertion<V>
+where
+    V: AsNumeric + Debug + Clone,
+{
     fn to_be_positive(self) -> Self {
-        let result = *self.value > 0;
+        let result = self.value.is_positive();
         let sentence = AssertionSentence::new("be", "positive");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_negative(self) -> Self {
-        let result = *self.value < 0;
+        let result = self.value.is_negative();
         let sentence = AssertionSentence::new("be", "negative");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_zero(self) -> Self {
-        let result = *self.value == 0;
+        let result = self.value.is_zero();
         let sentence = AssertionSentence::new("be", "zero");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_greater_than(self, expected: i32) -> Self {
-        let result = *self.value > expected;
+        let result = self.value.is_greater_than(expected);
         let sentence = AssertionSentence::new("be", format!("greater than {}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_greater_than_or_equal(self, expected: i32) -> Self {
-        let result = *self.value >= expected;
+        let result = self.value.is_greater_than_or_equal(expected);
         let sentence = AssertionSentence::new("be", format!("greater than or equal to {}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_less_than(self, expected: i32) -> Self {
-        let result = *self.value < expected;
+        let result = self.value.is_less_than(expected);
         let sentence = AssertionSentence::new("be", format!("less than {}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_less_than_or_equal(self, expected: i32) -> Self {
-        let result = *self.value <= expected;
+        let result = self.value.is_less_than_or_equal(expected);
         let sentence = AssertionSentence::new("be", format!("less than or equal to {}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_in_range(self, range: Range<i32>) -> Self {
-        let result = range.contains(self.value);
+        let result = self.value.is_in_range(range.clone());
         let sentence = AssertionSentence::new("be", format!("in range {}..{}", range.start, range.end));
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_even(self) -> Self {
-        let result = *self.value % 2 == 0;
+        let result = self.value.is_even();
         let sentence = AssertionSentence::new("be", "even");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_odd(self) -> Self {
-        let result = *self.value % 2 != 0;
+        let result = self.value.is_odd();
         let sentence = AssertionSentence::new("be", "odd");
 
         return self.add_step(sentence, result);

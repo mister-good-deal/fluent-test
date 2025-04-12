@@ -1,38 +1,54 @@
 use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
+use std::fmt::Debug;
 
 pub trait BooleanMatchers {
     fn to_be_true(self) -> Self;
     fn to_be_false(self) -> Self;
 }
 
-impl BooleanMatchers for Assertion<bool> {
-    fn to_be_true(self) -> Self {
-        let result = self.value;
-        let sentence = AssertionSentence::new("be", "true");
+/// Helper trait for boolean-like types
+trait AsBoolean {
+    fn is_true(&self) -> bool;
+    fn is_false(&self) -> bool;
+}
 
-        return self.add_step(sentence, result);
+// Implementation for bool
+impl AsBoolean for bool {
+    fn is_true(&self) -> bool {
+        *self
     }
 
-    fn to_be_false(self) -> Self {
-        let result = !self.value;
-        let sentence = AssertionSentence::new("be", "false");
-
-        return self.add_step(sentence, result);
+    fn is_false(&self) -> bool {
+        !*self
     }
 }
 
-// Implementation for references to bool
-impl BooleanMatchers for Assertion<&bool> {
+// Implementation for &bool
+impl AsBoolean for &bool {
+    fn is_true(&self) -> bool {
+        **self
+    }
+
+    fn is_false(&self) -> bool {
+        !**self
+    }
+}
+
+// Single implementation for any type that implements AsBoolean
+impl<V> BooleanMatchers for Assertion<V>
+where
+    V: AsBoolean + Debug + Clone,
+{
     fn to_be_true(self) -> Self {
-        let result = *self.value;
+        let result = self.value.is_true();
         let sentence = AssertionSentence::new("be", "true");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_false(self) -> Self {
-        let result = !*self.value;
+        let result = self.value.is_false();
         let sentence = AssertionSentence::new("be", "false");
 
         return self.add_step(sentence, result);

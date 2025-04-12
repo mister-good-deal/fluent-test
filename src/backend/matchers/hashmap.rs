@@ -1,5 +1,6 @@
 use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
+use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -19,68 +20,104 @@ pub trait HashMapMatchers<K, V> {
         R: PartialEq + Debug + ?Sized;
 }
 
-use std::borrow::Borrow;
-
-impl<K, V> HashMapMatchers<K, V> for Assertion<&HashMap<K, V>>
-where
-    K: Hash + Eq + Debug + Clone,
-    V: Debug + Clone,
-{
-    fn to_be_empty(self) -> Self {
-        let result = self.value.is_empty();
-        let sentence = AssertionSentence::new("be", "empty");
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
-        let result = actual_length == expected;
-        let sentence = AssertionSentence::new("have", format!("length {}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain_key<Q>(self, key: &Q) -> Self
+/// Helper trait for HashMap-like types
+trait AsHashMap<K, V> {
+    fn is_map_empty(&self) -> bool;
+    fn map_length(&self) -> usize;
+    fn map_contains_key<Q>(&self, key: &Q) -> bool
     where
         K: Borrow<Q>,
-        Q: Hash + Eq + Debug + ?Sized,
-    {
-        let result = self.value.contains_key(key);
-        let sentence = AssertionSentence::new("contain", format!("key {:?}", key));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain_entry<Q, R>(self, key: &Q, value: &R) -> Self
+        Q: Hash + Eq + ?Sized;
+    fn map_contains_entry<Q, R>(&self, key: &Q, value: &R) -> bool
     where
         K: Borrow<Q>,
         V: Borrow<R>,
-        Q: Hash + Eq + Debug + ?Sized,
-        R: PartialEq + Debug + ?Sized,
-    {
-        let result = self.value.get(key).is_some_and(|v| v.borrow() == value);
-        let sentence = AssertionSentence::new("contain", format!("entry ({:?}, {:?})", key, value));
+        Q: Hash + Eq + ?Sized,
+        R: PartialEq + ?Sized;
+}
 
-        return self.add_step(sentence, result);
+// Implementation for &HashMap<K, V>
+impl<K, V> AsHashMap<K, V> for &HashMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn is_map_empty(&self) -> bool {
+        self.is_empty()
+    }
+
+    fn map_length(&self) -> usize {
+        self.len()
+    }
+
+    fn map_contains_key<Q>(&self, key: &Q) -> bool
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
+        self.contains_key(key)
+    }
+
+    fn map_contains_entry<Q, R>(&self, key: &Q, value: &R) -> bool
+    where
+        K: Borrow<Q>,
+        V: Borrow<R>,
+        Q: Hash + Eq + ?Sized,
+        R: PartialEq + ?Sized,
+    {
+        self.get(key).is_some_and(|v| v.borrow() == value)
     }
 }
 
-// Implementation for owned HashMap
-impl<K, V> HashMapMatchers<K, V> for Assertion<HashMap<K, V>>
+// Implementation for HashMap<K, V>
+impl<K, V> AsHashMap<K, V> for HashMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn is_map_empty(&self) -> bool {
+        self.is_empty()
+    }
+
+    fn map_length(&self) -> usize {
+        self.len()
+    }
+
+    fn map_contains_key<Q>(&self, key: &Q) -> bool
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
+        self.contains_key(key)
+    }
+
+    fn map_contains_entry<Q, R>(&self, key: &Q, value: &R) -> bool
+    where
+        K: Borrow<Q>,
+        V: Borrow<R>,
+        Q: Hash + Eq + ?Sized,
+        R: PartialEq + ?Sized,
+    {
+        self.get(key).is_some_and(|v| v.borrow() == value)
+    }
+}
+
+// Single implementation for any type that implements AsHashMap
+impl<M, K, V> HashMapMatchers<K, V> for Assertion<M>
 where
     K: Hash + Eq + Debug + Clone,
     V: Debug + Clone,
+    M: AsHashMap<K, V> + Debug + Clone,
 {
     fn to_be_empty(self) -> Self {
-        let result = self.value.is_empty();
+        let result = self.value.is_map_empty();
         let sentence = AssertionSentence::new("be", "empty");
 
         return self.add_step(sentence, result);
     }
 
     fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
+        let actual_length = self.value.map_length();
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
@@ -92,7 +129,7 @@ where
         K: Borrow<Q>,
         Q: Hash + Eq + Debug + ?Sized,
     {
-        let result = self.value.contains_key(key);
+        let result = self.value.map_contains_key(key);
         let sentence = AssertionSentence::new("contain", format!("key {:?}", key));
 
         return self.add_step(sentence, result);
@@ -105,7 +142,7 @@ where
         Q: Hash + Eq + Debug + ?Sized,
         R: PartialEq + Debug + ?Sized,
     {
-        let result = self.value.get(key).is_some_and(|v| v.borrow() == value);
+        let result = self.value.map_contains_entry(key, value);
         let sentence = AssertionSentence::new("contain", format!("entry ({:?}, {:?})", key, value));
 
         return self.add_step(sentence, result);

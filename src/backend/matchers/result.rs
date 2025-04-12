@@ -10,77 +10,94 @@ pub trait ResultMatchers<T: Debug, E: Debug> {
     fn to_contain_err<U: PartialEq<E> + Debug>(self, expected: &U) -> Self;
 }
 
-impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Assertion<Result<T, E>> {
-    fn to_be_ok(self) -> Self {
-        let result = self.value.is_ok();
-        let sentence = AssertionSentence::new("be", "ok");
+/// Helper trait for Result-like types
+trait AsResult<T: Debug + Clone, E: Debug + Clone> {
+    fn is_ok_result(&self) -> bool;
+    fn is_err_result(&self) -> bool;
+    fn contains_ok<U: PartialEq<T> + Debug>(&self, expected: &U) -> bool;
+    fn contains_err<U: PartialEq<E> + Debug>(&self, expected: &U) -> bool;
+}
 
-        return self.add_step(sentence, result);
+// Implementation for Result<T, E>
+impl<T: Debug + Clone, E: Debug + Clone> AsResult<T, E> for Result<T, E> {
+    fn is_ok_result(&self) -> bool {
+        self.is_ok()
     }
 
-    fn to_be_err(self) -> Self {
-        let result = self.value.is_err();
-        let sentence = AssertionSentence::new("be", "err");
-
-        return self.add_step(sentence, result);
+    fn is_err_result(&self) -> bool {
+        self.is_err()
     }
 
-    fn to_contain_ok<U: PartialEq<T> + Debug>(self, expected: &U) -> Self {
-        let result = match &self.value {
+    fn contains_ok<U: PartialEq<T> + Debug>(&self, expected: &U) -> bool {
+        match self {
             Ok(actual) => expected == actual,
             Err(_) => false,
-        };
-
-        let sentence = AssertionSentence::new("contain", format!("ok value {:?}", expected));
-
-        return self.add_step(sentence, result);
+        }
     }
 
-    fn to_contain_err<U: PartialEq<E> + Debug>(self, expected: &U) -> Self {
-        let result = match &self.value {
+    fn contains_err<U: PartialEq<E> + Debug>(&self, expected: &U) -> bool {
+        match self {
             Ok(_) => false,
             Err(actual) => expected == actual,
-        };
-
-        let sentence = AssertionSentence::new("contain", format!("err value {:?}", expected));
-
-        return self.add_step(sentence, result);
+        }
     }
 }
 
-// Implementation for references to Result<T, E>
-impl<T: Debug + Clone, E: Debug + Clone> ResultMatchers<T, E> for Assertion<&Result<T, E>> {
+// Implementation for &Result<T, E>
+impl<T: Debug + Clone, E: Debug + Clone> AsResult<T, E> for &Result<T, E> {
+    fn is_ok_result(&self) -> bool {
+        self.is_ok()
+    }
+
+    fn is_err_result(&self) -> bool {
+        self.is_err()
+    }
+
+    fn contains_ok<U: PartialEq<T> + Debug>(&self, expected: &U) -> bool {
+        match self {
+            Ok(actual) => expected == actual,
+            Err(_) => false,
+        }
+    }
+
+    fn contains_err<U: PartialEq<E> + Debug>(&self, expected: &U) -> bool {
+        match self {
+            Ok(_) => false,
+            Err(actual) => expected == actual,
+        }
+    }
+}
+
+// Single implementation for any type that implements AsResult
+impl<V, T, E> ResultMatchers<T, E> for Assertion<V>
+where
+    T: Debug + Clone,
+    E: Debug + Clone,
+    V: AsResult<T, E> + Debug + Clone,
+{
     fn to_be_ok(self) -> Self {
-        let result = self.value.is_ok();
+        let result = self.value.is_ok_result();
         let sentence = AssertionSentence::new("be", "ok");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_err(self) -> Self {
-        let result = self.value.is_err();
+        let result = self.value.is_err_result();
         let sentence = AssertionSentence::new("be", "err");
 
         return self.add_step(sentence, result);
     }
 
     fn to_contain_ok<U: PartialEq<T> + Debug>(self, expected: &U) -> Self {
-        let result = match &self.value {
-            Ok(actual) => expected == actual,
-            Err(_) => false,
-        };
-
+        let result = self.value.contains_ok(expected);
         let sentence = AssertionSentence::new("contain", format!("ok value {:?}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_contain_err<U: PartialEq<E> + Debug>(self, expected: &U) -> Self {
-        let result = match &self.value {
-            Ok(_) => false,
-            Err(actual) => expected == actual,
-        };
-
+        let result = self.value.contains_err(expected);
         let sentence = AssertionSentence::new("contain", format!("err value {:?}", expected));
 
         return self.add_step(sentence, result);
