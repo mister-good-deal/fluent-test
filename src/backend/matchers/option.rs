@@ -11,47 +11,78 @@ pub trait OptionMatchers<T: Debug> {
         T: PartialEq;
 }
 
-// Implementation for owned Option<T>
-impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Assertion<Option<T>> {
-    fn to_be_some(self) -> Self {
-        let result = self.value.is_some();
-        let sentence = AssertionSentence::new("be", "some");
+/// Helper trait for Optiony types
+trait AsOption {
+    type Item: Debug;
 
-        return self.add_step(sentence, result);
-    }
-
-    fn to_be_none(self) -> Self {
-        let result = self.value.is_none();
-        let sentence = AssertionSentence::new("be", "none");
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain(self, expected: &T) -> Self
+    fn is_some_option(&self) -> bool;
+    fn is_none_option(&self) -> bool;
+    fn contains_item<U>(&self, expected: &U) -> bool
     where
-        T: PartialEq,
-    {
-        let result = match &self.value {
-            Some(actual) => actual == expected,
-            None => false,
-        };
-        let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
+        U: PartialEq<Self::Item>;
+}
 
-        return self.add_step(sentence, result);
+// Implementation for Option<T>
+impl<T: Debug + PartialEq> AsOption for Option<T> {
+    type Item = T;
+
+    fn is_some_option(&self) -> bool {
+        self.is_some()
+    }
+
+    fn is_none_option(&self) -> bool {
+        self.is_none()
+    }
+
+    fn contains_item<U>(&self, expected: &U) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        match self {
+            Some(actual) => expected == actual,
+            None => false,
+        }
     }
 }
 
-// Implementation for references to Option<T>
-impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Assertion<&Option<T>> {
+// Implementation for &Option<T>
+impl<T: Debug + PartialEq> AsOption for &Option<T> {
+    type Item = T;
+
+    fn is_some_option(&self) -> bool {
+        self.is_some()
+    }
+
+    fn is_none_option(&self) -> bool {
+        self.is_none()
+    }
+
+    fn contains_item<U>(&self, expected: &U) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        match self {
+            Some(actual) => expected == actual,
+            None => false,
+        }
+    }
+}
+
+// Single implementation of OptionMatchers for any type that implements AsOption
+impl<T, V> OptionMatchers<T> for Assertion<V>
+where
+    T: Debug + Clone + PartialEq,
+    V: AsOption<Item = T> + Debug + Clone,
+{
     fn to_be_some(self) -> Self {
-        let result = self.value.is_some();
+        let result = self.value.is_some_option();
         let sentence = AssertionSentence::new("be", "some");
 
         return self.add_step(sentence, result);
     }
 
     fn to_be_none(self) -> Self {
-        let result = self.value.is_none();
+        let result = self.value.is_none_option();
         let sentence = AssertionSentence::new("be", "none");
 
         return self.add_step(sentence, result);
@@ -61,10 +92,7 @@ impl<T: Debug + Clone + PartialEq> OptionMatchers<T> for Assertion<&Option<T>> {
     where
         T: PartialEq,
     {
-        let result = match self.value {
-            Some(actual) => actual == expected,
-            None => false,
-        };
+        let result = self.value.contains_item(expected);
         let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
 
         return self.add_step(sentence, result);

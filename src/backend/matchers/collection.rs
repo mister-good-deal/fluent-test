@@ -2,6 +2,7 @@ use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::fmt::Debug;
 
+/// Define the primary matcher trait for collections
 pub trait CollectionMatchers<T> {
     fn to_be_empty(self) -> Self;
     fn to_have_length(self, expected: usize) -> Self;
@@ -10,7 +11,181 @@ pub trait CollectionMatchers<T> {
     fn to_equal_collection<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self;
 }
 
-impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Assertion<&[T]> {
+/// Helper trait for types that can be examined as collections
+trait AsCollection {
+    type Item;
+
+    fn is_empty(&self) -> bool;
+    fn length(&self) -> usize;
+    fn contains_item<U>(&self, item: &U) -> bool
+    where
+        U: PartialEq<Self::Item>;
+    fn contains_all_items<U>(&self, items: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>;
+    fn equals_items<U>(&self, other: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>;
+}
+
+// Implement AsCollection for slice references
+impl<T: PartialEq> AsCollection for &[T] {
+    type Item = T;
+
+    fn is_empty(&self) -> bool {
+        <[T]>::is_empty(self)
+    }
+
+    fn length(&self) -> usize {
+        self.len()
+    }
+
+    fn contains_item<U>(&self, item: &U) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        self.iter().any(|x| item == x)
+    }
+
+    fn contains_all_items<U>(&self, items: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        items.iter().all(|item| self.contains_item(item))
+    }
+
+    fn equals_items<U>(&self, other: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        if self.len() != other.len() {
+            return false;
+        }
+
+        self.iter().zip(other.iter()).all(|(a, b)| b == a)
+    }
+}
+
+// Implement AsCollection for Vec references
+impl<T: PartialEq> AsCollection for &Vec<T> {
+    type Item = T;
+
+    fn is_empty(&self) -> bool {
+        Vec::is_empty(self)
+    }
+
+    fn length(&self) -> usize {
+        self.len()
+    }
+
+    fn contains_item<U>(&self, item: &U) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        self.iter().any(|x| item == x)
+    }
+
+    fn contains_all_items<U>(&self, items: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        items.iter().all(|item| self.contains_item(item))
+    }
+
+    fn equals_items<U>(&self, other: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        if self.len() != other.len() {
+            return false;
+        }
+
+        self.iter().zip(other.iter()).all(|(a, b)| b == a)
+    }
+}
+
+// Implement AsCollection for owned Vecs
+impl<T: PartialEq> AsCollection for Vec<T> {
+    type Item = T;
+
+    fn is_empty(&self) -> bool {
+        Vec::is_empty(self)
+    }
+
+    fn length(&self) -> usize {
+        self.len()
+    }
+
+    fn contains_item<U>(&self, item: &U) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        self.iter().any(|x| item == x)
+    }
+
+    fn contains_all_items<U>(&self, items: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        items.iter().all(|item| self.contains_item(item))
+    }
+
+    fn equals_items<U>(&self, other: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        if self.len() != other.len() {
+            return false;
+        }
+
+        self.iter().zip(other.iter()).all(|(a, b)| b == a)
+    }
+}
+
+// Implement AsCollection for array references
+impl<T: PartialEq, const N: usize> AsCollection for &[T; N] {
+    type Item = T;
+
+    fn is_empty(&self) -> bool {
+        N == 0
+    }
+
+    fn length(&self) -> usize {
+        N
+    }
+
+    fn contains_item<U>(&self, item: &U) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        self.iter().any(|x| item == x)
+    }
+
+    fn contains_all_items<U>(&self, items: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        items.iter().all(|item| self.contains_item(item))
+    }
+
+    fn equals_items<U>(&self, other: &[U]) -> bool
+    where
+        U: PartialEq<Self::Item>,
+    {
+        if N != other.len() {
+            return false;
+        }
+
+        self.iter().zip(other.iter()).all(|(a, b)| b == a)
+    }
+}
+
+// Implementation of CollectionMatchers that works with any type implementing AsCollection
+impl<T, V> CollectionMatchers<T> for Assertion<V>
+where
+    T: Debug + Clone + PartialEq,
+    V: AsCollection<Item = T> + Debug + Clone,
+{
     fn to_be_empty(self) -> Self {
         let result = self.value.is_empty();
         let sentence = AssertionSentence::new("be", "empty");
@@ -19,7 +194,7 @@ impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Assertion<&[T]> {
     }
 
     fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
+        let actual_length = self.value.length();
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
@@ -27,175 +202,29 @@ impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Assertion<&[T]> {
     }
 
     fn to_contain<U: PartialEq<T> + Debug>(self, expected: U) -> Self {
-        let result = self.value.iter().any(|item| expected == *item);
+        let result = self.value.contains_item(&expected);
         let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_contain_all_of<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        let result = expected.iter().all(|exp| self.value.iter().any(|item| *exp == *item));
+        let result = self.value.contains_all_items(expected);
         let sentence = AssertionSentence::new("contain", format!("all of {:?}", expected));
 
         return self.add_step(sentence, result);
     }
 
     fn to_equal_collection<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        // Convert expected to Vec<&T> for comparison
-        let expected_vec: Vec<&U> = expected.iter().collect();
+        let result = self.value.equals_items(expected);
 
-        // Quick length check first
-        if self.value.len() != expected_vec.len() {
-            let result = false;
-            let sentence = AssertionSentence::new("equal", format!("collection {:?} (different lengths)", expected_vec));
-            return self.add_step(sentence, result);
-        }
-
-        // Check if all elements match in order
-        let result = self.value.iter().zip(expected_vec.iter()).all(|(a, b)| **b == *a);
-        let sentence = AssertionSentence::new("equal", format!("collection {:?}", expected_vec));
-
-        return self.add_step(sentence, result);
-    }
-}
-
-// Add support for Vec<T> as reference
-impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Assertion<&Vec<T>> {
-    fn to_be_empty(self) -> Self {
-        let result = self.value.is_empty();
-        let sentence = AssertionSentence::new("be", "empty");
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
-        let result = actual_length == expected;
-        let sentence = AssertionSentence::new("have", format!("length {}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain<U: PartialEq<T> + Debug>(self, expected: U) -> Self {
-        let result = self.value.iter().any(|item| expected == *item);
-        let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain_all_of<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        let result = expected.iter().all(|exp| self.value.iter().any(|item| *exp == *item));
-        let sentence = AssertionSentence::new("contain", format!("all of {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_equal_collection<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        // Quick length check first
-        if self.value.len() != expected.len() {
-            let result = false;
+        // Different message if lengths don't match
+        if self.value.length() != expected.len() {
             let sentence = AssertionSentence::new("equal", format!("collection {:?} (different lengths)", expected));
             return self.add_step(sentence, result);
         }
 
-        // Check if all elements match in order
-        let result = self.value.iter().zip(expected.iter()).all(|(a, b)| *b == *a);
         let sentence = AssertionSentence::new("equal", format!("collection {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-}
-
-// Also add support for Vec<T> directly
-impl<T: Debug + Clone + PartialEq> CollectionMatchers<T> for Assertion<Vec<T>> {
-    fn to_be_empty(self) -> Self {
-        let result = self.value.is_empty();
-        let sentence = AssertionSentence::new("be", "empty");
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
-        let result = actual_length == expected;
-        let sentence = AssertionSentence::new("have", format!("length {}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain<U: PartialEq<T> + Debug>(self, expected: U) -> Self {
-        let result = self.value.iter().any(|item| expected == *item);
-        let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain_all_of<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        let result = expected.iter().all(|exp| self.value.iter().any(|item| *exp == *item));
-        let sentence = AssertionSentence::new("contain", format!("all of {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_equal_collection<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        // Quick length check first
-        if self.value.len() != expected.len() {
-            let result = false;
-            let sentence = AssertionSentence::new("equal", format!("collection {:?} (different lengths)", expected));
-            return self.add_step(sentence, result);
-        }
-
-        // Check if all elements match in order
-        let result = self.value.iter().zip(expected.iter()).all(|(a, b)| *b == *a);
-        let sentence = AssertionSentence::new("equal", format!("collection {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-}
-
-// Also add support for array references
-impl<T: Debug + Clone + PartialEq, const N: usize> CollectionMatchers<T> for Assertion<&[T; N]> {
-    fn to_be_empty(self) -> Self {
-        let result = N == 0;
-        let sentence = AssertionSentence::new("be", "empty");
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = N;
-        let result = actual_length == expected;
-        let sentence = AssertionSentence::new("have", format!("length {}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain<U: PartialEq<T> + Debug>(self, expected: U) -> Self {
-        let result = self.value.iter().any(|item| expected == *item);
-        let sentence = AssertionSentence::new("contain", format!("{:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_contain_all_of<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        let result = expected.iter().all(|exp| self.value.iter().any(|item| *exp == *item));
-        let sentence = AssertionSentence::new("contain", format!("all of {:?}", expected));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_equal_collection<U: PartialEq<T> + Debug>(self, expected: &[U]) -> Self {
-        // Quick length check first
-        if N != expected.len() {
-            let result = false;
-            let sentence = AssertionSentence::new("equal", format!("collection {:?} (different lengths)", expected));
-            return self.add_step(sentence, result);
-        }
-
-        // Check if all elements match in order
-        let result = self.value.iter().zip(expected.iter()).all(|(a, b)| *b == *a);
-        let sentence = AssertionSentence::new("equal", format!("collection {:?}", expected));
-
         return self.add_step(sentence, result);
     }
 }

@@ -1,5 +1,6 @@
 use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
+use std::fmt::Debug;
 
 /// Trait for string assertions
 pub trait StringMatchers {
@@ -17,68 +18,86 @@ pub trait StringMatchers {
     fn to_match(self, pattern: &str) -> Self;
 }
 
-impl StringMatchers for Assertion<String> {
-    fn to_be_empty(self) -> Self {
-        let result = self.value.is_empty();
-        let sentence = AssertionSentence::new("be", "empty");
+/// Helper trait for string-like types
+trait AsString {
+    fn is_empty_string(&self) -> bool;
+    fn length_string(&self) -> usize;
+    fn contains_substring(&self, substring: &str) -> bool;
+    fn starts_with_substring(&self, prefix: &str) -> bool;
+    fn ends_with_substring(&self, suffix: &str) -> bool;
+    fn matches_pattern(&self, pattern: &str) -> bool;
+}
 
-        return self.add_step(sentence, result);
+// Implementation for String
+impl AsString for String {
+    fn is_empty_string(&self) -> bool {
+        self.is_empty()
     }
 
-    fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
-        let result = actual_length == expected;
-        let sentence = AssertionSentence::new("have", format!("length {}", expected));
-
-        return self.add_step(sentence, result);
+    fn length_string(&self) -> usize {
+        self.len()
     }
 
-    fn to_contain(self, substring: &str) -> Self {
-        return self.to_contain_substring(substring);
+    fn contains_substring(&self, substring: &str) -> bool {
+        self.contains(substring)
     }
 
-    fn to_contain_substring(self, substring: &str) -> Self {
-        let result = self.value.contains(substring);
-        let sentence = AssertionSentence::new("contain", format!("\"{}\"", substring));
-
-        return self.add_step(sentence, result);
+    fn starts_with_substring(&self, prefix: &str) -> bool {
+        self.starts_with(prefix)
     }
 
-    fn to_start_with(self, prefix: &str) -> Self {
-        let result = self.value.starts_with(prefix);
-        let sentence = AssertionSentence::new("start with", format!("\"{}\"", prefix));
-
-        return self.add_step(sentence, result);
+    fn ends_with_substring(&self, suffix: &str) -> bool {
+        self.ends_with(suffix)
     }
 
-    fn to_end_with(self, suffix: &str) -> Self {
-        let result = self.value.ends_with(suffix);
-        let sentence = AssertionSentence::new("end with", format!("\"{}\"", suffix));
-
-        return self.add_step(sentence, result);
-    }
-
-    fn to_match(self, pattern: &str) -> Self {
-        // This is a simplified implementation since we can't easily include a regex library
-        // In a real implementation, this would use a regex library to match the pattern
-        let result = self.value.contains(pattern);
-        let sentence = AssertionSentence::new("match", format!("pattern \"{}\"", pattern));
-
-        return self.add_step(sentence, result);
+    fn matches_pattern(&self, pattern: &str) -> bool {
+        // Simple implementation - in a real regex impl this would be different
+        self.contains(pattern)
     }
 }
 
-// Implement for &str references
-impl StringMatchers for Assertion<&str> {
+// Implementation for &str
+impl AsString for &str {
+    fn is_empty_string(&self) -> bool {
+        self.is_empty()
+    }
+
+    fn length_string(&self) -> usize {
+        self.len()
+    }
+
+    fn contains_substring(&self, substring: &str) -> bool {
+        self.contains(substring)
+    }
+
+    fn starts_with_substring(&self, prefix: &str) -> bool {
+        self.starts_with(prefix)
+    }
+
+    fn ends_with_substring(&self, suffix: &str) -> bool {
+        self.ends_with(suffix)
+    }
+
+    fn matches_pattern(&self, pattern: &str) -> bool {
+        // Simple implementation - in a real regex impl this would be different
+        self.contains(pattern)
+    }
+}
+
+// Single implementation for any type that implements AsString
+impl<V> StringMatchers for Assertion<V>
+where
+    V: AsString + Debug + Clone,
+{
     fn to_be_empty(self) -> Self {
-        let result = self.value.is_empty();
+        let result = self.value.is_empty_string();
         let sentence = AssertionSentence::new("be", "empty");
 
         return self.add_step(sentence, result);
     }
 
     fn to_have_length(self, expected: usize) -> Self {
-        let actual_length = self.value.len();
+        let actual_length = self.value.length_string();
         let result = actual_length == expected;
         let sentence = AssertionSentence::new("have", format!("length {}", expected));
 
@@ -90,21 +109,21 @@ impl StringMatchers for Assertion<&str> {
     }
 
     fn to_contain_substring(self, substring: &str) -> Self {
-        let result = self.value.contains(substring);
+        let result = self.value.contains_substring(substring);
         let sentence = AssertionSentence::new("contain", format!("\"{}\"", substring));
 
         return self.add_step(sentence, result);
     }
 
     fn to_start_with(self, prefix: &str) -> Self {
-        let result = self.value.starts_with(prefix);
+        let result = self.value.starts_with_substring(prefix);
         let sentence = AssertionSentence::new("start with", format!("\"{}\"", prefix));
 
         return self.add_step(sentence, result);
     }
 
     fn to_end_with(self, suffix: &str) -> Self {
-        let result = self.value.ends_with(suffix);
+        let result = self.value.ends_with_substring(suffix);
         let sentence = AssertionSentence::new("end with", format!("\"{}\"", suffix));
 
         return self.add_step(sentence, result);
@@ -112,8 +131,7 @@ impl StringMatchers for Assertion<&str> {
 
     fn to_match(self, pattern: &str) -> Self {
         // This is a simplified implementation since we can't easily include a regex library
-        // In a real implementation, this would use a regex library to match the pattern
-        let result = self.value.contains(pattern);
+        let result = self.value.matches_pattern(pattern);
         let sentence = AssertionSentence::new("match", format!("pattern \"{}\"", pattern));
 
         return self.add_step(sentence, result);
