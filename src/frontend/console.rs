@@ -48,7 +48,8 @@ impl ConsoleRenderer {
         // Add individual step results with proper formatting
         for step in &result.steps {
             let result_symbol = if step.passed { "✓" } else { "✗" };
-            let formatted_sentence = step.sentence.format();
+            // For individual steps, conjugate based on the subject name
+            let formatted_sentence = step.sentence.format_with_conjugation(result.expr_str);
 
             // Always indent and add pass/fail prefix
             details.push_str(&format!("  {} {}\n", result_symbol, formatted_sentence));
@@ -63,11 +64,13 @@ impl ConsoleRenderer {
             return "No assertions made".to_string();
         }
 
+        // For single assertions, conjugate based on the subject name
         if result.steps.len() == 1 {
-            return format!("{} {}", result.expr_str, result.steps[0].sentence.format());
+            return format!("{} {}", result.expr_str, result.steps[0].sentence.format_with_conjugation(result.expr_str));
         }
 
-        let mut message = format!("{} {}", result.expr_str, result.steps[0].sentence.format());
+        // Start with the first step and conjugate based on the subject
+        let mut message = format!("{} {}", result.expr_str, result.steps[0].sentence.format_with_conjugation(result.expr_str));
 
         // Add remaining steps with logical operators
         for i in 1..result.steps.len() {
@@ -80,6 +83,8 @@ impl ConsoleRenderer {
                 None => " [MISSING OP] ",
             };
 
+            // Use the base form for all subsequent parts in a chain
+            // since the subject is already established
             message.push_str(&format!("{}{}", op_str, curr.sentence.format()));
         }
 
