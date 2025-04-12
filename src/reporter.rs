@@ -74,6 +74,7 @@ impl Reporter {
                 use_colors: config.use_colors,
                 use_unicode_symbols: config.use_unicode_symbols,
                 show_success_details: config.show_success_details,
+                enhanced_output: config.enhanced_output,
             });
             renderer.print_success(&result);
         }
@@ -119,6 +120,7 @@ impl Reporter {
                 use_colors: config.use_colors,
                 use_unicode_symbols: config.use_unicode_symbols,
                 show_success_details: config.show_success_details,
+                enhanced_output: config.enhanced_output,
             });
             renderer.print_failure(&result);
         }
@@ -167,6 +169,7 @@ impl Reporter {
                 use_colors: config.use_colors,
                 use_unicode_symbols: config.use_unicode_symbols,
                 show_success_details: config.show_success_details,
+                enhanced_output: config.enhanced_output,
             });
             renderer.print_session_summary(&session);
         });

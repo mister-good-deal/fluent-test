@@ -34,15 +34,8 @@ impl AssertionSentence {
     }
 
     /// Format the sentence into a readable string (raw format, without subject)
-    /// This version keeps the original format (with 'not' before the verb) for backwards
-    /// compatibility with tests
     pub fn format(&self) -> String {
-        let mut result = if self.negated {
-            // Keep original format for test backward compatibility
-            format!("not {} {}", self.verb, self.object)
-        } else {
-            format!("{} {}", self.verb, self.object)
-        };
+        let mut result = if self.negated { format!("not {} {}", self.verb, self.object) } else { format!("{} {}", self.verb, self.object) };
 
         if !self.qualifiers.is_empty() {
             result.push(' ');

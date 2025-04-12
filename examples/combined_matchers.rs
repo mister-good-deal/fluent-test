@@ -4,8 +4,8 @@ use fluent_test::prelude::*;
 use std::collections::HashMap;
 
 fn main() {
-    // Initialize the event system
-    initialize_event_system();
+    // Enable enhanced output for this example
+    config().enhanced_output(true).apply();
 
     println!("FluentTest Example: Combined Matchers with Logical Chaining");
 

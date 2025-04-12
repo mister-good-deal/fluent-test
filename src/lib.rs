@@ -2,15 +2,55 @@
 //!
 //! This crate provides a more expressive way to write tests in Rust,
 //! inspired by JavaScript testing frameworks like Jest.
+//!
+//! By default, assertions behave like standard Rust assertions.
+//! Enable enhanced output with:
+//!
+//! ```
+//! // In your test code:
+//! use fluent_test::prelude::*;
+//!
+//! fn my_test() {
+//!     // Enable enhanced output for this test
+//!     fluent_test::config().enhanced_output(true).apply();
+//!     
+//!     expect!(2 + 2).to_equal(4);
+//! }
+//! ```
+//!
+//! Or set the FLUENT_TEST_ENHANCED_OUTPUT=true environment variable.
 
 // Allow explicit return statements as part of the coding style
 #![allow(clippy::needless_return)]
 
+// Initialization constants and utilities
+
+// Import Once for initialization
+use std::sync::Once;
+
+// Initialization for tests
+static TEST_INIT: Once = Once::new();
+
 pub mod backend;
-mod config;
+pub mod config;
 pub mod events;
 pub mod frontend;
 mod reporter;
+
+// Auto-initialize for tests if enhanced output is enabled
+pub fn auto_initialize_for_tests() {
+    TEST_INIT.call_once(|| {
+        // Check environment variable to enable enhanced output
+        let config = config::Config::new();
+        if config.enhanced_output {
+            // Apply the config which will initialize the event system
+            config.apply();
+        }
+    });
+}
+
+// Re-export the initialize function
+pub use config::initialize;
 
 /// Matcher traits module for bringing the traits into scope
 pub mod matchers {
@@ -36,11 +76,12 @@ pub mod prelude {
     // Import modifiers
     pub use crate::backend::modifiers::*;
 
-    // Import and initialize the event system
-    pub use crate::events::initialize_event_system;
+    // Import configuration and initialization
+    pub use crate::config;
+    pub use crate::initialize;
 
-    // Call initialize_event_system at the beginning of any test or program
-    // that uses FluentTest to setup event handlers
+    #[cfg(test)]
+    pub use crate::auto_initialize_for_tests;
 }
 
 // Re-exports
@@ -55,9 +96,12 @@ pub fn config() -> Config {
 /// Main entry point for fluent assertions
 #[macro_export]
 macro_rules! expect {
-    ($expr:expr) => {
+    ($expr:expr) => {{
+        // Always auto-initialize
+        $crate::auto_initialize_for_tests();
+
         $crate::backend::Assertion::new($expr, stringify!($expr))
-    };
+    }};
 }
 
 /// Shorthand for creating a negated expectation
@@ -65,6 +109,9 @@ macro_rules! expect {
 #[macro_export]
 macro_rules! expect_not {
     ($expr:expr) => {{
+        // Always auto-initialize
+        $crate::auto_initialize_for_tests();
+
         use $crate::backend::modifiers::NotModifier;
         $crate::backend::Assertion::new($expr, stringify!($expr)).not()
     }};
@@ -79,17 +126,24 @@ macro_rules! fluent_test {
     () => {
         #[test]
         fn _fluent_test_runner() {
-            // Setup code here
+            // Auto-initialize if enhanced output is enabled
+            $crate::auto_initialize_for_tests();
 
-            // Use a drop guard to ensure reporter runs at the end
-            struct ReportOnDrop;
-            impl Drop for ReportOnDrop {
-                fn drop(&mut self) {
-                    $crate::Reporter::summarize();
+            // Check if enhanced output is enabled
+            let enhanced_output = $crate::config::is_enhanced_output_enabled();
+
+            // Setup reporting guard only if enhanced output is enabled
+            if enhanced_output {
+                // Use a drop guard to ensure reporter runs at the end
+                struct ReportOnDrop;
+                impl Drop for ReportOnDrop {
+                    fn drop(&mut self) {
+                        $crate::Reporter::summarize();
+                    }
                 }
-            }
 
-            let _guard = ReportOnDrop;
+                let _guard = ReportOnDrop;
+            }
 
             // The test itself runs normally
         }
@@ -108,4 +162,18 @@ pub mod test_utils {
     pub use crate::backend::matchers::option::OptionMatchers;
     pub use crate::backend::matchers::result::ResultMatchers;
     pub use crate::backend::matchers::string::StringMatchers;
+
+    // Helper function to set up testing
+    pub fn setup_tests() {
+        // Force enhanced output for internal tests
+        crate::config().enhanced_output(true).apply();
+    }
+
+    // When tests run, make sure we have enhanced output enabled
+    // by default for internal library tests
+    #[test]
+    #[ignore]
+    fn _setup_for_tests() {
+        setup_tests();
+    }
 }

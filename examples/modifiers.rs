@@ -3,8 +3,8 @@ use common::guard_test;
 use fluent_test::prelude::*;
 
 fn main() {
-    // Initialize the event system
-    initialize_event_system();
+    // Enable enhanced output for this example
+    config().enhanced_output(true).apply();
 
     println!("\n=== Testing AND modifier (all true) ===");
     let number = 42;

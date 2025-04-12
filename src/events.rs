@@ -13,11 +13,14 @@ pub enum AssertionEvent {
 }
 
 // Thread-local registry of success handlers
+// Define type aliases to reduce complexity
+type AssertionHandler = Box<dyn Fn(Assertion<()>)>;
+
 thread_local! {
-    static SUCCESS_HANDLERS: RefCell<Vec<Box<dyn Fn(Assertion<()>)>>> = RefCell::new(Vec::new());
-    static FAILURE_HANDLERS: RefCell<Vec<Box<dyn Fn(Assertion<()>)>>> = RefCell::new(Vec::new());
+    static SUCCESS_HANDLERS: RefCell<Vec<AssertionHandler>> = RefCell::new(Vec::new());
+    static FAILURE_HANDLERS: RefCell<Vec<AssertionHandler>> = RefCell::new(Vec::new());
     static SESSION_COMPLETED_HANDLERS: RefCell<Vec<Box<dyn Fn()>>> = RefCell::new(Vec::new());
-    static INITIALIZED: RefCell<bool> = RefCell::new(false);
+    static INITIALIZED: RefCell<bool> = const { RefCell::new(false) };
 }
 
 /// EventEmitter is responsible for sending events and managing event handlers
@@ -95,7 +98,9 @@ where
     });
 }
 
-/// Initialize the event system and register default handlers
+// This is an internal function, deprecated in favor of using Config.apply()
+// but kept for compatibility with example and test code
+#[doc(hidden)]
 pub fn initialize_event_system() {
     EventEmitter::init();
 

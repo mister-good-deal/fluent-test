@@ -55,8 +55,9 @@ use fluent_test::prelude::*;
 
 #[test]
 fn should_check_values() {
-    // Initialize the event system before using assertions
-    initialize_event_system();
+    // By default, FluentTest behaves like standard Rust assertions
+    // To enable enhanced output, configure it:
+    config().enhanced_output(true).apply();
     
     let my_number = 5;
     let my_string = "hello world";
@@ -66,6 +67,12 @@ fn should_check_values() {
     expect!(my_string).to_contain("world");
     expect!(my_vec).to_have_length(3);
 }
+```
+
+You can also enable enhanced output globally by setting the environment variable:
+
+```bash
+FLUENT_TEST_ENHANCED_OUTPUT=true cargo test
 ```
 
 ## Available Matchers
@@ -720,8 +727,8 @@ impl<T: AsRef<User> + Clone> UserMatchers<T> for Assertion<T> {
 // Use it in your tests
 #[test]
 fn test_user_permissions() {
-    // Initialize the event system
-    initialize_event_system();
+    // Enable enhanced output for more descriptive messages
+    config().enhanced_output(true).apply();
     
     let admin_user = get_admin_user();
     let regular_user = get_regular_user();
@@ -747,14 +754,12 @@ You can customize the output for CI environments or other special cases:
 // In your test module or test helper file
 #[test]
 fn setup() {
-    // Initialize the event system
-    initialize_event_system();
-    
     // Configure the output formatting
     fluent_test::config()
-        .use_colors(true)
-        .use_unicode_symbols(true)
-        .show_success_details(false)
+        .enhanced_output(true)    // Enable enhanced output
+        .use_colors(true)         // Use colored output
+        .use_unicode_symbols(true) // Use ✓ and ✗ symbols
+        .show_success_details(false) // Don't show details for passing tests
         .apply();
 }
 ```
@@ -779,12 +784,17 @@ FluentTest uses a modular, event-driven architecture:
    - Matchers - Trait implementations for different types of assertions
    - Modifiers - Support for logical operations (AND, OR, NOT)
 
-2. **Event System** - Decouples assertion execution from reporting
+2. **Config System** - Controls the library's behavior
+   - `Config` - Configuration options including enabling enhanced output
+   - Environment variables for controlling behavior without code changes
+   - Automatic initialization when enhanced output is enabled
+
+3. **Event System** - Decouples assertion execution from reporting
    - `AssertionEvent` - Events emitted when assertions succeed or fail
    - `EventEmitter` - Responsible for delivering events to registered handlers
    - Thread-local handlers for managing assertions across test contexts
 
-3. **Frontend Layer** - Reporting and user interface
+4. **Frontend Layer** - Reporting and user interface
    - `Reporter` - Listens to events and manages test sessions
    - `ConsoleRenderer` - Formats and displays test results
 
@@ -792,6 +802,7 @@ This separation of concerns makes the library more maintainable and extensible, 
 - Multiple reporter implementations (console, JSON, HTML, etc.)
 - Clean extension points for custom matchers
 - Proper isolation between test evaluation and reporting logic
+- Flexibility in choosing between standard or enhanced output
 
 ## Releases
 

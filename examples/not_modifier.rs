@@ -1,8 +1,8 @@
 use fluent_test::prelude::*;
 
 fn main() {
-    // Initialize the event system
-    initialize_event_system();
+    // Enable enhanced output for this example
+    config().enhanced_output(true).apply();
 
     println!("Running not modifier examples");
 
