@@ -9,7 +9,6 @@
 pub mod backend;
 mod config;
 pub mod frontend;
-pub mod helpers;
 mod reporter;
 
 /// Matcher traits module for bringing the traits into scope

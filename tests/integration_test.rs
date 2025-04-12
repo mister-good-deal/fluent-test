@@ -1,4 +1,5 @@
 use fluent_test::prelude::*;
+mod common;
 
 #[test]
 fn test_basic_assertions() {

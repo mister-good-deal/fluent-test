@@ -1,4 +1,5 @@
-use fluent_test::helpers::guard_test;
+mod common;
+use common::guard_test;
 use fluent_test::prelude::*;
 
 fn main() {
