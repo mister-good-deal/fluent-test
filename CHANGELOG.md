@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.3.0 (2024-04-13)
+
+### Added
+
+- Added enhanced configuration system:
+  - Simplified API with `config().enhanced_output(true).apply()`
+  - Support for environment variable `FLUENT_TEST_ENHANCED_OUTPUT`
+  - New example files demonstrating configuration options
+- Added new example files:
+  - `config_example.rs` - Shows configuration options
+  - `enhanced_output.rs` - Demonstrates enhanced output formatting
+
+### Changed
+
+- Implemented event-based architecture:
+  - Decoupled assertions from reporting using an event system
+  - Created a clean separation between backend and frontend components
+  - Added EventEmitter for publishing assertion events
+  - Implemented customizable event handlers for flexible output formatting
+- Improved internal architecture:
+  - Eliminated duplicate code in matcher implementations using helper traits
+  - Created consistent abstraction pattern across all matchers
+  - Reduced code by ~30% while maintaining the same public API
+- Improved test output:
+  - Better grammar with smart verb conjugation based on variable names
+  - Removed reference symbols (`&`) from variable names in assertion messages
+- Updated all examples to use the modern configuration approach
+- Marked `initialize_event_system` as deprecated (hidden from docs)
+
+### Removed
+
+- Removed backward compatibility code
+- Removed unused test utilities
+- Removed `REFACTORING.md` as it's no longer needed
+
 ## 0.2.0 (2024-03-30)
 
 ### Added
