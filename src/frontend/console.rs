@@ -64,13 +64,16 @@ impl ConsoleRenderer {
             return "No assertions made".to_string();
         }
 
+        // Clean expression string (remove reference symbols)
+        let clean_expr = result.expr_str.trim_start_matches('&');
+
         // For single assertions, conjugate based on the subject name
         if result.steps.len() == 1 {
-            return format!("{} {}", result.expr_str, result.steps[0].sentence.format_with_conjugation(result.expr_str));
+            return format!("{} {}", clean_expr, result.steps[0].sentence.format_with_conjugation(result.expr_str));
         }
 
         // Start with the first step and conjugate based on the subject
-        let mut message = format!("{} {}", result.expr_str, result.steps[0].sentence.format_with_conjugation(result.expr_str));
+        let mut message = format!("{} {}", clean_expr, result.steps[0].sentence.format_with_conjugation(result.expr_str));
 
         // Add remaining steps with logical operators
         for i in 1..result.steps.len() {
