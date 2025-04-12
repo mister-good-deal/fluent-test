@@ -1,6 +1,9 @@
 use fluent_test::prelude::*;
 
 fn main() {
+    // Initialize the event system
+    initialize_event_system();
+
     println!("Running not modifier examples");
 
     // --- Two ways to use negated expectations ---

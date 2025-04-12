@@ -3,6 +3,9 @@ use common::guard_test;
 use fluent_test::prelude::*;
 
 fn main() {
+    // Initialize the event system
+    initialize_event_system();
+
     println!("\n=== Testing AND modifier (all true) ===");
     let number = 42;
     // Using AND modifier with both conditions true

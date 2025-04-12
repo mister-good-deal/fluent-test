@@ -8,6 +8,7 @@
 
 pub mod backend;
 mod config;
+pub mod events;
 pub mod frontend;
 mod reporter;
 
@@ -34,6 +35,12 @@ pub mod prelude {
 
     // Import modifiers
     pub use crate::backend::modifiers::*;
+
+    // Import and initialize the event system
+    pub use crate::events::initialize_event_system;
+
+    // Call initialize_event_system at the beginning of any test or program
+    // that uses FluentTest to setup event handlers
 }
 
 // Re-exports

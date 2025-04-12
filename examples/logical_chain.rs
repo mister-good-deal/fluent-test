@@ -3,6 +3,9 @@ use common::guard_test;
 use fluent_test::prelude::*;
 
 fn main() {
+    // Initialize the event system
+    initialize_event_system();
+
     // Example of using the AND logical operator
     let value = 42;
 

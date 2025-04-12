@@ -181,43 +181,35 @@ impl<T> Assertion<T> {
         // Final assertions or test assertions always evaluate
         let passed = self.calculate_chain_result();
 
-        // Report the result
-        self.report_result(passed);
+        // Emit an event with the result
+        self.emit_result(passed);
 
         return passed;
     }
 
     /// Report the assertion result
-    fn report_result(&self, passed: bool) {
-        use crate::reporter::{report_failure, report_success};
+    fn emit_result(&self, passed: bool) {
+        use crate::events::{AssertionEvent, EventEmitter};
 
         // Check if this is the final result or an intermediate chained result
         let is_final = !self.steps.is_empty() && (self.steps.last().unwrap().logical_op.is_none() || self.steps.len() > 1);
 
+        // Convert to a type-erased assertion for reporting
+        let type_erased = Assertion::<()> {
+            value: (),
+            expr_str: self.expr_str,
+            negated: self.negated,
+            steps: self.steps.clone(),
+            in_chain: self.in_chain,
+            is_final: self.is_final,
+        };
+
         if passed && is_final {
-            // Convert to a type-erased assertion for reporting
-            let type_erased = Assertion::<()> {
-                value: (),
-                expr_str: self.expr_str,
-                negated: self.negated,
-                steps: self.steps.clone(),
-                in_chain: self.in_chain,
-                is_final: self.is_final,
-            };
-
-            report_success(type_erased);
+            // Emit a success event
+            EventEmitter::emit(AssertionEvent::Success(type_erased));
         } else if !passed {
-            // Convert to a type-erased assertion for reporting
-            let type_erased = Assertion::<()> {
-                value: (),
-                expr_str: self.expr_str,
-                negated: self.negated,
-                steps: self.steps.clone(),
-                in_chain: self.in_chain,
-                is_final: self.is_final,
-            };
-
-            report_failure(type_erased.clone());
+            // Emit a failure event
+            EventEmitter::emit(AssertionEvent::Failure(type_erased.clone()));
 
             // Skip panicking in special test cases that check the evaluation result
             let thread_name = std::thread::current().name().unwrap_or("").to_string();
@@ -273,8 +265,8 @@ impl<T> Drop for Assertion<T> {
             // Calculate the chain result
             let passed = self.calculate_chain_result();
 
-            // Report the result
-            self.report_result(passed);
+            // Emit an event with the result
+            self.emit_result(passed);
 
             // Reset the flag
             EVALUATION_IN_PROGRESS.with(|flag| {

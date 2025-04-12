@@ -1,6 +1,9 @@
 use fluent_test::prelude::*;
 
 fn main() {
+    // Initialize the event system
+    initialize_event_system();
+
     // Just to demonstrate the API
     let x = 42;
     let name = "Arthur";

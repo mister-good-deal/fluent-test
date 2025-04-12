@@ -4,6 +4,9 @@ use fluent_test::prelude::*;
 use std::collections::HashMap;
 
 fn main() {
+    // Initialize the event system
+    initialize_event_system();
+
     println!("FluentTest Example: Combined Matchers with Logical Chaining");
 
     // Numeric matchers with AND and OR
