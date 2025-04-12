@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.2 (2024-04-13)
+
+### Added
+
+- Added GitHub wiki documentation:
+  - Comprehensive documentation for all matchers
+  - Usage guides for modifiers (AND/OR/NOT)
+  - Custom matchers examples and best practices
+  - Architecture overview
+  - Output formatting options
+
+### Changed
+
+- Moved detailed matcher documentation from README to wiki
+- Simplified README with links to corresponding wiki pages
+- Improved documentation organization
+
 ## 0.3.1 (2024-04-13)
 
 ### Added
