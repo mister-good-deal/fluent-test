@@ -55,6 +55,9 @@ use fluent_test::prelude::*;
 
 #[test]
 fn should_check_values() {
+    // Initialize the event system before using assertions
+    initialize_event_system();
+    
     let my_number = 5;
     let my_string = "hello world";
     let my_vec = vec![1, 2, 3];
@@ -697,28 +700,29 @@ You can easily extend FluentTest with your own matchers:
 ```rust
 // Define a custom matcher for your domain
 trait UserMatchers<T> {
-    fn to_be_admin(self);
+    fn to_be_admin(self) -> Self;
 }
 
-// Implement it for the Expectation type
-impl<T: AsRef<User>> UserMatchers<T> for Expectation<T> {
-    fn to_be_admin(self) {
+// Implement it for the Assertion type
+impl<T: AsRef<User> + Clone> UserMatchers<T> for Assertion<T> {
+    fn to_be_admin(self) -> Self {
         let user = self.value.as_ref();
         let success = user.role == Role::Admin;
-        let not = if self.negated { " not" } else { "" };
         
-        if (success && !self.negated) || (!success && self.negated) {
-            self.report_success(&format!("is{not} an admin"));
-        } else {
-            let expected_msg = format!("Expected {}{not} to be an admin", self.expr_str);
-            self.report_failure(&expected_msg, &format!("Found role: {:?}", user.role));
-        }
+        // Create a sentence for the assertion
+        let sentence = AssertionSentence::new("be", "an admin");
+        
+        // Add the step to the assertion chain and return it
+        return self.add_step(sentence, success);
     }
 }
 
 // Use it in your tests
 #[test]
 fn test_user_permissions() {
+    // Initialize the event system
+    initialize_event_system();
+    
     let admin_user = get_admin_user();
     let regular_user = get_regular_user();
     
@@ -743,6 +747,10 @@ You can customize the output for CI environments or other special cases:
 // In your test module or test helper file
 #[test]
 fn setup() {
+    // Initialize the event system
+    initialize_event_system();
+    
+    // Configure the output formatting
     fluent_test::config()
         .use_colors(true)
         .use_unicode_symbols(true)
@@ -757,9 +765,33 @@ FluentTest is built around a few core components:
 
 1. The `expect!` macro which captures both values and their textual representation
 2. The `expect_not!` macro which creates negated expectations
-3. The `Expectation<T>` struct which holds the value and provides the fluent API
+3. The `Assertion<T>` struct which holds the value and provides the fluent API
 4. Trait implementations for different types of assertions
-5. A custom test reporter that enhances the standard output
+5. An event-based system that decouples assertion evaluation from reporting
+6. A custom test reporter that enhances the standard output
+
+### Architecture
+
+FluentTest uses a modular, event-driven architecture:
+
+1. **Backend Layer** - Core assertion evaluation logic
+   - `Assertion<T>` - The main struct that holds values and builds assertions
+   - Matchers - Trait implementations for different types of assertions
+   - Modifiers - Support for logical operations (AND, OR, NOT)
+
+2. **Event System** - Decouples assertion execution from reporting
+   - `AssertionEvent` - Events emitted when assertions succeed or fail
+   - `EventEmitter` - Responsible for delivering events to registered handlers
+   - Thread-local handlers for managing assertions across test contexts
+
+3. **Frontend Layer** - Reporting and user interface
+   - `Reporter` - Listens to events and manages test sessions
+   - `ConsoleRenderer` - Formats and displays test results
+
+This separation of concerns makes the library more maintainable and extensible, allowing for:
+- Multiple reporter implementations (console, JSON, HTML, etc.)
+- Clean extension points for custom matchers
+- Proper isolation between test evaluation and reporting logic
 
 ## Releases
 
