@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.1 (2024-04-13)
+
+### Added
+
+- Added comprehensive unit tests:
+  - Tests for configuration options and environment variable handling in `config.rs`
+  - Tests for event emission and handler registration in `events.rs`
+  - Tests for reporter functionality including session tracking and message deduplication in `reporter.rs`
+
+### Fixed
+
+- Fixed format macro warnings in event tests
+
 ## 0.3.0 (2024-04-13)
 
 ### Added
