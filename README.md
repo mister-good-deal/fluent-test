@@ -13,6 +13,7 @@ expressive assertions with readable error messages while maintaining compatibili
 
 - **Fluent, Expressive API**: Write tests in a readable, chainable style similar to Jest.
 - **Logical Chain Modifiers**: Combine assertions with `.and()` and `.or()` operators.
+- **Test Fixtures**: Set up and tear down test environments with attribute-based fixtures.
 - **Helpful Error Messages**: Get clear error messages that include variable names and expressions.
 - **Seamless Integration**: Works alongside Rust's standard testing infrastructure.
 - **Beautiful Test Output**: Enhanced test reporting with visual cues and better organization.
@@ -28,6 +29,7 @@ expressive assertions with readable error messages while maintaining compatibili
 - [x] Improved test output formatting
 - [x] CI/CD integration for automatic releases
 - [x] Documentation and examples
+- [x] Test fixtures for setup and teardown
 - [ ] More advanced matchers (e.g., regex, custom types)
 - [ ] Performance optimizations
 - [ ] Support for async testing
@@ -176,6 +178,44 @@ expect!(value).not().to_equal(100);
 ```
 
 [View Using Modifiers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Using-Modifiers)
+
+## Test Fixtures
+
+FluentTest provides a powerful fixture system for setting up and tearing down test environments:
+
+```rust
+use fluent_test::prelude::*;
+
+// Define setup function
+#[setup]
+fn prepare_test_data() {
+    // Code to run before each test
+    println!("Setting up test environment");
+}
+
+// Define teardown function
+#[tear_down]
+fn cleanup_resources() {
+    // Code to run after each test
+    println!("Cleaning up test environment");
+}
+
+// Test with fixtures
+#[test]
+#[with_fixtures]
+fn my_test() {
+    // This will automatically run setup before and teardown after
+    expect!(2 + 2).to_equal(4);
+}
+```
+
+Key features:
+- Attribute-based API with `#[setup]`, `#[tear_down]`, and `#[with_fixtures]`
+- Module-scoped fixtures (fixtures are tied to the module they're defined in)
+- Automatic cleanup on test failures
+- Multiple setup/teardown functions per module
+
+[View Test Fixtures documentation](https://github.com/mister-good-deal/fluent-test/wiki/Fixtures)
 
 ## Custom Matchers
 
