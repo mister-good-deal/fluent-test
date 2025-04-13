@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/mister-good-deal/fluent-test/graph/badge.svg?token=W5L8E2CQ9M)](https://codecov.io/gh/mister-good-deal/fluent-test)
 [![License](https://img.shields.io/crates/l/fluent-test.svg)](https://github.com/mister-good-deal/fluent-test/blob/master/LICENSE)
 [![Downloads](https://img.shields.io/crates/d/fluent-test.svg)](https://crates.io/crates/fluent-test)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10418/badge)](https://www.bestpractices.dev/projects/10418)
 
 A fluent, Jest-like testing library for Rust that builds upon the standard testing infrastructure. FluentTest provides
 expressive assertions with readable error messages while maintaining compatibility with Rust's built-in testing functionality.
