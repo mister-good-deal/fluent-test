@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.1 (2024-04-13)
+
+### Fixed
+
+- Fixed environment variable parsing to properly handle case-insensitive values
+- Improved CI workflow to handle publishing multiple crates in the workspace
+- Marked a flaky test as ignored to prevent intermittent CI failures
+
 ## 0.4.0 (2024-04-13)
 
 ### Added
