@@ -39,7 +39,10 @@ impl Config {
     pub fn new() -> Self {
         // Check for environment variable to enable enhanced output
         let enhanced_from_env = match env::var(ENV_ENHANCED_OUTPUT) {
-            Ok(val) => val.to_lowercase() == "true" || val == "1" || val == "yes",
+            Ok(val) => {
+                let lowercase_val = val.to_lowercase();
+                lowercase_val == "true" || lowercase_val == "1" || lowercase_val == "yes"
+            }
             Err(_) => false, // Default to standard output if env var not set
         };
 
