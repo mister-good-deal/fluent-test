@@ -26,12 +26,21 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
       
-      - name: Get version from Cargo.toml
+      - name: Get versions from Cargo.toml files
         id: get_version
         run: |
-          LOCAL_VERSION=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
-          echo "local_version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
-          echo "Local version: $LOCAL_VERSION"
+          MAIN_VERSION=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          MACROS_VERSION=$(grep '^version =' fluent-test-macros/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          
+          echo "local_version=$MAIN_VERSION" >> $GITHUB_OUTPUT
+          echo "macros_version=$MACROS_VERSION" >> $GITHUB_OUTPUT
+          echo "Main crate version: $MAIN_VERSION"
+          echo "Macros crate version: $MACROS_VERSION"
+          
+          # Verify versions match
+          if [ "$MAIN_VERSION" != "$MACROS_VERSION" ]; then
+            echo "Warning: Main crate version ($MAIN_VERSION) does not match macros crate version ($MACROS_VERSION)"
+          fi
       
       - name: Check latest git tag
         id: check_tag
@@ -78,8 +87,22 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         run: |
           echo "Publishing version ${{ steps.get_version.outputs.local_version }} to crates.io..."
+          
+          # First publish the macros crate
+          echo "Publishing fluent-test-macros crate first..."
+          cd fluent-test-macros
           cargo publish --no-verify
-          echo "Successfully published version ${{ steps.get_version.outputs.local_version }} to crates.io"
+          echo "Successfully published fluent-test-macros to crates.io"
+          
+          # Wait a bit for crates.io to index the published crate
+          echo "Waiting for crates.io to index the macros crate..."
+          sleep 30
+          
+          # Then publish the main crate
+          cd ..
+          echo "Publishing main fluent-test crate..."
+          cargo publish --no-verify
+          echo "Successfully published fluent-test version ${{ steps.get_version.outputs.local_version }} to crates.io"
       
       - name: No publish needed
         if: steps.version_check.outputs.newer_version != 'true'
