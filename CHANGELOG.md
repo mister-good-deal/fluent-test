@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 (2024-04-13)
+
+### Added
+
+- Added test fixtures support:
+  - Setup and teardown functions for test environment preparation
+  - Attribute-based API (#[setup], #[tear_down], #[with_fixtures])
+  - Module-scoped fixtures for better organization
+  - Automatic cleanup on test failures
+  - Comprehensive documentation in wiki/Fixtures.md
+  - Example code in examples/attribute_fixtures.rs and examples/fixtures_example.rs
+
+### Changed
+
+- Updated examples to use the new attribute-style fixtures
+- Enhanced documentation for fixture usage and best practices
+
 ## 0.3.2 (2024-04-13)
 
 ### Added

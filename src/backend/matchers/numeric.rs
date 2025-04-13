@@ -117,6 +117,92 @@ impl AsNumeric for &i32 {
     }
 }
 
+// Implementation for usize
+impl AsNumeric for usize {
+    fn is_positive(&self) -> bool {
+        *self > 0
+    }
+
+    fn is_negative(&self) -> bool {
+        false // usize cannot be negative
+    }
+
+    fn is_zero(&self) -> bool {
+        *self == 0
+    }
+
+    fn is_greater_than(&self, expected: i32) -> bool {
+        *self > expected as usize
+    }
+
+    fn is_greater_than_or_equal(&self, expected: i32) -> bool {
+        *self >= expected as usize
+    }
+
+    fn is_less_than(&self, expected: i32) -> bool {
+        *self < expected as usize
+    }
+
+    fn is_less_than_or_equal(&self, expected: i32) -> bool {
+        *self <= expected as usize
+    }
+
+    fn is_in_range(&self, range: Range<i32>) -> bool {
+        range.contains(&(*self as i32))
+    }
+
+    fn is_even(&self) -> bool {
+        *self % 2 == 0
+    }
+
+    fn is_odd(&self) -> bool {
+        *self % 2 != 0
+    }
+}
+
+// Implementation for &usize
+impl AsNumeric for &usize {
+    fn is_positive(&self) -> bool {
+        **self > 0
+    }
+
+    fn is_negative(&self) -> bool {
+        false // usize cannot be negative
+    }
+
+    fn is_zero(&self) -> bool {
+        **self == 0
+    }
+
+    fn is_greater_than(&self, expected: i32) -> bool {
+        **self > expected as usize
+    }
+
+    fn is_greater_than_or_equal(&self, expected: i32) -> bool {
+        **self >= expected as usize
+    }
+
+    fn is_less_than(&self, expected: i32) -> bool {
+        **self < expected as usize
+    }
+
+    fn is_less_than_or_equal(&self, expected: i32) -> bool {
+        **self <= expected as usize
+    }
+
+    fn is_in_range(&self, range: Range<i32>) -> bool {
+        range.contains(&(**self as i32))
+    }
+
+    fn is_even(&self) -> bool {
+        **self % 2 == 0
+    }
+
+    fn is_odd(&self) -> bool {
+        **self % 2 != 0
+    }
+}
+
 // Single implementation for any type that implements AsNumeric
 impl<V> NumericMatchers<i32> for Assertion<V>
 where
