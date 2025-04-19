@@ -11,11 +11,12 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Required for creating releases
+      contents: write # Required for creating releases and pushing changes
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for release notes
+          token: ${{ secrets.GH_PAT }} # Using PAT for checkout to enable pushing changes
       
       - name: Extract version from tag
         id: get_version
@@ -25,21 +26,123 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "Tag: $TAG_NAME, Version: $VERSION"
+          
+          # Get the current date in YYYY-MM-DD format
+          RELEASE_DATE=$(date +"%Y-%m-%d")
+          echo "release_date=$RELEASE_DATE" >> $GITHUB_OUTPUT
+          echo "Release Date: $RELEASE_DATE"
+      
+      # Update the CHANGELOG.md by replacing "(Unreleased)" with the current date
+      - name: Update CHANGELOG.md with release date
+        id: update_changelog
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          RELEASE_DATE="${{ steps.get_version.outputs.release_date }}"
+          
+          echo "Checking CHANGELOG.md for version $VERSION"
+          grep -n "## $VERSION" CHANGELOG.md || echo "Version not found in CHANGELOG.md"
+          
+          # Show current version header in CHANGELOG
+          echo "Current entry in CHANGELOG:"
+          grep "## $VERSION" CHANGELOG.md || echo "No entry found"
+          
+          # Replace "(Unreleased)" with the current date for this version
+          sed -i "s/## $VERSION (Unreleased)/## $VERSION ($RELEASE_DATE)/" CHANGELOG.md
+          
+          # Check if the replacement was made
+          if grep -q "## $VERSION ($RELEASE_DATE)" CHANGELOG.md; then
+            echo "Replaced 'Unreleased' with release date $RELEASE_DATE for version $VERSION in CHANGELOG.md"
+            echo "updated=true" >> $GITHUB_OUTPUT
+            
+            echo "New entry in CHANGELOG:"
+            grep "## $VERSION" CHANGELOG.md
+          else
+            echo "No '(Unreleased)' tag found for version $VERSION in CHANGELOG.md"
+            echo "updated=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # If CHANGELOG was updated, commit and push the changes
+      - name: Commit and push CHANGELOG update
+        if: steps.update_changelog.outputs.updated == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }} # Using a personal access token with repo permissions
+        run: |
+          # Set git configuration
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Show git status before changes
+          echo "Git status before commit:"
+          git status
+          
+          # Add changes and commit
+          git add CHANGELOG.md
+          git commit -m "docs: Update CHANGELOG.md with release date for v${{ steps.get_version.outputs.version }}"
+          
+          echo "Git log (last 3 commits):"
+          git log -n 3 --oneline
+          
+          # Need to fetch origin to avoid push issues
+          echo "Fetching latest from origin/master..."
+          git fetch origin master
+          
+          # Get current branch and remote references
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "Current branch: $CURRENT_BRANCH"
+          
+          # Push to master branch instead of tag reference
+          echo "Pushing changes to master branch..."
+          # Use token in the push URL to ensure authentication
+          REMOTE_URL=$(git config --get remote.origin.url)
+          REPO_PATH=$(echo "$REMOTE_URL" | sed -E 's|https://github.com/(.+)/(.+)\.git|\1/\2|' || echo "$REMOTE_URL")
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${REPO_PATH}.git" HEAD:master
+          echo "✅ Committed and pushed CHANGELOG update to master branch"
       
       - name: Extract release notes from CHANGELOG
         id: changelog
         run: |
           # Extract section for the current version
           VERSION="${{ steps.get_version.outputs.version }}"
+          RELEASE_DATE="${{ steps.get_version.outputs.release_date }}"
           
-          # Extract content between the current version header and the next header
-          RELEASE_NOTES=$(awk -v ver="$VERSION" '
+          echo "Extracting release notes for version $VERSION with date $RELEASE_DATE"
+          
+          # Try to extract with the release date first (most likely scenario after our update)
+          RELEASE_NOTES=$(awk -v ver="$VERSION" -v date="$RELEASE_DATE" '
             BEGIN { capture=0; notes=""; }
-            $0 ~ "^## " ver { capture=1; next; }
+            $0 ~ "^## " ver " \\(" date "\\)" { capture=1; next; }
             $0 ~ /^## [0-9]+\.[0-9]+\.[0-9]+/ && capture { capture=0; }
             capture { notes = notes $0 "\n"; }
             END { print notes; }
           ' CHANGELOG.md)
+          
+          echo "Using release date search results: ${#RELEASE_NOTES} characters found"
+          
+          # If not found with release date, try with "Unreleased" as fallback
+          if [ -z "$RELEASE_NOTES" ]; then
+            echo "Trying with 'Unreleased' pattern..."
+            RELEASE_NOTES=$(awk -v ver="$VERSION" '
+              BEGIN { capture=0; notes=""; }
+              $0 ~ "^## " ver " \\(Unreleased\\)" { capture=1; next; }
+              $0 ~ /^## [0-9]+\.[0-9]+\.[0-9]+/ && capture { capture=0; }
+              capture { notes = notes $0 "\n"; }
+              END { print notes; }
+            ' CHANGELOG.md)
+            echo "Using Unreleased search results: ${#RELEASE_NOTES} characters found"
+          fi
+          
+          # If still not found, try with just the version
+          if [ -z "$RELEASE_NOTES" ]; then
+            echo "Trying with just the version number pattern..."
+            RELEASE_NOTES=$(awk -v ver="$VERSION" '
+              BEGIN { capture=0; notes=""; }
+              $0 ~ "^## " ver { capture=1; next; }
+              $0 ~ /^## [0-9]+\.[0-9]+\.[0-9]+/ && capture { capture=0; }
+              capture { notes = notes $0 "\n"; }
+              END { print notes; }
+            ' CHANGELOG.md)
+            echo "Using version-only search results: ${#RELEASE_NOTES} characters found"
+          fi
           
           # If no specific release notes found, generate from commits
           if [ -z "$RELEASE_NOTES" ]; then
@@ -47,10 +150,19 @@ jobs:
             echo "Falling back to auto-generated notes from commits."
             echo "use_generated_notes=true" >> $GITHUB_OUTPUT
           else
-            # Save release notes to a temporary file to preserve formatting
-            echo "$RELEASE_NOTES" > release_notes.md
-            echo "use_generated_notes=false" >> $GITHUB_OUTPUT
-            echo "Found release notes in CHANGELOG.md for version $VERSION"
+            # Check if notes are not just whitespace
+            if [ "$(echo "$RELEASE_NOTES" | tr -d '[:space:]')" != "" ]; then
+              # Save release notes to a temporary file to preserve formatting
+              echo "$RELEASE_NOTES" > release_notes.md
+              echo "use_generated_notes=false" >> $GITHUB_OUTPUT
+              echo "Found release notes in CHANGELOG.md for version $VERSION"
+              echo "---------------- NOTES BEGIN ----------------"
+              cat release_notes.md
+              echo "----------------- NOTES END -----------------"
+            else
+              echo "Found only whitespace in release notes, using auto-generated notes instead."
+              echo "use_generated_notes=true" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Create GitHub Release with CHANGELOG notes
