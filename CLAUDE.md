@@ -41,6 +41,32 @@
 - Use thread-local storage for test reporting
 - Public API exposed through prelude
 
+## Git Workflow and Pull Requests
+
+- Create a feature branch before making changes: `git checkout -b feature/my-feature-name`
+- Use descriptive branch names prefixed with type: `feature/`, `bugfix/`, `docs/`, `ci/`, etc.
+- Make small, focused commits with clear messages
+- Creating pull requests:
+  - Using GitHub CLI: 
+    ```bash
+    gh pr create --title "Title of your PR" --body "$(cat <<'EOF'
+    ## Summary
+    Brief description of changes
+
+    ## Details
+    - Bullet point details
+    - Another important point
+    
+    ## Test plan
+    How you tested the changes
+    EOF
+    )"
+    ```
+  - For more complex PRs, create a markdown file with content and use:
+    ```bash
+    gh pr create --title "PR Title" --body "$(cat PR_DESCRIPTION.md)"
+    ```
+
 ## Releases and Publishing
 
 - **Version Bump**: Update `version` in Cargo.toml when making significant changes
