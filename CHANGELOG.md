@@ -15,6 +15,17 @@
 
 ### Added
 
+- Added test lifecycle fixture support:
+  - New `#[before_all]` attribute for code that runs once before any test in a module
+  - New `#[after_all]` attribute for code that runs once after all tests in a module
+  - Complete test lifecycle management with before_all → setup → test → teardown → after_all
+  - Documentation in wiki/Fixtures.md, including examples of all fixture types
+  - New detailed examples in examples/module_lifecycle.rs
+
+## 0.4.2 (2024-04-17)
+
+### Added
+
 - Added module-level fixtures support:
   - New `#[with_fixtures_module]` attribute to apply fixtures to all test functions in a module
   - Eliminates the need to add `#[with_fixtures]` to each test function

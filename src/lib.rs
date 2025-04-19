@@ -53,7 +53,13 @@ pub fn auto_initialize_for_tests() {
 pub use config::initialize;
 
 // Export attribute macros for fixtures
-pub use fluent_test_macros::{setup, tear_down, with_fixtures, with_fixtures_module};
+pub use fluent_test_macros::{after_all, before_all, setup, tear_down, with_fixtures, with_fixtures_module};
+
+// Global exit handler for after_all fixtures
+#[ctor::dtor]
+fn run_after_all_fixtures() {
+    backend::fixtures::run_after_all_fixtures();
+}
 
 /// Matcher traits module for bringing the traits into scope
 pub mod matchers {
@@ -74,7 +80,7 @@ pub mod prelude {
     pub use crate::expect_not;
 
     // Fixture attribute macros
-    pub use crate::{setup, tear_down, with_fixtures, with_fixtures_module};
+    pub use crate::{after_all, before_all, setup, tear_down, with_fixtures, with_fixtures_module};
 
     // Import all matcher traits
     pub use crate::matchers::*;

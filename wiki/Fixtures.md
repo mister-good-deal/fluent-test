@@ -165,11 +165,85 @@ fn test_with_panic() {
 }
 ```
 
+## Lifecycle Fixtures
+
+FluentTest supports four types of fixtures to handle different phases of the test lifecycle:
+
+1. **#[before_all]** - Runs once before any test in the module
+2. **#[setup]** - Runs before each test in the module
+3. **#[tear_down]** - Runs after each test in the module
+4. **#[after_all]** - Runs once after all tests in the module have completed
+
+Here's an example using all lifecycle fixtures:
+
+```rust
+use fluent_test::prelude::*;
+
+#[with_fixtures_module]
+mod database_tests {
+    use super::*;
+    
+    // Run once before any test in this module
+    #[before_all]
+    fn initialize_database() {
+        println!("Creating test database...");
+        // Create test database, load schema, etc.
+    }
+    
+    // Run before each test
+    #[setup]
+    fn setup_test_data() {
+        println!("Setting up test data...");
+        // Insert test data for each test
+    }
+    
+    #[test]
+    fn test_user_creation() {
+        // Test code that uses the database
+    }
+    
+    #[test]
+    fn test_user_deletion() {
+        // Another test using the database
+    }
+    
+    // Run after each test
+    #[tear_down]
+    fn clean_test_data() {
+        println!("Cleaning up test data...");
+        // Remove test data after each test
+    }
+    
+    // Run once after all tests in this module
+    #[after_all]
+    fn drop_database() {
+        println!("Dropping test database...");
+        // Clean up the test database
+    }
+}
+```
+
+The execution order is:
+1. `initialize_database()` (#[before_all]) - Run once at the start
+2. For each test:
+   a. `setup_test_data()` (#[setup]) - Run before the test
+   b. Test function - The actual test
+   c. `clean_test_data()` (#[tear_down]) - Run after the test
+3. `drop_database()` (#[after_all]) - Run once at the end
+
 ## Implementation Details
 
 Fixtures are collected and associated with their module paths. When a test marked with `#[with_fixtures]` is run, it:
 
-1. Looks up setup functions for the current module path
-2. Runs those setup functions
+1. Runs before_all functions for the module if they haven't run yet
+2. Runs setup functions for the current module
 3. Executes the test code
-4. Runs any teardown functions for the module, even if the test code panics
+4. Runs teardown functions for the module, even if the test code panics
+5. Registers after_all functions to run when testing is complete
+
+### Notes about After All
+
+The #[after_all] fixture relies on Rust's ctor crate to register a global exit handler. This ensures that after_all fixtures run even if tests are executed in parallel or if some tests fail. However, there are some limitations:
+
+- In cargo test with parallel execution, the execution order is not guaranteed
+- When running tests individually, after_all fixtures will still run at process exit
