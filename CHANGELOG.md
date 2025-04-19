@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.2 (Unreleased)
+
+### Added
+
+- Added module-level fixtures support:
+  - New `#[with_fixtures_module]` attribute to apply fixtures to all test functions in a module
+  - Eliminates the need to add `#[with_fixtures]` to each test function
+  - Supports nested modules with their own fixtures
+  - Documentation in wiki/Fixtures.md
+  - Examples in examples/module_fixtures.rs
+
 ## 0.4.1 (2024-04-13)
 
 ### Fixed

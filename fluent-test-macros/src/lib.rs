@@ -1,6 +1,9 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{ItemFn, parse_macro_input};
+use syn::{
+    Attribute, Item, ItemFn, ItemMod, parse_macro_input,
+    visit_mut::{self, VisitMut},
+};
 
 /// Registers a function to be run before each test in the current module
 ///
@@ -114,4 +117,87 @@ pub fn with_fixtures(_attr: TokenStream, item: TokenStream) -> TokenStream {
     };
 
     TokenStream::from(output)
+}
+
+/// A struct to visit all functions in a module and add the with_fixtures attribute to test functions
+struct TestFunctionVisitor {}
+
+impl VisitMut for TestFunctionVisitor {
+    fn visit_item_fn_mut(&mut self, node: &mut ItemFn) {
+        // First check if this is a test function (has #[test] attribute)
+        let is_test = node.attrs.iter().any(|attr| attr.path().is_ident("test"));
+
+        // Check if it already has the with_fixtures attribute
+        let already_has_fixtures = node.attrs.iter().any(|attr| attr.path().is_ident("with_fixtures"));
+
+        // Only add the with_fixtures attribute if this is a test function and doesn't already have it
+        if is_test && !already_has_fixtures {
+            // Create the with_fixtures attribute
+            let with_fixtures_attr: Attribute = syn::parse_quote!(#[with_fixtures]);
+
+            // Add it to the function's attributes
+            node.attrs.push(with_fixtures_attr);
+        }
+
+        // Continue visiting the function's items
+        visit_mut::visit_item_fn_mut(self, node);
+    }
+}
+
+/// Runs all test functions in a module with setup and teardown fixtures
+///
+/// Example:
+/// ```
+/// use fluent_test::prelude::*;
+///
+/// #[with_fixtures_module]
+/// mod test_module {
+///     #[setup]
+///     fn setup() {
+///         // Initialize test environment
+///     }
+///     
+///     #[tear_down]
+///     fn tear_down() {
+///         // Clean up test environment
+///     }
+///     
+///     #[test]
+///     fn test_something() {
+///         // Test code - will automatically run with fixtures
+///         expect!(2 + 2).to_equal(4);
+///     }
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn with_fixtures_module(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let mut input_mod = parse_macro_input!(item as ItemMod);
+
+    // Only process if we have a defined module body
+    if let Some((_, items)) = &mut input_mod.content {
+        // Visit all items in the module
+        let mut visitor = TestFunctionVisitor {};
+        for item in items.iter_mut() {
+            // Check if the item is a function
+            if let Item::Fn(func) = item {
+                visitor.visit_item_fn_mut(func);
+            }
+
+            // Recursively process nested modules as well
+            if let Item::Mod(nested_mod) = item {
+                if let Some((_, nested_items)) = &mut nested_mod.content {
+                    for nested_item in nested_items.iter_mut() {
+                        if let Item::Fn(func) = nested_item {
+                            visitor.visit_item_fn_mut(func);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Convert back to token stream
+    TokenStream::from(quote! {
+        #input_mod
+    })
 }

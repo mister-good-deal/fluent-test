@@ -212,6 +212,7 @@ fn my_test() {
 
 Key features:
 - Attribute-based API with `#[setup]`, `#[tear_down]`, and `#[with_fixtures]`
+- Module-level fixtures with `#[with_fixtures_module]` to apply fixtures to all tests in a module
 - Module-scoped fixtures (fixtures are tied to the module they're defined in)
 - Automatic cleanup on test failures
 - Multiple setup/teardown functions per module

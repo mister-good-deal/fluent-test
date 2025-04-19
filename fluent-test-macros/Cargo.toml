@@ -1,6 +1,6 @@
 [package]
 name = "fluent-test-macros"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2024"
 authors = ["Romain Laneuville<romain.laneuville@hotmail.fr>"]
 description = "Procedural macros for fluent-test"
@@ -13,6 +13,6 @@ categories = ["development-tools", "development-tools::testing"]
 proc-macro = true
 
 [dependencies]
-syn = { version = "2.0", features = ["full"] }
+syn = { version = "2.0", features = ["full", "visit-mut"] }
 quote = "1.0"
 proc-macro2 = "1.0"
