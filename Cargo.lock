@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "fluent-test"
-version = "0.4.2"
+version = "0.4.3"
 dependencies = [
  "colored",
  "ctor",
@@ -52,7 +52,7 @@ dependencies = [
 
 [[package]]
 name = "fluent-test-macros"
-version = "0.4.2"
+version = "0.4.3"
 dependencies = [
  "proc-macro2",
  "quote",

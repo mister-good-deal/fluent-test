@@ -5,6 +5,76 @@ use syn::{
     visit_mut::{self, VisitMut},
 };
 
+/// Registers a function to be run once before any test in the current module
+///
+/// Example:
+/// ```
+/// use fluent_test::prelude::*;
+///
+/// #[before_all]
+/// fn setup_once() {
+///     // Initialize test environment once for all tests
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn before_all(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input_fn = parse_macro_input!(item as ItemFn);
+    let fn_name = &input_fn.sig.ident;
+
+    // Create a unique registration function name based on the function name
+    let register_fn_name = syn::Ident::new(&format!("__register_before_all_fixture_{}", fn_name), fn_name.span());
+
+    let output = quote! {
+        #input_fn
+
+        // We use ctor to register the function at runtime
+        #[ctor::ctor]
+        fn #register_fn_name() {
+            fluent_test::backend::fixtures::register_before_all(
+                module_path!(),
+                Box::new(|| #fn_name())
+            );
+        }
+    };
+
+    TokenStream::from(output)
+}
+
+/// Registers a function to be run once after all tests in the current module
+///
+/// Example:
+/// ```
+/// use fluent_test::prelude::*;
+///
+/// #[after_all]
+/// fn teardown_once() {
+///     // Clean up test environment after all tests
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn after_all(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input_fn = parse_macro_input!(item as ItemFn);
+    let fn_name = &input_fn.sig.ident;
+
+    // Create a unique registration function name based on the function name
+    let register_fn_name = syn::Ident::new(&format!("__register_after_all_fixture_{}", fn_name), fn_name.span());
+
+    let output = quote! {
+        #input_fn
+
+        // We use ctor to register the function at runtime
+        #[ctor::ctor]
+        fn #register_fn_name() {
+            fluent_test::backend::fixtures::register_after_all(
+                module_path!(),
+                Box::new(|| #fn_name())
+            );
+        }
+    };
+
+    TokenStream::from(output)
+}
+
 /// Registers a function to be run before each test in the current module
 ///
 /// Example:
