@@ -9,7 +9,7 @@ FluentTest provides a fixture system that allows you to set up and tear down tes
 
 ## Using Fixtures
 
-Fixtures are defined using attribute macros and are tied to the module they're defined in. Tests that use the `#[with_fixtures]` attribute will automatically run the setup and teardown functions for that module.
+Fixtures are defined using attribute macros and are tied to the module they're defined in. Tests that use the `#[with_fixtures]` attribute will automatically run the setup and teardown functions for that module. You can also apply fixtures to all test functions in a module using the `#[with_fixtures_module]` attribute on the module itself.
 
 ### Basic Example
 
@@ -37,6 +37,46 @@ fn my_test() {
     expect!(2 + 2).to_equal(4);
 }
 ```
+
+## Module-Level Fixtures
+
+You can apply fixtures to all test functions in a module by using the `#[with_fixtures_module]` attribute:
+
+```rust
+use fluent_test::prelude::*;
+
+#[with_fixtures_module]
+mod user_tests {
+    use super::*;
+    
+    #[setup]
+    fn setup() {
+        // Setup specific to user tests
+        println!("Setting up test environment");
+    }
+    
+    #[tear_down]
+    fn tear_down() {
+        // Teardown specific to user tests
+        println!("Cleaning up test environment");
+    }
+    
+    // No need for #[with_fixtures] on each test
+    #[test]
+    fn test_one() {
+        // Fixtures will be automatically applied
+        expect!(2 + 2).to_equal(4);
+    }
+    
+    #[test]
+    fn test_two() {
+        // Fixtures will also be applied here
+        expect!(3 + 3).to_equal(6);
+    }
+}
+```
+
+This eliminates the need to add `#[with_fixtures]` to each test function, making your tests more concise.
 
 ## Module Scoping
 
