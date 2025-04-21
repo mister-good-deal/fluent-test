@@ -1,6 +1,32 @@
 use crate::backend::Assertion;
 use crate::backend::assertions::sentence::AssertionSentence;
 use std::fmt::Debug;
+use std::future::{Future, Ready, ready};
+
+/// Helper trait to convert types to futures
+pub trait MaybeAwait {
+    type Output;
+    type Future: Future<Output = Self::Output>;
+    fn into_future(self) -> Self::Future;
+}
+
+impl MaybeAwait for bool {
+    type Output = bool;
+    type Future = Ready<Self::Output>;
+
+    fn into_future(self) -> Self::Future {
+        ready(self)
+    }
+}
+
+impl MaybeAwait for &bool {
+    type Output = bool;
+    type Future = Ready<Self::Output>;
+
+    fn into_future(self) -> Self::Future {
+        ready(*self)
+    }
+}
 
 pub trait BooleanMatchers {
     fn to_be_true(self) -> Self;

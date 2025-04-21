@@ -1,3 +1,5 @@
+#[cfg(feature = "async")]
+pub mod async_matchers;
 pub mod boolean;
 pub mod collection;
 pub mod equality;

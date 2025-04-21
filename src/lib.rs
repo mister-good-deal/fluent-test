@@ -71,6 +71,12 @@ pub mod matchers {
     pub use crate::backend::matchers::option::OptionMatchers;
     pub use crate::backend::matchers::result::ResultMatchers;
     pub use crate::backend::matchers::string::StringMatchers;
+
+    // Async matchers - only available when async feature is enabled
+    #[cfg(feature = "async")]
+    pub use crate::backend::matchers::async_matchers::TimeConstraint;
+    #[cfg(feature = "async")]
+    pub use crate::backend::matchers::async_matchers::{AsyncFailAssertion, AsyncMatchers, AsyncResolveAssertion, AsyncResultMatchers};
 }
 
 /// Main prelude module containing everything needed for fluent testing
@@ -106,13 +112,58 @@ pub fn config() -> Config {
 }
 
 /// Main entry point for fluent assertions
+///
+/// This macro creates an assertion for synchronous values.
+/// For asynchronous values, use the `expect!(..).await` pattern.
+///
+/// # Usage
+/// ```
+/// use fluent_test::prelude::*;
+///
+/// // Regular synchronous assertion
+/// expect!(2 + 2).to_equal(4);
+///
+/// // Asynchronous assertion (in an async context)
+/// # async fn example() {
+/// async fn delayed_value() -> i32 {
+///     // Some async operation
+///     42
+/// }
+///
+/// // For async values, the future is awaited inside the macro
+/// let result = delayed_value();
+/// expect!(result).to_resolve_with(42);
+/// ```
 #[macro_export]
 macro_rules! expect {
     ($expr:expr) => {{
-        // Always auto-initialize
-        $crate::auto_initialize_for_tests();
+        // When the async feature is enabled, check if the type is a Future
+        #[cfg(feature = "async")]
+        async move {
+            // Always auto-initialize
+            $crate::auto_initialize_for_tests();
 
-        $crate::backend::Assertion::new($expr, stringify!($expr))
+            // Get a reference to avoid moving the value
+            let expr_ref = &$expr;
+
+            // Track the start time and create an async block
+            use tokio::time::Instant;
+            let start = Instant::now();
+
+            // Await the future and measure elapsed time, even non-async code implements `into_future` trait
+            let resolved = $expr.into_future().await;
+            let elapsed = start.elapsed();
+
+            // Create an assertion with the elapsed time
+            $crate::backend::Assertion::with_elapsed(resolved, stringify!($expr), elapsed);
+        };
+        #[cfg(not(feature = "async"))]
+        {
+            // Always auto-initialize
+            $crate::auto_initialize_for_tests();
+            // If async feature is not enabled, just create a normal assertion
+            $crate::backend::Assertion::new($expr, stringify!($expr));
+        };
     }};
 }
 
@@ -174,6 +225,9 @@ pub mod test_utils {
     pub use crate::backend::matchers::option::OptionMatchers;
     pub use crate::backend::matchers::result::ResultMatchers;
     pub use crate::backend::matchers::string::StringMatchers;
+
+    #[cfg(feature = "async")]
+    pub use crate::backend::matchers::async_matchers::{AsyncMatchers, AsyncResultMatchers};
 
     // Helper function to set up testing
     pub fn setup_tests() {

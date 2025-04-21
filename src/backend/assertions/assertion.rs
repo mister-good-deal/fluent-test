@@ -36,6 +36,8 @@ pub struct Assertion<T> {
     pub in_chain: bool,
     /// Flag to mark the final step in a chain
     pub is_final: bool,
+    /// Optional elapsed time for async operations
+    pub elapsed: Option<std::time::Duration>,
 }
 
 /// Represents the complete result of a test session
@@ -59,7 +61,13 @@ impl<T> Assertion<T> {
             steps: Vec::new(),
             in_chain: false,
             is_final: true, // By default, single-step assertions are final
+            elapsed: None,  // No elapsed time by default
         };
+    }
+
+    /// Create an assertion with elapsed time (for async operations)
+    pub fn with_elapsed(value: T, expr_str: &'static str, elapsed: std::time::Duration) -> Self {
+        return Self { value, expr_str, negated: false, steps: Vec::new(), in_chain: false, is_final: true, elapsed: Some(elapsed) };
     }
 
     /// Add an assertion step and get back a cloned Assertion for chaining
@@ -88,8 +96,9 @@ impl<T> Assertion<T> {
             expr_str: self.expr_str,
             negated: false, // Reset negation after using it
             steps: new_steps,
-            in_chain: true, // Mark this as part of a chain
-            is_final: true, // This step is final until a modifier makes it non-final
+            in_chain: true,        // Mark this as part of a chain
+            is_final: true,        // This step is final until a modifier makes it non-final
+            elapsed: self.elapsed, // Keep the elapsed time if set
         };
     }
 
@@ -238,6 +247,7 @@ impl<T> Assertion<T> {
             steps: self.steps.clone(),
             in_chain: self.in_chain,
             is_final: self.is_final,
+            elapsed: self.elapsed,
         };
 
         // Emit appropriate events based on assertion result
@@ -408,6 +418,7 @@ mod tests {
             steps: vec![step],
             in_chain: true,
             is_final: true,
+            elapsed: None, // No elapsed time for this test
         };
 
         // Verify the expected behavior

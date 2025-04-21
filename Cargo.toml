@@ -17,8 +17,26 @@ thread_local = "1.1.8"
 once_cell = "1.18.0"
 ctor = "0.2.7"
 fluent-test-macros = { path = "./fluent-test-macros", version = "0.4.3" }
+tokio = { version = "1", features = ["time", "rt"], optional = true }
+futures = "0.3.29"
+
+[features]
+default = ["async"]
+async = ["tokio"]
+
+# Generated examples to demonstrate usage
+[[example]]
+name = "async_matchers"
+path = "examples/async_matchers.rs"
+required-features = ["async"]
+
+[[example]]
+name = "async_await"
+path = "examples/async_await.rs"
+required-features = ["async"]
 
 [dev-dependencies]
+tokio = { version = "1", features = ["full"] }
 
 [workspace]
 members = [
