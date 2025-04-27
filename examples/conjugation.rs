@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 fn main() {
     // Enable enhanced output for this example
@@ -45,5 +45,5 @@ fn main() {
     expect!(user).to_equal("John"); // Should be "user is equal to 'John'"
     expect!(&users).to_contain("Alice"); // Should be "users contain 'Alice'"
 
-    fluent_test::Reporter::summarize();
+    rest::Reporter::summarize();
 }

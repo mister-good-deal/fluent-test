@@ -9,7 +9,7 @@ use syn::{
 ///
 /// Example:
 /// ```
-/// use fluent_test::prelude::*;
+/// use rest::prelude::*;
 ///
 /// #[before_all]
 /// fn setup_once() {
@@ -30,7 +30,7 @@ pub fn before_all(_attr: TokenStream, item: TokenStream) -> TokenStream {
         // We use ctor to register the function at runtime
         #[ctor::ctor]
         fn #register_fn_name() {
-            fluent_test::backend::fixtures::register_before_all(
+            rest::backend::fixtures::register_before_all(
                 module_path!(),
                 Box::new(|| #fn_name())
             );
@@ -44,7 +44,7 @@ pub fn before_all(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// Example:
 /// ```
-/// use fluent_test::prelude::*;
+/// use rest::prelude::*;
 ///
 /// #[after_all]
 /// fn teardown_once() {
@@ -65,7 +65,7 @@ pub fn after_all(_attr: TokenStream, item: TokenStream) -> TokenStream {
         // We use ctor to register the function at runtime
         #[ctor::ctor]
         fn #register_fn_name() {
-            fluent_test::backend::fixtures::register_after_all(
+            rest::backend::fixtures::register_after_all(
                 module_path!(),
                 Box::new(|| #fn_name())
             );
@@ -79,7 +79,7 @@ pub fn after_all(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// Example:
 /// ```
-/// use fluent_test::prelude::*;
+/// use rest::prelude::*;
 ///
 /// #[setup]
 /// fn setup() {
@@ -100,7 +100,7 @@ pub fn setup(_attr: TokenStream, item: TokenStream) -> TokenStream {
         // We use ctor to register the function at runtime
         #[ctor::ctor]
         fn #register_fn_name() {
-            fluent_test::backend::fixtures::register_setup(
+            rest::backend::fixtures::register_setup(
                 module_path!(),
                 Box::new(|| #fn_name())
             );
@@ -114,7 +114,7 @@ pub fn setup(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// Example:
 /// ```
-/// use fluent_test::prelude::*;
+/// use rest::prelude::*;
 ///
 /// #[tear_down]
 /// fn tear_down() {
@@ -135,7 +135,7 @@ pub fn tear_down(_attr: TokenStream, item: TokenStream) -> TokenStream {
         // We use ctor to register the function at runtime
         #[ctor::ctor]
         fn #register_fn_name() {
-            fluent_test::backend::fixtures::register_teardown(
+            rest::backend::fixtures::register_teardown(
                 module_path!(),
                 Box::new(|| #fn_name())
             );
@@ -149,7 +149,7 @@ pub fn tear_down(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// Example:
 /// ```
-/// use fluent_test::prelude::*;
+/// use rest::prelude::*;
 ///
 /// #[with_fixtures]
 /// fn test_something() {
@@ -179,7 +179,7 @@ pub fn with_fixtures(_attr: TokenStream, item: TokenStream) -> TokenStream {
             // Get the current module path - critical for finding the right fixtures
             let module_path = module_path!();
 
-            fluent_test::backend::fixtures::run_test_with_fixtures(
+            rest::backend::fixtures::run_test_with_fixtures(
                 module_path,
                 std::panic::AssertUnwindSafe(|| #impl_name())
             );
@@ -218,7 +218,7 @@ impl VisitMut for TestFunctionVisitor {
 ///
 /// Example:
 /// ```
-/// use fluent_test::prelude::*;
+/// use rest::prelude::*;
 ///
 /// #[with_fixtures_module]
 /// mod test_module {

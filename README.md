@@ -1,13 +1,13 @@
-# FluentTest
+# Rest
 
-[![Crates.io](https://img.shields.io/crates/v/fluent-test.svg)](https://crates.io/crates/fluent-test)
-[![Build Status](https://github.com/mister-good-deal/fluent-test/workflows/CI/badge.svg)](https://github.com/mister-good-deal/fluent-test/actions)
-[![codecov](https://codecov.io/gh/mister-good-deal/fluent-test/graph/badge.svg?token=W5L8E2CQ9M)](https://codecov.io/gh/mister-good-deal/fluent-test)
-[![License](https://img.shields.io/crates/l/fluent-test.svg)](https://github.com/mister-good-deal/fluent-test/blob/master/LICENSE)
-[![Downloads](https://img.shields.io/crates/d/fluent-test.svg)](https://crates.io/crates/fluent-test)
+[![Crates.io](https://img.shields.io/crates/v/rest.svg)](https://crates.io/crates/rest)
+[![Build Status](https://github.com/mister-good-deal/rest/workflows/CI/badge.svg)](https://github.com/mister-good-deal/rest/actions)
+[![codecov](https://codecov.io/gh/mister-good-deal/rest/graph/badge.svg?token=W5L8E2CQ9M)](https://codecov.io/gh/mister-good-deal/rest)
+[![License](https://img.shields.io/crates/l/rest.svg)](https://github.com/mister-good-deal/rest/blob/master/LICENSE)
+[![Downloads](https://img.shields.io/crates/d/rest.svg)](https://crates.io/crates/rest)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10418/badge)](https://www.bestpractices.dev/projects/10418)
 
-A fluent, Jest-like testing library for Rust that builds upon the standard testing infrastructure. FluentTest provides
+A fluent, Jest-like testing library for Rust that builds upon the standard testing infrastructure. Rest provides
 expressive assertions with readable error messages while maintaining compatibility with Rust's built-in testing functionality.
 
 ## Features
@@ -45,20 +45,20 @@ expressive assertions with readable error messages while maintaining compatibili
 
 ## Quick Start
 
-Add FluentTest to your project:
+Add Rest to your project:
 
 ```bash
-cargo add fluent-test --dev
+cargo add rest --dev
 ```
 
 Write your first test:
 
 ```rust
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 #[test]
 fn should_check_values() {
-    // By default, FluentTest behaves like standard Rust assertions
+    // By default, Rest behaves like standard Rust assertions
     // To enable enhanced output, configure it:
     config().enhanced_output(true).apply();
     
@@ -75,28 +75,28 @@ fn should_check_values() {
 You can also enable enhanced output globally by setting the environment variable:
 
 ```bash
-FLUENT_TEST_ENHANCED_OUTPUT=true cargo test
+REST_ENHANCED_OUTPUT=true cargo test
 ```
 
 ## Available Matchers
 
-FluentTest provides a comprehensive set of matchers for various types. All matchers support negation through either the
+Rest provides a comprehensive set of matchers for various types. All matchers support negation through either the
 `not()` method or the `expect_not!` macro.
 
-For complete documentation of all matchers, please see the [Wiki documentation](https://github.com/mister-good-deal/fluent-test/wiki).
+For complete documentation of all matchers, please see the [Wiki documentation](https://github.com/mister-good-deal/rest/wiki).
 
 ### Boolean Matchers
 
 - **to_be_true** - Checks if a boolean is true
 - **to_be_false** - Checks if a boolean is false
 
-[View Boolean Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Boolean-Matchers)
+[View Boolean Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Boolean-Matchers)
 
 ### Equality Matchers
 
 - **to_equal** - Checks if a value equals another value
 
-[View Equality Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Equality-Matchers)
+[View Equality Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Equality-Matchers)
 
 ### Numeric Matchers
 
@@ -111,7 +111,7 @@ For complete documentation of all matchers, please see the [Wiki documentation](
 - **to_be_negative** - Checks if a number is negative
 - **to_be_in_range** - Checks if a number is within a specified range
 
-[View Numeric Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Numeric-Matchers)
+[View Numeric Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Numeric-Matchers)
 
 ### String Matchers
 
@@ -122,7 +122,7 @@ For complete documentation of all matchers, please see the [Wiki documentation](
 - **to_match** - Checks if a string matches a pattern
 - **to_have_length** - Checks if a string has a specific length
 
-[View String Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/String-Matchers)
+[View String Matchers documentation](https://github.com/mister-good-deal/rest/wiki/String-Matchers)
 
 ### Collection Matchers
 
@@ -132,7 +132,7 @@ For complete documentation of all matchers, please see the [Wiki documentation](
 - **to_contain_all_of** - Checks if a collection contains all specified elements
 - **to_equal_collection** - Compares two collections for element-wise equality
 
-[View Collection Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Collection-Matchers)
+[View Collection Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Collection-Matchers)
 
 ### HashMap Matchers
 
@@ -141,7 +141,7 @@ For complete documentation of all matchers, please see the [Wiki documentation](
 - **to_contain_key** - Checks if a HashMap contains a specific key
 - **to_contain_entry** - Checks if a HashMap contains a specific key-value pair
 
-[View HashMap Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/HashMap-Matchers)
+[View HashMap Matchers documentation](https://github.com/mister-good-deal/rest/wiki/HashMap-Matchers)
 
 ### Option Matchers
 
@@ -149,7 +149,7 @@ For complete documentation of all matchers, please see the [Wiki documentation](
 - **to_be_none** - Checks if an Option is None
 - **to_contain_value** - Checks if an Option contains a specific value
 
-[View Option Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Option-Matchers)
+[View Option Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Option-Matchers)
 
 ### Result Matchers
 
@@ -158,11 +158,11 @@ For complete documentation of all matchers, please see the [Wiki documentation](
 - **to_contain_ok** - Checks if a Result contains a specific Ok value
 - **to_contain_err** - Checks if a Result contains a specific Err value
 
-[View Result Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Result-Matchers)
+[View Result Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Result-Matchers)
 
 ## Using Modifiers
 
-FluentTest provides powerful modifiers to create complex assertions, including:
+Rest provides powerful modifiers to create complex assertions, including:
 
 - Negation with the `.not()` method or `expect_not!` macro
 - Logical chaining with `.and()` and `.or()` operators
@@ -178,14 +178,14 @@ expect!(number).to_be_greater_than(30)
 expect!(value).not().to_equal(100);
 ```
 
-[View Using Modifiers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Using-Modifiers)
+[View Using Modifiers documentation](https://github.com/mister-good-deal/rest/wiki/Using-Modifiers)
 
 ## Test Fixtures
 
-FluentTest provides a powerful fixture system for setting up and tearing down test environments:
+Rest provides a powerful fixture system for setting up and tearing down test environments:
 
 ```rust
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 // Define setup function
 #[setup]
@@ -218,39 +218,39 @@ Key features:
 - Automatic cleanup on test failures
 - Multiple setup/teardown functions per module
 
-[View Test Fixtures documentation](https://github.com/mister-good-deal/fluent-test/wiki/Fixtures)
+[View Test Fixtures documentation](https://github.com/mister-good-deal/rest/wiki/Fixtures)
 
 ## Custom Matchers
 
-FluentTest is designed to be easily extensible. You can create your own custom matchers to make your tests more expressive and domain-specific.
+Rest is designed to be easily extensible. You can create your own custom matchers to make your tests more expressive and domain-specific.
 
-[View Custom Matchers documentation](https://github.com/mister-good-deal/fluent-test/wiki/Custom-Matchers)
+[View Custom Matchers documentation](https://github.com/mister-good-deal/rest/wiki/Custom-Matchers)
 
 ## Output Formatting
 
-FluentTest enhances the standard test output with colors, symbols, and improved formatting:
+Rest enhances the standard test output with colors, symbols, and improved formatting:
 
 - **Color Coding**: Green for passing tests, red for failing tests
 - **Unicode Symbols**: Check (✓) marks for passing conditions, cross (✗) for failing ones
 - **Clean Variable Names**: Reference symbols (`&`) are automatically removed from output
 - **Consistent Indentation**: Multi-line output is properly indented for readability
 
-[View Output Formatting documentation](https://github.com/mister-good-deal/fluent-test/wiki/Output-Formatting)
+[View Output Formatting documentation](https://github.com/mister-good-deal/rest/wiki/Output-Formatting)
 
 ## Architecture
 
-FluentTest uses a modular, event-driven architecture:
+Rest uses a modular, event-driven architecture:
 
 - **Backend Layer** - Core assertion evaluation logic
 - **Config System** - Controls the library's behavior
 - **Event System** - Decouples assertion execution from reporting
 - **Frontend Layer** - Reporting and user interface
 
-[View Architecture documentation](https://github.com/mister-good-deal/fluent-test/wiki/Architecture)
+[View Architecture documentation](https://github.com/mister-good-deal/rest/wiki/Architecture)
 
 ## Releases
 
-This project is automatically published to [crates.io](https://crates.io/crates/fluent-test) when:
+This project is automatically published to [crates.io](https://crates.io/crates/rest) when:
 
 1. The version in Cargo.toml is increased beyond the latest git tag
 2. The code is merged to the master branch
@@ -277,7 +277,7 @@ Coverage reports are automatically generated on each push to the master branch a
 
 ### Viewing Coverage Reports
 
-- The latest coverage report is always available on [Codecov.io](https://codecov.io/gh/mister-good-deal/fluent-test)
+- The latest coverage report is always available on [Codecov.io](https://codecov.io/gh/mister-good-deal/rest)
 - Each CI run also produces an HTML coverage report available as a downloadable artifact
 
 ### Running Code Coverage Locally

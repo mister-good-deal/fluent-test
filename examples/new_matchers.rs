@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 use std::collections::HashMap;
 
 fn main() {
@@ -51,5 +51,5 @@ fn main() {
     expect!(&user_scores).not().to_contain_key("Charlie");
 
     // Report test results
-    fluent_test::Reporter::summarize();
+    rest::Reporter::summarize();
 }

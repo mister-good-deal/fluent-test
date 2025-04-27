@@ -1,6 +1,6 @@
 mod common;
 use common::guard_test;
-use fluent_test::prelude::*;
+use rest::prelude::*;
 use std::collections::HashMap;
 
 fn main() {

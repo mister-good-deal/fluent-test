@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 // This binary shows different configuration options for FluentTest
 fn main() {

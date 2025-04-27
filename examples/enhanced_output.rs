@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 fn main() {
     println!("FluentTest Enhanced Output Example\n");

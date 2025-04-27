@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicUsize, Ordering};
 

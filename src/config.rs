@@ -5,9 +5,9 @@ use std::sync::Once;
 static INIT: Once = Once::new();
 
 // Environment variable to control enhanced output
-const ENV_ENHANCED_OUTPUT: &str = "FLUENT_TEST_ENHANCED_OUTPUT";
+const ENV_ENHANCED_OUTPUT: &str = "REST_ENHANCED_OUTPUT";
 
-/// Configuration for FluentTest's output and behavior
+/// Configuration for Rest's output and behavior
 pub struct Config {
     pub(crate) use_colors: bool,
     pub(crate) use_unicode_symbols: bool,
@@ -88,7 +88,7 @@ impl Config {
     }
 }
 
-/// Initialize the FluentTest system
+/// Initialize the Rest system
 /// This is called automatically when needed but can also be called explicitly
 pub fn initialize() {
     INIT.call_once(|| {

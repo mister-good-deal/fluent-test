@@ -1,10 +1,10 @@
 [package]
-name = "fluent-test-macros"
-version = "0.4.3"
+name = "rest-macros"
+version = "0.5.0"
 edition = "2024"
 authors = ["Romain Laneuville<romain.laneuville@hotmail.fr>"]
-description = "Procedural macros for fluent-test"
-repository = "https://github.com/mister-good-deal/fluent-test"
+description = "Procedural macros for rest"
+repository = "https://github.com/mister-good-deal/rest"
 license = "MIT"
 keywords = ["testing", "test", "jest", "fluent", "assertions"]
 categories = ["development-tools", "development-tools::testing"]

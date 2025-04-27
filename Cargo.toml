@@ -1,10 +1,10 @@
 [package]
-name = "fluent-test"
-version = "0.4.3"
+name = "rest"
+version = "0.5.0"
 edition = "2024"
 authors = ["Romain Laneuville<romain.laneuville@hotmail.fr>"]
 description = "A fluent, Jest-like testing library for Rust"
-repository = "https://github.com/mister-good-deal/fluent-test"
+repository = "https://github.com/mister-good-deal/rest"
 license = "MIT"
 keywords = ["testing", "test", "jest", "fluent", "assertions"]
 categories = ["development-tools", "development-tools::testing"]
@@ -16,11 +16,11 @@ lazy_static = "1.4.0"
 thread_local = "1.1.8"
 once_cell = "1.18.0"
 ctor = "0.2.7"
-fluent-test-macros = { path = "./fluent-test-macros", version = "0.4.3" }
+rest-macros = { path = "./rest-macros", version = "0.5.0" }
 
 [dev-dependencies]
 
 [workspace]
 members = [
-    "fluent-test-macros"
+    "rest-macros"
 ]
