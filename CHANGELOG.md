@@ -19,7 +19,7 @@
   - Updated all documentation and examples to use new name
   - Renamed GitHub repository URLs
 
-## 0.4.3 (Unreleased)
+## 0.4.3 (2024-04-17)
 
 ### Added
 
