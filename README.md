@@ -211,6 +211,7 @@ fn my_test() {
 ```
 
 Key features:
+
 - Complete test lifecycle management with `#[before_all]`, `#[setup]`, `#[tear_down]`, and `#[after_all]`
 - Attribute-based API with `#[setup]`, `#[tear_down]`, and `#[with_fixtures]`
 - Module-level fixtures with `#[with_fixtures_module]` to apply fixtures to all tests in a module

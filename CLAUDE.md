@@ -20,7 +20,7 @@
 - Apply formatting: `cargo fmt`
 - Run linter: `cargo clippy -- -D warnings --fix`
 - Check errors with `cargo clippy -- -D warnings` after editing code
-- Format Markdown: Use markdownlint-cli2 to format Markdown files with `npx markdownlint-cli2 --fix README.md`
+- Format Markdown: Use markdownlint-cli2 to format Markdown files with `npx markdownlint-cli2 --fix **/*.md`
 
 ## Code Style Guidelines
 
@@ -47,7 +47,8 @@
 - Use descriptive branch names prefixed with type: `feature/`, `bugfix/`, `docs/`, `ci/`, etc.
 - Make small, focused commits with clear messages
 - Creating pull requests:
-  - Using GitHub CLI: 
+  - Using GitHub CLI:
+
     ```bash
     gh pr create --title "Title of your PR" --body "$(cat <<'EOF'
     ## Summary
@@ -62,7 +63,9 @@
     EOF
     )"
     ```
+
   - For more complex PRs, create a markdown file with content and use:
+
     ```bash
     gh pr create --title "PR Title" --body "$(cat PR_DESCRIPTION.md)"
     ```

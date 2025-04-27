@@ -224,6 +224,7 @@ mod database_tests {
 ```
 
 The execution order is:
+
 1. `initialize_database()` (#[before_all]) - Run once at the start
 2. For each test:
    a. `setup_test_data()` (#[setup]) - Run before the test
