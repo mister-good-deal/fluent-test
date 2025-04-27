@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 (2025-04-27)
+
+### Fixed
+
+- Version bump to fix CI issue with existing tag
+
 ## 0.5.0 (2025-04-27)
 
 ### Changed
