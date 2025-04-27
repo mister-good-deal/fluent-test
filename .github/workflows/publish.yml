@@ -30,7 +30,7 @@ jobs:
         id: get_version
         run: |
           MAIN_VERSION=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
-          MACROS_VERSION=$(grep '^version =' fluent-test-macros/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          MACROS_VERSION=$(grep '^version =' rest-macros/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
           
           echo "local_version=$MAIN_VERSION" >> $GITHUB_OUTPUT
           echo "macros_version=$MACROS_VERSION" >> $GITHUB_OUTPUT
@@ -89,10 +89,10 @@ jobs:
           echo "Publishing version ${{ steps.get_version.outputs.local_version }} to crates.io..."
           
           # First publish the macros crate
-          echo "Publishing fluent-test-macros crate first..."
-          cd fluent-test-macros
+          echo "Publishing rest-macros crate first..."
+          cd rest-macros
           cargo publish --no-verify
-          echo "Successfully published fluent-test-macros to crates.io"
+          echo "Successfully published rest-macros to crates.io"
           
           # Wait a bit for crates.io to index the published crate
           echo "Waiting for crates.io to index the macros crate..."
@@ -100,9 +100,9 @@ jobs:
           
           # Then publish the main crate
           cd ..
-          echo "Publishing main fluent-test crate..."
+          echo "Publishing main rest crate..."
           cargo publish --no-verify
-          echo "Successfully published fluent-test version ${{ steps.get_version.outputs.local_version }} to crates.io"
+          echo "Successfully published rest version ${{ steps.get_version.outputs.local_version }} to crates.io"
       
       - name: No publish needed
         if: steps.version_check.outputs.newer_version != 'true'
