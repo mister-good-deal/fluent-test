@@ -32,7 +32,7 @@ jobs:
           echo "release_date=$RELEASE_DATE" >> $GITHUB_OUTPUT
           echo "Release Date: $RELEASE_DATE"
       
-      # Update the CHANGELOG.md by replacing "(Unreleased)" with the current date
+      # Update the CHANGELOG.md by replacing "(Unreleased)" with the current date only if necessary
       - name: Update CHANGELOG.md with release date
         id: update_changelog
         run: |
@@ -46,19 +46,27 @@ jobs:
           echo "Current entry in CHANGELOG:"
           grep "## $VERSION" CHANGELOG.md || echo "No entry found"
           
-          # Replace "(Unreleased)" with the current date for this version
-          sed -i "s/## $VERSION (Unreleased)/## $VERSION ($RELEASE_DATE)/" CHANGELOG.md
-          
-          # Check if the replacement was made
-          if grep -q "## $VERSION ($RELEASE_DATE)" CHANGELOG.md; then
-            echo "Replaced 'Unreleased' with release date $RELEASE_DATE for version $VERSION in CHANGELOG.md"
-            echo "updated=true" >> $GITHUB_OUTPUT
-            
-            echo "New entry in CHANGELOG:"
+          # Check if we already have a date (not Unreleased)
+          if grep -q "## $VERSION ([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\})" CHANGELOG.md; then
+            echo "Version $VERSION already has a date, no need to update"
+            echo "updated=false" >> $GITHUB_OUTPUT
+            echo "Current entry in CHANGELOG:"
             grep "## $VERSION" CHANGELOG.md
           else
-            echo "No '(Unreleased)' tag found for version $VERSION in CHANGELOG.md"
-            echo "updated=false" >> $GITHUB_OUTPUT
+            # Replace "(Unreleased)" with the current date for this version
+            sed -i "s/## $VERSION (Unreleased)/## $VERSION ($RELEASE_DATE)/" CHANGELOG.md
+            
+            # Check if the replacement was made
+            if grep -q "## $VERSION ($RELEASE_DATE)" CHANGELOG.md; then
+              echo "Replaced 'Unreleased' with release date $RELEASE_DATE for version $VERSION in CHANGELOG.md"
+              echo "updated=true" >> $GITHUB_OUTPUT
+              
+              echo "New entry in CHANGELOG:"
+              grep "## $VERSION" CHANGELOG.md
+            else
+              echo "No '(Unreleased)' tag found for version $VERSION in CHANGELOG.md"
+              echo "updated=false" >> $GITHUB_OUTPUT
+            fi
           fi
       
       # If CHANGELOG was updated, commit and push the changes
