@@ -55,7 +55,7 @@ fn test_string_ends_with() {
 
 ## to_match
 
-Checks if a string matches a pattern. 
+Checks if a string matches a pattern.
 
 ```rust
 fn test_string_matches() {
