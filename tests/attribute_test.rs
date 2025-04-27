@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 // Setup a new test module focused just on attribute-style fixtures

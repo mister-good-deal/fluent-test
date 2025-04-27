@@ -1,5 +1,5 @@
-use fluent_test::prelude::*;
 use once_cell::sync::Lazy;
+use rest::prelude::*;
 use std::sync::{
     Mutex,
     atomic::{AtomicUsize, Ordering},

@@ -1,4 +1,4 @@
-# FluentTest Development Guide
+# Rest Development Guide
 
 ## Build Commands
 

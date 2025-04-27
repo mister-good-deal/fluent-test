@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 use std::cell::RefCell;
 
 // A shared counter for demonstration

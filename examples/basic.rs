@@ -1,4 +1,4 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 fn main() {
     // Enable enhanced output for this example
@@ -27,5 +27,5 @@ fn main() {
     expect!(name_ref).to_equal(&arthur);
 
     // Report test results
-    fluent_test::Reporter::summarize();
+    rest::Reporter::summarize();
 }

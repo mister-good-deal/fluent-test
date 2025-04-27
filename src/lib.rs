@@ -1,4 +1,4 @@
-//! FluentTest: A fluent, Jest-like testing library for Rust
+//! Rest: A fluent, Jest-like testing library for Rust
 //!
 //! This crate provides a more expressive way to write tests in Rust,
 //! inspired by JavaScript testing frameworks like Jest.
@@ -8,17 +8,17 @@
 //!
 //! ```
 //! // In your test code:
-//! use fluent_test::prelude::*;
+//! use rest::prelude::*;
 //!
 //! fn my_test() {
 //!     // Enable enhanced output for this test
-//!     fluent_test::config().enhanced_output(true).apply();
+//!     rest::config().enhanced_output(true).apply();
 //!     
 //!     expect!(2 + 2).to_equal(4);
 //! }
 //! ```
 //!
-//! Or set the FLUENT_TEST_ENHANCED_OUTPUT=true environment variable.
+//! Or set the REST_ENHANCED_OUTPUT=true environment variable.
 
 // Allow explicit return statements as part of the coding style
 #![allow(clippy::needless_return)]
@@ -53,7 +53,7 @@ pub fn auto_initialize_for_tests() {
 pub use config::initialize;
 
 // Export attribute macros for fixtures
-pub use fluent_test_macros::{after_all, before_all, setup, tear_down, with_fixtures, with_fixtures_module};
+pub use rest_macros::{after_all, before_all, setup, tear_down, with_fixtures, with_fixtures_module};
 
 // Global exit handler for after_all fixtures
 #[ctor::dtor]
@@ -129,15 +129,15 @@ macro_rules! expect_not {
     }};
 }
 
-/// Run all FluentTest tests in a module
+/// Run all Rest tests in a module
 ///
 /// This can be used as a test harness to handle initialization
 /// and reporting.
 #[macro_export]
-macro_rules! fluent_test {
+macro_rules! rest_test {
     () => {
         #[test]
-        fn _fluent_test_runner() {
+        fn _rest_test_runner() {
             // Auto-initialize if enhanced output is enabled
             $crate::auto_initialize_for_tests();
 

@@ -1,9 +1,9 @@
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 #[test]
 fn test_basic_assertions() {
     // Enable enhanced output for this specific test
-    fluent_test::config().enhanced_output(true).apply();
+    rest::config().enhanced_output(true).apply();
 
     let value = 42;
 
@@ -20,7 +20,7 @@ fn test_with_standard_assertions() {
     assert_eq!(value, 42);
 
     // Use enhanced output for fluent assertions
-    fluent_test::config().enhanced_output(true).apply();
+    rest::config().enhanced_output(true).apply();
     expect!(value).to_be_even();
 }
 
@@ -29,7 +29,7 @@ fn test_with_standard_assertions() {
 #[should_panic]
 fn test_failure_reporting() {
     // Enable enhanced output for this should_panic test
-    fluent_test::config().enhanced_output(true).apply();
+    rest::config().enhanced_output(true).apply();
 
     let my_special_value = 13;
     expect!(my_special_value).to_be_even();

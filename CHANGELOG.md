@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0 (2025-04-27)
+
+### Changed
+
+- Renamed project from "fluent-test" to "rest"
+  - Updated package name to "rest" on crates.io
+  - Changed macro crate name to "rest-macros"
+  - Renamed API import paths from `fluent_test::*` to `rest::*`
+  - Updated environment variable from `FLUENT_TEST_ENHANCED_OUTPUT` to `REST_ENHANCED_OUTPUT`
+  - Renamed `fluent_test` macro to `rest_test`
+  - Updated all documentation and examples to use new name
+  - Renamed GitHub repository URLs
+
 ## 0.4.3 (Unreleased)
 
 ### Added
@@ -94,7 +107,7 @@
 
 - Added enhanced configuration system:
   - Simplified API with `config().enhanced_output(true).apply()`
-  - Support for environment variable `FLUENT_TEST_ENHANCED_OUTPUT`
+  - Support for environment variable `REST_ENHANCED_OUTPUT`
   - New example files demonstrating configuration options
 - Added new example files:
   - `config_example.rs` - Shows configuration options
@@ -186,7 +199,7 @@
 
 ### Added
 
-- Initial implementation of FluentTest, a Jest-like testing library for Rust
+- Initial implementation of Rest, a Jest-like testing library for Rust
 - Core expectation and matcher system
 - Fluent assertion API with `expect!` macro
 - Negation support with `.not()` method and `expect_not!` macro

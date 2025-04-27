@@ -1,6 +1,6 @@
 mod common;
 use common::guard_test;
-use fluent_test::prelude::*;
+use rest::prelude::*;
 
 fn main() {
     // Enable enhanced output for this example
@@ -40,5 +40,5 @@ fn main() {
 
     // Report test results
     println!("\n=== Test Summary ===");
-    fluent_test::Reporter::summarize();
+    rest::Reporter::summarize();
 }

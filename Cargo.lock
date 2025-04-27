@@ -38,28 +38,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fluent-test"
-version = "0.4.3"
-dependencies = [
- "colored",
- "ctor",
- "fluent-test-macros",
- "lazy_static",
- "once_cell",
- "regex",
- "thread_local",
-]
-
-[[package]]
-name = "fluent-test-macros"
-version = "0.4.3"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -123,6 +101,28 @@ name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
+
+[[package]]
+name = "rest"
+version = "0.5.0"
+dependencies = [
+ "colored",
+ "ctor",
+ "lazy_static",
+ "once_cell",
+ "regex",
+ "rest-macros",
+ "thread_local",
+]
+
+[[package]]
+name = "rest-macros"
+version = "0.5.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "syn"
